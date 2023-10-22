@@ -73,8 +73,7 @@ def initialize_driver(browser="chrome", headless=True):
     if browser.lower() == "chrome":
         chrome_options = Options()
         if headless:
-            # chrome_options.add_argument("--headless")
-            pass
+            chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
