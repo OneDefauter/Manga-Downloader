@@ -3,13 +3,17 @@
 Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para conseguir as URL's das imagens dos capítulos e então baixa e coloca em sua receptiva pasta.
 
 # Requisitos
-● [**Python**](https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe)\n
+● [**Python**](https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe)
+
 ● [**ImageMagick**](https://github.com/OneDefauter/Menu_/releases/download/Req/ImageMagick-7.1.1-21-Q16-HDRI-x64-dll.exe)
 
 ## Módulos necessários
 ● **requests**
+
 ● **pywin32**
+
 ● **selenium**
+
 ● **aiohttp**
 
 ***Nota: os módulos são instalados caso não tenha.***
