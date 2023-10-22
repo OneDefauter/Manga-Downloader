@@ -13,6 +13,9 @@ import aiohttp
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
@@ -100,8 +103,8 @@ parser = argparse.ArgumentParser(description="Mangá Downloader")
 parser.add_argument("-nh", "--no-headless", action="store_true", help="Executar o Selenium em modo não headless")
 parser.add_argument("-a", "--agregador", type=int, choices=range(1, len(lista_agregadores) + 1), help="Número do agregador")
 parser.add_argument("-n", "--nome", type=str, help="Nome da obra")
-parser.add_argument("-c", "--capitulo", type=int, help="Número do capítulo")
-parser.add_argument("-t", "--ate", type=int, help="Até qual capítulo baixar")
+parser.add_argument("-c", "--capitulo", type=float, help="Número do capítulo")
+parser.add_argument("-t", "--ate", type=float, help="Até qual capítulo baixar")
 
 args = parser.parse_args()
 
@@ -137,10 +140,10 @@ elif args.ate and not args.capitulo:
     capítulo = ate
 else:
     # Se o argumento do número do capítulo foi fornecido
-    capítulo = args.capitulo if args.capitulo else int(input("Digite o número do capítulo: "))
+    capítulo = args.capitulo if args.capitulo else float(input("Digite o número do capítulo: "))
 
     # Se o argumento do até qual capítulo baixar foi fornecido
-    ate = args.ate if args.ate else int(input("Digite até qual capítulo deseja baixar (pressione Enter para usar o mesmo valor do capítulo): ") or capítulo)
+    ate = args.ate if args.ate else float(input("Digite até qual capítulo deseja baixar (pressione Enter para usar o mesmo valor do capítulo): ") or capítulo)
 
 
 
@@ -252,41 +255,61 @@ def organizar(folder_path):
 
 
 async def main():
+    
+    print("\nAguarde...")
+    
     if agregador_escolhido == 1:
         base_url = 'https://www.brmangas.net/ler/'
         max_attempts = 10
         sleep_time = 0.1
         links = []
 
-        if capítulo <= ate:
-            for num_capitulo in range(capítulo, ate + 1):
-                url = f'{base_url}{nome_formatado}-{num_capitulo}-online/'
+        # Função para obter capítulos dentro de um intervalo
+        def obter_capitulos(driver, inicio, fim):
+            url = f"https://www.brmangas.net/manga/{nome_formatado}-online/"
+            
+            # Abre a página
+            driver.get(url)
+            
+            # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+            driver.implicitly_wait(5)
+            
+            # Verifica se a página contém o texto "Página não encontrada"
+            if "Página não encontrada" in driver.page_source:
+                print(f"Erro: Obra {nome} não encontrado. Status code: 404")
+                url = str(input("Digite a URL da obra: "))
+                
+                # Tente abrir a página com o link fornecido
+                driver.get(url)
+                
+                # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+                driver.implicitly_wait(5)
+                
+                # Verifica se a página contém o texto "Página não encontrada"
+                if "Página não encontrada" in driver.page_source:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+            
+            # Esperar a lista de capítulos carregar
+            capitulos = driver.find_elements(By.XPATH, '//div[@class="lista_manga"]//li[@class="row lista_ep"]')
 
-                try:
-                    # Tenta acessar a URL
-                    driver.get(url)
+            capitulos_encontrados = []
+            
+            os.system("cls")
+            print("Verificando capítulos...")
 
-                    # Verifica se a página contém o texto "404 Not Found"
-                    if "Página não encontrada" in driver.page_source:
-                        print(f"Erro: Capítulo {num_capitulo} não encontrado. Status code: 404")
-                    else:
-                        print(f"URL para o Capítulo {num_capitulo}: {url}")
-                        links.append(url)
+            for capitulo in capitulos:
+                numero_capitulo = float(capitulo.get_attribute('data-cap'))
+                if inicio <= numero_capitulo <= fim:
+                    link = capitulo.find_element(By.XPATH, './/a').get_attribute('href')
+                    capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
 
-                except Exception as e:
-                    if "ERR_INTERNET_DISCONNECTED" in str(e):
-                        print(f"Erro ao acessar {url}: Sem acesso à Internet.")
-                        sys.exit()
-                    else:
-                        print(f"Erro ao acessar {url}: {str(e)}")
+            return capitulos_encontrados
 
-                time.sleep(sleep_time)
-        else:
-            print("O capítulo inicial deve ser menor ou igual ao capítulo final")
-            sys.exit()
+        capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
 
-        if len(links) == 0:
-            print("Nenhum capítulo válido encontrado")
+        if len(capitulos_solicitados) == 0:
+            print("Nenhum capítulo encontrado")
             sys.exit()
 
         def mudar():
@@ -308,6 +331,8 @@ async def main():
 
                 # Espera até que o novo conteúdo seja carregado após a seleção
                 driver.implicitly_wait(10)
+                
+                print("Modo de leitura alterado para: Páginas abertas")
 
                 time.sleep(3)
 
@@ -353,19 +378,16 @@ async def main():
             await asyncio.gather(*tasks)
 
             organizar(folder_path)
-            1
+            
             print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
 
         async with aiohttp.ClientSession() as session:
-            for url in links:
-                parts = url.split('/')
-                if len(parts) >= 6:
-                    capitulo_str = parts[4]
-
-                    # Extrair apenas o número do capítulo (última parte antes de '-online')
-                    numero_capitulo = capitulo_str.rsplit('-', 2)[-2]
-
-                    await run(url, numero_capitulo, session)
+            os.system("cls")
+            for capitulo in capitulos_solicitados:
+                numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
+                url = capitulo['link']
+                
+                await run(url, numero_capitulo, session)
                     
             driver.close()
 
@@ -379,31 +401,76 @@ async def main():
         sleep_time = 0.1
         links = []
 
-        if capítulo <= ate:
-            for num_capitulo in range(capítulo, ate + 1):
-                url = f'{base_url}{nome_formatado}/cap-{num_capitulo}/'
+        # Função para obter capítulos dentro de um intervalo
+        def obter_capitulos(driver, inicio, fim):
+            url = f"https://crystalscan.net/manga/{nome_formatado}/"
+            
+            # Abre a página
+            driver.get(url)
+            
+            # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+            driver.implicitly_wait(5)
+            
+            # Verifica se a página contém o texto "Página não encontrada"
+            if "Página não encontrada" in driver.page_source:
+                print(f"Erro: Obra {nome} não encontrado. Status code: 404")
+                url = str(input("Digite a URL da obra: "))
+                
+                # Tente abrir a página com o link fornecido
+                driver.get(url)
+                
+                # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+                driver.implicitly_wait(5)
+                
+                # Verifica se a página contém o texto "Página não encontrada"
+                if "Página não encontrada" in driver.page_source:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+            
+            # Injeta um script JavaScript para simular um pequeno movimento do mouse
+            driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
-                try:
-                    # Tenta acessar a URL
-                    driver.get(url)
+            # Aguarde até que o botão seja visível (você pode ajustar o tempo de espera conforme necessário)
+            try:
+                element = WebDriverWait(driver, 5).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, "chapter-readmore"))
+                )
 
-                    # Verifica se a página contém o texto "Página não encontrada"
-                    if "Página não encontrada" in driver.page_source:
-                        print(f"Erro: Capítulo {num_capitulo} não encontrado. Status code: 404")
-                    else:
-                        print(f"URL para o Capítulo {num_capitulo}: {url}")
-                        links.append(url)
+                # Clique no botão
+                element.click()
 
-                except Exception as e:
-                    print(f"Erro ao acessar {url}: {str(e)}")
+            except TimeoutException:
+                # print("O botão não está presente ou não é visível. Ignorando o clique.")
+                pass
+            
+            time.sleep(5)
+            
+            os.system("cls")
+            print("Verificando capítulos...")
 
-                time.sleep(sleep_time)
-        else:
-            print("O capítulo inicial deve ser menor ou igual ao capítulo final")
-            sys.exit()
+            # Esperar a lista de capítulos carregar
+            chapter_elements = driver.find_elements(By.CLASS_NAME, "wp-manga-chapter")
 
-        if len(links) == 0:
-            print("Nenhum capítulo válido encontrado")
+            capitulos_encontrados = []
+
+            for capitulo in chapter_elements:
+                # Encontra o elemento 'a' dentro do 'li'
+                a_element = capitulo.find_element(By.TAG_NAME, "a")
+
+                # Obtém o texto do número do capítulo
+                # Usa expressão regular para extrair números, pontos e vírgulas
+                numero_capitulo = float(re.sub(r'[^0-9.,]', '', a_element.text.strip()))
+
+                if inicio <= numero_capitulo <= fim:
+                    link = a_element.get_attribute("href")
+                    capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+
+            return capitulos_encontrados
+
+        capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+
+        if len(capitulos_solicitados) == 0:
+            print("Nenhum capítulo encontrado")
             sys.exit()
 
         async def run(url, numero_capitulo, session):
@@ -411,6 +478,8 @@ async def main():
 
             # Verificar se a pasta já existe e tem conteúdo
             contents = os.listdir(folder_path) if os.path.exists(folder_path) else []
+
+            print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
             if contents:
                 print(f"A pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
@@ -454,14 +523,19 @@ async def main():
 
             organizar(folder_path)
 
-        async with aiohttp.ClientSession() as session:
-            for url in links:
-                parts = url.split('/')
-                if len(parts) >= 1:
-                    capitulo_str = parts[5]
+            print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
-                    numero_capitulo = capitulo_str.rsplit('-', 2)[-1]
-                    await run(url, numero_capitulo, session)
+        async with aiohttp.ClientSession() as session:
+            os.system("cls")
+            
+            # Inverter a ordem dos capítulos
+            capitulos_solicitados.reverse()
+            
+            for capitulo in capitulos_solicitados:
+                numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
+                url = capitulo['link']
+                
+                await run(url, numero_capitulo, session)
                     
             driver.close()
 
