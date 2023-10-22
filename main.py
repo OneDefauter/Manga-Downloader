@@ -75,26 +75,9 @@ def initialize_driver(browser="chrome", headless=True):
         if headless:
             chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument('--log-level=3')
-        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        chrome_options.add_argument('--no-sandbox')
         return webdriver.Chrome(options=chrome_options)
-    elif browser.lower() == "firefox":
-        firefox_options = FirefoxOptions()
-        if headless:
-            firefox_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument('--log-level=3')
-        chrome_options.add_argument('--ignore-certificate-errors')
-        return webdriver.Firefox(options=firefox_options)
-    elif browser.lower() == "edge":
-        edge_options = EdgeOptions()
-        edge_options.use_chromium = True
-        if headless:
-            edge_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument('--log-level=3')
-        chrome_options.add_argument('--ignore-certificate-errors')
-        return webdriver.Edge(options=edge_options)
     else:
         raise ValueError("Navegador não suportado")
 
