@@ -264,6 +264,7 @@ async def main():
                 
                 if not "brmangas" in url:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
                 
                 # Tente abrir a página com o link fornecido
@@ -275,6 +276,7 @@ async def main():
                 # Verifica se a página contém o texto "Página não encontrada"
                 if "Página não encontrada" in driver.page_source:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
             
             # Esperar a lista de capítulos carregar
@@ -297,7 +299,8 @@ async def main():
 
         if len(capitulos_solicitados) == 0:
             print("Nenhum capítulo encontrado")
-            sys.exit()
+            driver.quit()
+            sys.exit(0)
 
         def mudar():
             # Localiza o elemento do menu suspenso pelo ID
@@ -376,7 +379,7 @@ async def main():
                 
                 await run(url, numero_capitulo, session)
                     
-            driver.close()
+            driver.quit()
 
 
 
@@ -405,6 +408,7 @@ async def main():
                 
                 if not "crystalscan" in url:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
                 
                 # Tente abrir a página com o link fornecido
@@ -416,6 +420,7 @@ async def main():
                 # Verifica se a página contém o texto "Página não encontrada"
                 if "Página não encontrada" in driver.page_source:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
             
             # Injeta um script JavaScript para simular um pequeno movimento do mouse
@@ -462,6 +467,7 @@ async def main():
 
         if len(capitulos_solicitados) == 0:
             print("Nenhum capítulo encontrado")
+            driver.quit()
             sys.exit()
 
         async def run(url, numero_capitulo, session):
@@ -528,7 +534,7 @@ async def main():
                 
                 await run(url, numero_capitulo, session)
                     
-            driver.close()
+            driver.quit()
 
 
 
@@ -557,6 +563,7 @@ async def main():
                 
                 if not "argoscomics" in url:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
                 
                 # Tente abrir a página com o link fornecido
@@ -568,6 +575,7 @@ async def main():
                 # Verifica se a página contém o texto "Página não encontrada"
                 if "Página não encontrada" in driver.page_source:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
             
             # Injeta um script JavaScript para simular um pequeno movimento do mouse
@@ -638,6 +646,7 @@ async def main():
 
         if len(capitulos_solicitados) == 0:
             print("Nenhum capítulo encontrado")
+            driver.quit()
             sys.exit()
 
         async def run(url, numero_capitulo, session):
@@ -695,7 +704,7 @@ async def main():
                 
                 await run(url, numero_capitulo, session)
                     
-            driver.close()
+            driver.quit()
 
 
 
@@ -724,6 +733,7 @@ async def main():
                 
                 if not "argoshentai" in url:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
                 
                 # Tente abrir a página com o link fornecido
@@ -735,6 +745,7 @@ async def main():
                 # Verifica se a página contém o texto "Página não encontrada"
                 if "Página não encontrada" in driver.page_source:
                     print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
                     sys.exit()
             
             # Injeta um script JavaScript para simular um pequeno movimento do mouse
@@ -805,6 +816,7 @@ async def main():
 
         if len(capitulos_solicitados) == 0:
             print("Nenhum capítulo encontrado")
+            driver.quit()
             sys.exit()
 
         async def run(url, numero_capitulo, session):
@@ -862,7 +874,7 @@ async def main():
                 
                 await run(url, numero_capitulo, session)
                     
-            driver.close()
+            driver.quit()
 
 
 
