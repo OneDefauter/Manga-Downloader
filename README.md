@@ -29,6 +29,9 @@ Baixe o arquivo [**run.py**](https://github.com/OneDefauter/Manga-Downloader/rel
 |**Até qual capítulo baixar**          |**`-t`**|**`--ate`**|
 
 **Exemplo de uso: run.py -a 1 -n "Is This Hero For Real?" -c 50**
+
 **Com esse argumento vai baixar o capítulo 50 da obra 'Is This Hero For Real?' no agregador 1**
+
 **Caso queira baixar vários capítulos use: run.py -a 1 -n "Is This Hero For Real?" -c 50 -t 80**
+
 **Assim irá baixar do capítulo 50 ao 80.**
