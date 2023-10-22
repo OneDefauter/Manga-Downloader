@@ -9,7 +9,7 @@ required_modules = ['requests', 'pywin32', 'selenium', 'aiohttp']
 
 for module in required_modules:
     try:
-        __import__(module)
+        __import__('win32api') if module == 'pywin32' else __import__(module)
     except ImportError:
         print(f"Módulo {module} não encontrado. Instalando...")
         subprocess.run(['pip', 'install', module])
