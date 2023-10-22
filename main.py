@@ -67,13 +67,14 @@ if not is_imagick_installed():
     sys.exit()
 
 # Lista de agregadores
-lista_agregadores = ["BR Mangás", "Crystal Scan"]
+lista_agregadores = ["BR Mangás", "Crystal Scan", "Argos Comics", "Argos Hentai"]
 
 def initialize_driver(browser="chrome", headless=True):
     if browser.lower() == "chrome":
         chrome_options = Options()
         if headless:
-            chrome_options.add_argument("--headless")
+            # chrome_options.add_argument("--headless")
+            pass
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
@@ -262,6 +263,10 @@ async def main():
                 print(f"Erro: Obra {nome} não encontrado. Status code: 404")
                 url = str(input("Digite a URL da obra: "))
                 
+                if not "brmangas" in url:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+                
                 # Tente abrir a página com o link fornecido
                 driver.get(url)
                 
@@ -378,7 +383,7 @@ async def main():
 
 
 
-    if agregador_escolhido == 2:
+    elif agregador_escolhido == 2:
         base_url = 'https://crystalscan.net/manga/'
         max_attempts = 10
         sleep_time = 0.1
@@ -398,6 +403,10 @@ async def main():
             if "Página não encontrada" in driver.page_source:
                 print(f"Erro: Obra {nome} não encontrado. Status code: 404")
                 url = str(input("Digite a URL da obra: "))
+                
+                if not "crystalscan" in url:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
                 
                 # Tente abrir a página com o link fornecido
                 driver.get(url)
@@ -506,7 +515,7 @@ async def main():
 
             organizar(folder_path)
 
-            print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
+            print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
 
         async with aiohttp.ClientSession() as session:
             os.system("cls")
@@ -522,6 +531,339 @@ async def main():
                     
             driver.close()
 
+
+
+
+
+    elif agregador_escolhido == 3:
+        base_url = 'https://argoscomics.com/manga/'
+        max_attempts = 10
+        sleep_time = 0.1
+        links = []
+
+        # Função para obter capítulos dentro de um intervalo
+        def obter_capitulos(driver, inicio, fim):
+            url = f"https://argoscomics.com/manga/{nome_formatado}/"
+            
+            # Abre a página
+            driver.get(url)
+            
+            # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+            driver.implicitly_wait(5)
+            
+            # Verifica se a página contém o texto "Página não encontrada"
+            if "Página não encontrada" in driver.page_source:
+                print(f"Erro: Obra {nome} não encontrado. Status code: 404")
+                url = str(input("Digite a URL da obra: "))
+                
+                if not "argoscomics" in url:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+                
+                # Tente abrir a página com o link fornecido
+                driver.get(url)
+                
+                # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+                driver.implicitly_wait(5)
+                
+                # Verifica se a página contém o texto "Página não encontrada"
+                if "Página não encontrada" in driver.page_source:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+            
+            # Injeta um script JavaScript para simular um pequeno movimento do mouse
+            driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+
+            # Aguarde até que o botão seja visível (você pode ajustar o tempo de espera conforme necessário)
+            try:
+                element = WebDriverWait(driver, 5).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, "chapter-readmore"))
+                )
+
+                # Clique no botão
+                element.click()
+
+            except TimeoutException:
+                # print("O botão não está presente ou não é visível. Ignorando o clique.")
+                pass
+            
+            time.sleep(5)
+            
+            os.system("cls")
+            print("Verificando capítulos...")
+
+            try:
+                # Localizar todos os elementos que têm a classe 'has-child'
+                volumes_com_child = driver.find_elements(By.CLASS_NAME, 'has-child')
+
+                # Expandir todos os volumes
+                for volume in volumes_com_child:
+                    volume.click()
+                    time.sleep(1)
+                    # Aguarde a expansão do volume
+                    # wait.until(EC.presence_of_element_located((By.XPATH, f'{volume}/following-sibling::ul')))
+
+            except TimeoutException:
+                pass
+            
+            time.sleep(5)
+
+            # Esperar a lista de capítulos carregar
+            wait = WebDriverWait(driver, 10)
+            lista_capitulos = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'sub-chap-list')))
+
+            # Selecionar os elementos de capítulo
+            lista_capitulos = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'sub-chap-list')))
+
+            capitulos_encontrados = []
+
+            for sub_chap_list in lista_capitulos:
+                capitulos = sub_chap_list.find_elements(By.CLASS_NAME, 'wp-manga-chapter')
+
+                for capitulo in capitulos:
+                    # Obter o número do capítulo
+                    # Obter o número do capítulo do texto do link
+                    link_text = capitulo.find_element(By.TAG_NAME, 'a').text
+                    numero_capitulo = float(re.sub(r'[^0-9.,]', '', link_text.replace(',', '')))
+
+                    # Obter o link do capítulo
+                    link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
+
+                    # Verificar se o capítulo está no intervalo desejado
+                    if inicio <= numero_capitulo <= fim:
+                        capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+
+            return capitulos_encontrados
+
+        capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+
+        if len(capitulos_solicitados) == 0:
+            print("Nenhum capítulo encontrado")
+            sys.exit()
+
+        async def run(url, numero_capitulo, session):
+            folder_path = os.path.join(nome, numero_capitulo)
+
+            # Verificar se a pasta já existe e tem conteúdo
+            contents = os.listdir(folder_path) if os.path.exists(folder_path) else []
+
+            print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
+
+            if contents:
+                print(f"A pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                for item in contents:
+                    item_path = os.path.join(folder_path, item)
+                    if os.path.isdir(item_path):
+                        shutil.rmtree(item_path)  # Exclui pasta e conteúdo
+                    else:
+                        os.remove(item_path)  # Exclui arquivo
+
+            os.makedirs(folder_path, exist_ok=True)
+
+            driver.get(url)
+            driver.implicitly_wait(10)
+
+            time.sleep(5)
+            
+            # Encontra a div que contém as imagens
+            div_reading_content = driver.find_element(By.CLASS_NAME, 'reading-content')
+
+            # Encontra todas as tags de imagem dentro da div
+            imagens = div_reading_content.find_elements(By.CLASS_NAME, 'wp-manga-chapter-img')
+
+            # Extrai os links das imagens
+            links_das_imagens = [imagem.get_attribute('src') for imagem in imagens]
+
+            # Criar lista de tarefas assíncronas para o download
+            tasks = [download(link, folder_path, session) for link in links_das_imagens]
+
+            # Agendar as tarefas para execução simultânea
+            await asyncio.gather(*tasks)
+
+            organizar(folder_path)
+
+            print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
+
+        async with aiohttp.ClientSession() as session:
+            os.system("cls")
+            
+            # Inverter a ordem dos capítulos
+            capitulos_solicitados.reverse()
+            
+            for capitulo in capitulos_solicitados:
+                numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
+                url = capitulo['link']
+                
+                await run(url, numero_capitulo, session)
+                    
+            driver.close()
+
+
+
+
+
+    elif agregador_escolhido == 4:
+        base_url = 'https://argoshentai.com/manga/'
+        max_attempts = 10
+        sleep_time = 0.1
+        links = []
+
+        # Função para obter capítulos dentro de um intervalo
+        def obter_capitulos(driver, inicio, fim):
+            url = f"https://argoshentai.com/manga/{nome_formatado}/"
+            
+            # Abre a página
+            driver.get(url)
+            
+            # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+            driver.implicitly_wait(5)
+            
+            # Verifica se a página contém o texto "Página não encontrada"
+            if "Página não encontrada" in driver.page_source:
+                print(f"Erro: Obra {nome} não encontrado. Status code: 404")
+                url = str(input("Digite a URL da obra: "))
+                
+                if not "argoshentai" in url:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+                
+                # Tente abrir a página com o link fornecido
+                driver.get(url)
+                
+                # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+                driver.implicitly_wait(5)
+                
+                # Verifica se a página contém o texto "Página não encontrada"
+                if "Página não encontrada" in driver.page_source:
+                    print("Erro: URL inválida. Status code: 404")
+                    sys.exit()
+            
+            # Injeta um script JavaScript para simular um pequeno movimento do mouse
+            driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+
+            # Aguarde até que o botão seja visível (você pode ajustar o tempo de espera conforme necessário)
+            try:
+                element = WebDriverWait(driver, 5).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, "chapter-readmore"))
+                )
+
+                # Clique no botão
+                element.click()
+
+            except TimeoutException:
+                # print("O botão não está presente ou não é visível. Ignorando o clique.")
+                pass
+            
+            time.sleep(5)
+            
+            os.system("cls")
+            print("Verificando capítulos...")
+
+            try:
+                # Localizar todos os elementos que têm a classe 'has-child'
+                volumes_com_child = driver.find_elements(By.CLASS_NAME, 'has-child')
+
+                # Expandir todos os volumes
+                for volume in volumes_com_child:
+                    volume.click()
+                    time.sleep(1)
+                    # Aguarde a expansão do volume
+                    # wait.until(EC.presence_of_element_located((By.XPATH, f'{volume}/following-sibling::ul')))
+
+            except TimeoutException:
+                pass
+            
+            time.sleep(5)
+
+            # Esperar a lista de capítulos carregar
+            wait = WebDriverWait(driver, 10)
+            lista_capitulos = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'sub-chap-list')))
+
+            # Selecionar os elementos de capítulo
+            lista_capitulos = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'sub-chap-list')))
+
+            capitulos_encontrados = []
+
+            for sub_chap_list in lista_capitulos:
+                capitulos = sub_chap_list.find_elements(By.CLASS_NAME, 'wp-manga-chapter')
+
+                for capitulo in capitulos:
+                    # Obter o número do capítulo
+                    # Obter o número do capítulo do texto do link
+                    link_text = capitulo.find_element(By.TAG_NAME, 'a').text
+                    numero_capitulo = float(re.sub(r'[^0-9.,]', '', link_text.replace(',', '')))
+
+                    # Obter o link do capítulo
+                    link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
+
+                    # Verificar se o capítulo está no intervalo desejado
+                    if inicio <= numero_capitulo <= fim:
+                        capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+
+            return capitulos_encontrados
+
+        capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+
+        if len(capitulos_solicitados) == 0:
+            print("Nenhum capítulo encontrado")
+            sys.exit()
+
+        async def run(url, numero_capitulo, session):
+            folder_path = os.path.join(nome, numero_capitulo)
+
+            # Verificar se a pasta já existe e tem conteúdo
+            contents = os.listdir(folder_path) if os.path.exists(folder_path) else []
+
+            print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
+
+            if contents:
+                print(f"A pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                for item in contents:
+                    item_path = os.path.join(folder_path, item)
+                    if os.path.isdir(item_path):
+                        shutil.rmtree(item_path)  # Exclui pasta e conteúdo
+                    else:
+                        os.remove(item_path)  # Exclui arquivo
+
+            os.makedirs(folder_path, exist_ok=True)
+
+            driver.get(url)
+            driver.implicitly_wait(10)
+
+            time.sleep(5)
+            
+            # Encontra a div que contém as imagens
+            div_reading_content = driver.find_element(By.CLASS_NAME, 'reading-content')
+
+            # Encontra todas as tags de imagem dentro da div
+            imagens = div_reading_content.find_elements(By.CLASS_NAME, 'wp-manga-chapter-img')
+
+            # Extrai os links das imagens
+            links_das_imagens = [imagem.get_attribute('src') for imagem in imagens]
+
+            # Criar lista de tarefas assíncronas para o download
+            tasks = [download(link, folder_path, session) for link in links_das_imagens]
+
+            # Agendar as tarefas para execução simultânea
+            await asyncio.gather(*tasks)
+
+            organizar(folder_path)
+
+            print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
+
+        async with aiohttp.ClientSession() as session:
+            os.system("cls")
+            
+            # Inverter a ordem dos capítulos
+            capitulos_solicitados.reverse()
+            
+            for capitulo in capitulos_solicitados:
+                numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
+                url = capitulo['link']
+                
+                await run(url, numero_capitulo, session)
+                    
+            driver.close()
 
 
 
