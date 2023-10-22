@@ -2,6 +2,7 @@ import os
 import subprocess
 import requests
 import tempfile
+import sys
 
 # Verificar se os módulos estão instalados
 required_modules = ['requests', 'pywin32', 'selenium', 'aiohttp']
@@ -14,7 +15,7 @@ for module in required_modules:
         subprocess.run(['pip', 'install', module])
 
 # URL do arquivo main.py no repositório GitHub
-main_py_url = 'https://github.com/OneDefauter/MangaDownloader/releases/download/main.py'
+main_py_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/main.py'
 
 # Nome do arquivo de destino
 main_py_filename = 'main.py'
@@ -30,4 +31,13 @@ response = requests.get(main_py_url)
 with open(main_py_path, 'wb') as f:
     f.write(response.content)
 
-print(f"{main_py_filename} foi baixado com sucesso em {temp_dir}.")
+# print(f"{main_py_filename} foi baixado com sucesso em {temp_dir}.")
+
+# Obtendo argumentos do script run.py
+run_args = sys.argv[1:]
+
+# Construindo a lista completa de argumentos para main.py
+main_args = ['python', main_py_path] + run_args
+
+# Abrir o arquivo main.py com argumentos
+subprocess.run(main_args)
