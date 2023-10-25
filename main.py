@@ -1310,7 +1310,8 @@ async def main():
             print("Verificando capítulos...")
             
             capitulos_encontrados = []
-
+            count = 2
+            
             # Loop para percorrer todas as páginas
             while True:
                 # Localiza os elementos que contêm as informações dos capítulos
@@ -1329,10 +1330,12 @@ async def main():
                 try:
                     next_page_button = driver.find_element(By.XPATH, '//li[@class="page-item"]/a[@class="page-link" and contains(text(), ">")]')
                     next_page_button.click()
+                    print(f"Carregando página... {count}")
                 except:
                     # Se não houver mais próxima página, sai do loop
                     break
                 
+                count += 1
                 # Aguarde um pouco para garantir que a próxima página seja totalmente carregada
                 time.sleep(5)
 
@@ -1498,6 +1501,7 @@ async def main():
             print("Verificando capítulos...")
             
             capitulos_encontrados = []
+            count = 2
 
             # Loop para percorrer todas as páginas
             while True:
@@ -1523,12 +1527,15 @@ async def main():
                     # Se não houver mais próxima página, sai do loop
                     if not result:
                         break
-                        
+                    
+                    print(f"Carregando página... {count}")
+                    
                 except:
                     # Se não houver mais próxima página, sai do loop
                     print("Não há mais próxima página.")
                     break
                 
+                count += 1
                 # Aguarde um pouco para garantir que a próxima página seja totalmente carregada
                 time.sleep(5)
 
