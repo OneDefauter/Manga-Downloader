@@ -1016,34 +1016,43 @@ async def main():
 
             time.sleep(5)
             
-            try:
+            # Aguarde até que o elemento de seleção de páginas esteja presente na página
+            select_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, 'select-paged'))
+            )
+
+            # Obtenha a lista de opções do elemento de seleção
+            options = select_element.find_elements(By.TAG_NAME, 'option')
+
+            if options[-1].text.split('/')[1] == "?":
+                driver.refresh()
+                driver.implicitly_wait(10)
+                
+                time.sleep(20)
+                # Injeta um script JavaScript para simular um pequeno movimento do mouse
+                driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+                
                 # Aguarde até que o elemento de seleção de páginas esteja presente na página
                 select_element = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, 'select-paged'))
                 )
-    
+
                 # Obtenha a lista de opções do elemento de seleção
                 options = select_element.find_elements(By.TAG_NAME, 'option')
-    
+                
+                if options[-1].text.split('/')[1] == "?":
+                    print("Erro: não foi possível obter o número total de páginas deste capítulo")
+                    driver.quit()
+                    sys.exit()
+                else:
+                    # Obtenha o valor total de páginas do último item da lista
+                    pags = int(options[-1].text.split('/')[1])
+            else:
                 # Obtenha o valor total de páginas do último item da lista
                 pags = int(options[-1].text.split('/')[1])
-                
-            except Exception:
-                time.sleep(10)
-                
-                # Aguarde até que o elemento de seleção de páginas esteja presente na página
-                select_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, 'select-paged'))
-                )
-    
-                # Obtenha a lista de opções do elemento de seleção
-                options = select_element.find_elements(By.TAG_NAME, 'option')
-    
-                # Obtenha o valor total de páginas do último item da lista
-                pags = int(options[-1].text.split('/')[1])
-                
-                time.sleep(1)
             
+            
+
             print(f"Total de páginas: {pags}")
 
             print(f"Carregando páginas... {1} / {pags}")
