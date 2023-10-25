@@ -1015,18 +1015,35 @@ async def main():
             driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
             time.sleep(5)
-
-            # Aguarde até que o elemento de seleção de páginas esteja presente na página
-            select_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'select-paged'))
-            )
-
-            # Obtenha a lista de opções do elemento de seleção
-            options = select_element.find_elements(By.TAG_NAME, 'option')
-
-            # Obtenha o valor total de páginas do último item da lista
-            pags = int(options[-1].text.split('/')[1])
-
+            
+            try:
+                # Aguarde até que o elemento de seleção de páginas esteja presente na página
+                select_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'select-paged'))
+                )
+    
+                # Obtenha a lista de opções do elemento de seleção
+                options = select_element.find_elements(By.TAG_NAME, 'option')
+    
+                # Obtenha o valor total de páginas do último item da lista
+                pags = int(options[-1].text.split('/')[1])
+                
+            except Exception:
+                time.sleep(10)
+                
+                # Aguarde até que o elemento de seleção de páginas esteja presente na página
+                select_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'select-paged'))
+                )
+    
+                # Obtenha a lista de opções do elemento de seleção
+                options = select_element.find_elements(By.TAG_NAME, 'option')
+    
+                # Obtenha o valor total de páginas do último item da lista
+                pags = int(options[-1].text.split('/')[1])
+                
+                time.sleep(1)
+            
             print(f"Total de páginas: {pags}")
 
             print(f"Carregando páginas... {1} / {pags}")
