@@ -1,6 +1,6 @@
 # Manga Downloader
 
-Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para conseguir as URL's das imagens dos capítulos e então baixa e coloca em sua receptiva pasta.
+Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para conseguir as URL's das imagens dos capítulos e então baixa e coloca em sua respectiva pasta.
 
 # Requisitos
 ● [**Python**](https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe)
