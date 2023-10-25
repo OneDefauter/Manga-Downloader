@@ -69,7 +69,7 @@ if not is_imagick_installed():
     sys.exit()
 
 # Lista de agregadores
-lista_agregadores = ["BR Mangás", "Crystal Scan", "Argos Comics", "Argos Hentai", "Mangás Chan", "Ler Mangá", "Tsuki", "YomuMangás", "SlimeRead"]
+lista_agregadores = ["BR Mangás (https://www.brmangas.net/)", "Crystal Scan (https://crystalscan.net/)", "Argos Comics (https://argoscomics.com/)", "Argos Hentai (https://argoshentai.com/)", "Mangás Chan (https://mangaschan.net/)", "Ler Mangá (https://lermanga.org/)", "Tsuki (https://tsuki-mangas.com/)", "YomuMangás (https://yomumangas.com/)", "SlimeRead (https://slimeread.com/)"]
 
 def initialize_driver(browser="chrome", headless=True):
     if browser.lower() == "chrome":
