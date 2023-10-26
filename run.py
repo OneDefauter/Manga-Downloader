@@ -4,7 +4,7 @@ import tempfile
 import sys
 
 # Verificar se os módulos estão instalados
-required_modules = ['requests', 'pywin32', 'selenium', 'aiohttp']
+required_modules = ['requests', 'pywin32', 'selenium', 'aiohttp', 'asyncio']
 
 for module in required_modules:
     try:
