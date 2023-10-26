@@ -1,6 +1,5 @@
 import os
 import subprocess
-import requests
 import tempfile
 import sys
 
@@ -13,6 +12,8 @@ for module in required_modules:
     except ImportError:
         print(f"Módulo {module} não encontrado. Instalando...")
         subprocess.run(['pip', 'install', module])
+
+import requests
 
 # URL do arquivo main.py no repositório GitHub
 main_py_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/main.py'
