@@ -18,6 +18,25 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ***Nota: os módulos são instalados caso não tenha.***
 
+## Sites suportados
+● **[BR Mangás](https://www.brmangas.net/)**
+
+● **[Crystal Scan](https://crystalscan.net/)**
+
+● **[Argos Comics](https://argoscomics.com/)**
+
+● **[Argos Hentai](https://argoshentai.com/)**
+
+● **[Mangás Chan](https://mangaschan.net/)**
+
+● **[Ler Mangá](https://lermanga.org/)**
+
+● **[Tsuki](https://tsuki-mangas.com/)**
+
+● **[YomuMangás](https://yomumangas.com/)**
+
+● **[SlimeRead](https://slimeread.com/)**
+
 ## Instalação
 
 Baixe o arquivo [**run.py**](https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/run.py) e inicie e pronto.
