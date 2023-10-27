@@ -10,7 +10,7 @@ import shutil
 import argparse
 import asyncio
 import aiohttp
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
@@ -69,16 +69,31 @@ if not is_imagick_installed():
     sys.exit()
 
 # Lista de agregadores
-lista_agregadores = ["BR Mangás (https://www.brmangas.net/)", "Crystal Scan (https://crystalscan.net/)", "Argos Comics (https://argoscomics.com/)", "Argos Hentai (https://argoshentai.com/)", "Mangás Chan (https://mangaschan.net/)", "Ler Mangá (https://lermanga.org/)", "Tsuki (https://tsuki-mangas.com/)", "YomuMangás (https://yomumangas.com/)", "SlimeRead (https://slimeread.com/)"]
+lista_agregadores = [
+    "BR Mangás (https://www.brmangas.net/)", 
+    "Crystal Scan (https://crystalscan.net/)", 
+    "Argos Comics (https://argoscomics.com/)", 
+    "Argos Hentai (https://argoshentai.com/)", 
+    "Mangás Chan (https://mangaschan.net/)", 
+    "Ler Mangá (https://lermanga.org/)", 
+    "Tsuki (https://tsuki-mangas.com/)", 
+    "YomuMangás (https://yomumangas.com/)", 
+    "SlimeRead (https://slimeread.com/)",
+    "Flower Manga (https://flowermanga.com/)"
+]
 
 def initialize_driver(browser="chrome", headless=True):
     if browser.lower() == "chrome":
         chrome_options = Options()
         if headless:
-            chrome_options.add_argument("--headless")
+            pass
+            # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
+        if agregador_escolhido != 7:
+            prefs = {"profile.managed_default_content_settings.images": 2}
+            chrome_options.add_experimental_option("prefs", prefs)
         return webdriver.Chrome(options=chrome_options)
     else:
         raise ValueError("Navegador não suportado")
@@ -92,9 +107,6 @@ parser.add_argument("-c", "--capitulo", type=float, help="Número do capítulo")
 parser.add_argument("-t", "--ate", type=float, help="Até qual capítulo baixar")
 
 args = parser.parse_args()
-
-# Inicialização do driver após a análise dos argumentos
-driver = initialize_driver("chrome", not args.no_headless)
 
 os.system("cls")
 
@@ -113,7 +125,7 @@ else:
 # Se o argumento do nome da obra foi fornecido
 nome = args.nome if args.nome else input("Digite o nome da obra: ")
 nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "")
-nome_formatado = nome.replace(" ", "-").replace("’", "").replace("'", "").lower()
+nome_formatado = nome.replace(" ", "-").replace("’", "").replace("'", "").replace(" – ", "").lower()
 
 # Se o argumento do número do capítulo for fornecido e o argumento do até qual capítulo baixar não for fornecido
 if args.capitulo and not args.ate:
@@ -132,6 +144,11 @@ else:
     ate = args.ate if args.ate else float(input("Digite até qual capítulo deseja baixar (pressione Enter para usar o mesmo valor do capítulo): ") or capítulo)
 
 
+
+
+
+# Extensões permitidas
+extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif']
 
 
 
@@ -177,7 +194,7 @@ async def download(link, folder_path, session, counter, max_attempts=10, sleep_t
 
 def organizar(folder_path, nome, numero_capitulo):
     # Verifique se há arquivos de imagem na pasta
-    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
     if not image_files:
         print("Capítulo sem imagem.")
@@ -185,7 +202,7 @@ def organizar(folder_path, nome, numero_capitulo):
         shutil.rmtree(folder_path)
         return
     
-    file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+    file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
     count = 1
 
@@ -194,7 +211,7 @@ def organizar(folder_path, nome, numero_capitulo):
         new_filename = f"{base}__{ext}"
         os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
 
-    file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+    file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
     for filename in file_list:
         base, ext = os.path.splitext(filename)
@@ -204,7 +221,7 @@ def organizar(folder_path, nome, numero_capitulo):
 
 
 
-    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
     input_images = [os.path.join(folder_path, image) for image in image_files]
     output_folder = os.path.join(folder_path, "temp")
@@ -230,7 +247,7 @@ def organizar(folder_path, nome, numero_capitulo):
     # Contador para numerar os arquivos
     count = 1
 
-    output_files = sorted([f for f in os.listdir(output_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+    output_files = sorted([f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
     for filename in output_files:
         base, ext = os.path.splitext(filename)
@@ -238,7 +255,7 @@ def organizar(folder_path, nome, numero_capitulo):
         os.rename(os.path.join(output_folder, filename), os.path.join(output_folder, new_filename))
         count += 1
 
-    output_files = [f for f in os.listdir(output_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+    output_files = [f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))]
     for image in output_files:
         output_pathfile = os.path.join(output_folder, image)
         shutil.move(output_pathfile, folder_path)
@@ -250,8 +267,8 @@ def organizar(folder_path, nome, numero_capitulo):
 
 
 async def main():
-    # Extensões permitidas
-    extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp']
+    # Inicialização do driver após a análise dos argumentos
+    driver = initialize_driver("chrome", not args.no_headless)
     
     print("\nAguarde...")
     
@@ -1016,71 +1033,6 @@ async def main():
 
             time.sleep(5)
             
-            # Aguarde até que o elemento de seleção de páginas esteja presente na página
-            select_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'select-paged'))
-            )
-
-            # Obtenha a lista de opções do elemento de seleção
-            options = select_element.find_elements(By.TAG_NAME, 'option')
-
-            if options[-1].text.split('/')[1] == "?":
-                driver.refresh()
-                driver.implicitly_wait(10)
-                
-                time.sleep(20)
-                # Injeta um script JavaScript para simular um pequeno movimento do mouse
-                driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
-                
-                # Aguarde até que o elemento de seleção de páginas esteja presente na página
-                select_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, 'select-paged'))
-                )
-
-                # Obtenha a lista de opções do elemento de seleção
-                options = select_element.find_elements(By.TAG_NAME, 'option')
-                
-                if options[-1].text.split('/')[1] == "?":
-                    print("Erro: não foi possível obter o número total de páginas deste capítulo")
-                    driver.quit()
-                    sys.exit()
-                else:
-                    # Obtenha o valor total de páginas do último item da lista
-                    pags = int(options[-1].text.split('/')[1])
-            else:
-                # Obtenha o valor total de páginas do último item da lista
-                pags = int(options[-1].text.split('/')[1])
-            
-            
-
-            print(f"Total de páginas: {pags}")
-
-            print(f"Carregando páginas... {1} / {pags}")
-
-            count = 1
-            while count < pags:
-                try:
-                
-                    # Encontrar o elemento do menu suspenso
-                    select_element = driver.find_element(By.ID, 'select-paged')
-
-                    # Criar um objeto Select
-                    select = Select(select_element)
-
-                    # Selecionar a próxima opção no menu suspenso
-                    select.select_by_index(count)
-                    
-                    time.sleep(2)
-
-                except Exception as e:
-                    print(f"Erro: {e}")
-
-                finally:
-                    count += 1
-                    print(f"Carregando páginas... {count} / {pags}")
-
-            time.sleep(1)
-            
             # Encontra a div que contém as imagens
             div_imagens = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div/div/div/article/div[3]')
 
@@ -1137,12 +1089,35 @@ async def main():
             # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
             driver.implicitly_wait(5)
             
+            lista_capitulos = driver.find_elements(By.CLASS_NAME, "single-chapter")
+            
             # Verifica se a página contém o texto "Página não encontrada"
             if "Página não encontrada" in driver.page_source:
                 print(f"Erro: Obra {nome} não encontrado. Status code: 404")
                 url = str(input("Digite a URL da obra: "))
                 
-                if not "argoshentai" in url:
+                if not "lermanga" in url:
+                    print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
+                    sys.exit()
+                
+                # Tente abrir a página com o link fornecido
+                driver.get(url)
+                
+                # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+                driver.implicitly_wait(5)
+                
+                # Verifica se a página contém o texto "Página não encontrada"
+                if "Página não encontrada" in driver.page_source:
+                    print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
+                    sys.exit()
+
+            elif len(lista_capitulos) == 0:
+                print(f"Erro: Obra {nome} não encontrado. Status code: 404")
+                url = str(input("Digite a URL da obra: "))
+                
+                if not "lermanga" in url:
                     print("Erro: URL inválida. Status code: 404")
                     driver.quit()
                     sys.exit()
@@ -1229,7 +1204,7 @@ async def main():
             def scroll_to_position(position):
                 script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
                 driver.execute_script(script)
-                time.sleep(2)
+                time.sleep(0.750)
             
             # Rolar até o final da página e esperar
             scroll_to_position(1)
@@ -1396,64 +1371,35 @@ async def main():
             driver.get(url)
             driver.implicitly_wait(10)
 
-            time.sleep(2)
-            
-            paginas_abertas_button = driver.find_element(By.XPATH, '//button[@class="buttonreader pointer" and contains(text(), "Páginas abertas")]')
-            paginas_abertas_button.click()
-
-            # Aguarde um pouco após a seleção (opcional)
             time.sleep(5)
             
-            # Função para realizar a rolagem até determinado ponto
-            def scroll_to_position(position):
-                script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
-                driver.execute_script(script)
-                time.sleep(2)
-            
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-            
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-            
-            # Rolar até 25% da página e esperar
-            scroll_to_position(0.25)
-            
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-            
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-            
-            # Rolar até 50% da página e esperar
-            scroll_to_position(0.5)
-            
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-            
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-            
-            # Rolar até 75% da página e esperar
-            scroll_to_position(0.75)
-            
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-            
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-    
-            # Encontra a div que contém as imagens
-            div_imagens = driver.find_element(By.XPATH, '/html/body/div/div/div[2]')
+            # Encontrar o elemento <select>
+            select_element = driver.find_element(By.CSS_SELECTOR, '.contents select.selectreader')
 
-            # Encontra todas as tags de imagem dentro da div
-            imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+            # Obter todas as opções dentro do <select>
+            options = select_element.find_elements(By.TAG_NAME, 'option')
 
-            # Extrai os links das imagens
-            links_das_imagens = [imagem.get_attribute('src') for imagem in imagens]
+            links_das_imagens = []
+
+            # Iterar sobre cada opção
+            for option in options:
+                # Obter o valor do atributo 'value' e converter para inteiro
+                valor_da_opcao = int(option.get_attribute('value'))
+
+                # Simular a seleção da opção
+                option.click()
+
+                time.sleep(5)
+
+                div_imagens = driver.find_element(By.XPATH, '/html/body/div/div')
+                imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+
+                links_das_imagens += [imagem.get_attribute('src') for imagem in imagens]
+
             links_das_imagens = [link.strip() if link is not None else None for link in links_das_imagens]
-            links_das_imagens = [link for link in links_das_imagens if link is not None and link.startswith('http')]
-
+            links_das_imagens = [link for link in links_das_imagens if link is not None]
+            links_das_imagens = [urlunparse(urlparse(url)._replace(query='')) for url in links_das_imagens]
+            
             if len(links_das_imagens) == 0:
                 print("Nenhuma imagem encontrada")
                 driver.quit()
@@ -1598,43 +1544,10 @@ async def main():
 
             time.sleep(5)
             
-            driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             
-            try:
-                # Usa execute_script para clicar no botão
-                script = 'document.querySelector(\'button[title="Alterar Modo de Imagem"]\').click();'
-                driver.execute_script(script)
-
-                # print("Clique no botão 'Alterar Modo de Imagem' realizado com sucesso!")
-
-            except Exception as e:
-                print(f"Erro ao clicar no botão: {e}")
-
-            time.sleep(1)
+            time.sleep(2)
             
-            pags_elemnt_raw = driver.find_element(By.CSS_SELECTOR, '[class^="styles_Pagination__"]')
-            pags = pags_elemnt_raw.find_element(By.CSS_SELECTOR, '[class^="styles_Total__"]').text
-            pags = int(re.sub(r'[^0-9.,]', '', pags.replace(',', '')))
-
-            count = 1
-            while count <= pags:
-                try:
-                    WebDriverWait(driver, 10).until(
-                        lambda driver: driver.execute_script(f'return document.getElementById("page-{count}").complete')
-                    )
-
-                    # Usa execute_script para clicar no botão
-                    script = 'document.querySelector(\'button[title="Próxima Página"]\').click();'
-                    driver.execute_script(script)
-
-                    print(f"Carregando páginas... {count} / {pags}")
-
-                except Exception as e:
-                    print(f"Erro ao clicar no botão: {e}")
-
-                finally:
-                    count += 1
-
             # Encontra a div que contém as imagens
             div_imagens = driver.find_element(By.CSS_SELECTOR, '[class^="styles_Pages__"]')
 
@@ -1774,49 +1687,15 @@ async def main():
             driver.get(url)
             driver.implicitly_wait(10)
 
-            time.sleep(10)
+            time.sleep(2)
             
             driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+
+            time.sleep(5)
+
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             
-            
-            # Função para realizar a rolagem até determinado ponto
-            def scroll_to_position(position):
-                script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
-                driver.execute_script(script)
-                time.sleep(2)
-
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-
-            # Rolar até 25% da página e esperar
-            scroll_to_position(0.25)
-
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-
-            # Rolar até 50% da página e esperar
-            scroll_to_position(0.5)
-
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
-
-            # Rolar até 75% da página e esperar
-            scroll_to_position(0.75)
-
-            # Rolar até o final da página e esperar
-            scroll_to_position(1)
-
-            # Rolar até o início da página e esperar
-            scroll_to_position(0)
+            time.sleep(2)
             
             
             # Encontra a div que contém as imagens
@@ -1859,6 +1738,160 @@ async def main():
                     
             driver.quit()
 
+
+
+
+
+    elif agregador_escolhido == 10:
+        base_url = 'https://flowermanga.com/manga/'
+        max_attempts = 10
+        sleep_time = 0.1
+        links = []
+
+        # Função para obter capítulos dentro de um intervalo
+        def obter_capitulos(driver, inicio, fim):
+            url = f"{base_url}{nome_formatado}/"
+            
+            # Abre a página
+            driver.get(url)
+            
+            # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+            driver.implicitly_wait(5)
+            
+            # Verifica se a página contém o texto "Página não encontrada"
+            if "Página não encontrada" in driver.page_source:
+                print(f"Erro: Obra {nome} não encontrado. Status code: 404")
+                url = str(input("Digite a URL da obra: "))
+                
+                if not "flowermanga" in url:
+                    print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
+                    sys.exit()
+                
+                # Tente abrir a página com o link fornecido
+                driver.get(url)
+                
+                # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+                driver.implicitly_wait(5)
+                
+                # Verifica se a página contém o texto "Página não encontrada"
+                if "Página não encontrada" in driver.page_source:
+                    print("Erro: URL inválida. Status code: 404")
+                    driver.quit()
+                    sys.exit()
+            
+            time.sleep(5)
+            
+            os.system("cls")
+            print("Verificando capítulos...")
+            
+            capitulos_encontrados = []
+            
+            # Executar o script JavaScript
+            script = """
+            var botao = document.querySelector('.c-chapter-readmore .btn');
+            if (botao) {
+                botao.click();
+            } else {
+                console.error("O botão não foi encontrado.");
+            }
+            """
+
+            # Executar o script usando execute_script
+            try:
+                driver.execute_script(script)
+            except Exception:
+                pass
+
+            time.sleep(2)
+
+            # Localiza os elementos que contêm as informações dos capítulos
+            chapter_elements = driver.find_elements(By.CLASS_NAME, "wp-manga-chapter")
+
+            capitulos_encontrados = []
+
+            for capitulo in chapter_elements:
+                # Encontra o elemento 'a' dentro do 'li'
+                a_element = capitulo.find_element(By.TAG_NAME, "a")
+
+                # Obtém o texto do número do capítulo
+                # Usa expressão regular para extrair números, pontos e vírgulas
+                numero_capitulo = float(re.sub(r'[^0-9.,]', '', a_element.text.replace(',', '')))
+                link = a_element.get_attribute("href")
+
+                if inicio <= numero_capitulo <= fim:
+                    capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+                
+            return capitulos_encontrados
+
+        capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+        
+        if len(capitulos_solicitados) == 0:
+            print("Nenhum capítulo encontrado")
+            driver.quit()
+            sys.exit()
+
+        async def run(url, numero_capitulo, session):
+            folder_path = os.path.join(nome_foler, numero_capitulo)
+
+            # Verificar se a pasta já existe e tem conteúdo
+            contents = os.listdir(folder_path) if os.path.exists(folder_path) else []
+
+            print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
+
+            if contents:
+                print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                for item in contents:
+                    item_path = os.path.join(folder_path, item)
+                    if os.path.isdir(item_path):
+                        shutil.rmtree(item_path)  # Exclui pasta e conteúdo
+                    else:
+                        os.remove(item_path)  # Exclui arquivo
+
+            os.makedirs(folder_path, exist_ok=True)
+
+            driver.get(url)
+            driver.implicitly_wait(10)
+
+            time.sleep(5)
+
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            
+            time.sleep(2)
+
+            # Encontra a div que contém as imagens
+            div_imagens = driver.find_element(By.CLASS_NAME, 'reading-content')
+
+            # Encontra todas as tags de imagem dentro da div
+            imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+
+            # Extrai os links das imagens
+            links_das_imagens = [imagem.get_attribute('src') for imagem in imagens]
+            links_das_imagens = [link.strip() for link in links_das_imagens]
+
+            # Criar lista de tarefas assíncronas para o download
+            tasks = [download(link, folder_path, session, counter) for counter, link in enumerate(links_das_imagens, start=1)]
+
+            # Agendar as tarefas para execução simultânea
+            await asyncio.gather(*tasks)
+
+            organizar(folder_path, nome, numero_capitulo)
+
+            print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
+
+        async with aiohttp.ClientSession() as session:
+            os.system("cls")
+            
+            # Inverter a ordem dos capítulos
+            capitulos_solicitados.reverse()
+            
+            for capitulo in capitulos_solicitados:
+                numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
+                url = capitulo['link']
+                
+                await run(url, numero_capitulo, session)
+                    
+            driver.quit()
 
 
 
