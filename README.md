@@ -39,6 +39,16 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[SlimeRead](https://slimeread.com/)**
 
+● **[Flower Manga](https://flowermanga.com/)**
+
+● **[Ler Manga Online](https://lermangaonline.com.br/)**
+
+● **[Manga BR](https://mangabr.net/)**
+
+● **[Projeto Scanlator](https://projetoscanlator.com/)**
+
+
+
 ## Instalação
 
 Baixe o arquivo [**run.py**](https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/run.py) e inicie e pronto.
