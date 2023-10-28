@@ -45,6 +45,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Manga BR](https://mangabr.net/)**
 
+● **[Projeto Scanlator](https://projetoscanlator.com/)**
+
 
 
 ## Instalação
