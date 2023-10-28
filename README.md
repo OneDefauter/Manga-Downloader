@@ -41,6 +41,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Flower Manga](https://flowermanga.com/)**
 
+● **[Ler Manga Online](https://lermangaonline.com.br/)**
+
 ● **[Manga BR](https://mangabr.net/)**
 
 
