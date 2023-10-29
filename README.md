@@ -53,6 +53,9 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 Baixe o arquivo [**run.py**](https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/run.py) e inicie e pronto.
 
+![WindowsSandboxClient_2p3jqtcmG1](https://github.com/OneDefauter/Manga-Downloader/assets/27703239/b2940bec-2a38-4f1f-b016-862146f1cc3d)
+
+
 ## Argumentos
 
 |                |Encurtado                          |Completo                         |
