@@ -10,6 +10,7 @@ import shutil
 import argparse
 import asyncio
 import aiohttp
+import zipfile
 from urllib.parse import urlparse, urlunparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -76,8 +77,7 @@ def initialize_driver(browser="chrome", headless=True):
     if browser.lower() == "chrome":
         chrome_options = Options()
         if headless:
-            pass
-            # chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
@@ -115,6 +115,12 @@ precisa_url = [
 
 carregar_imagens = [
     "Tsuki",
+]
+
+compactar = [
+    "CBZ",
+    "RAR",
+    "ZIP",
 ]
 
 # Configuração do parser para argumentos de linha de comando
@@ -192,6 +198,62 @@ else:
     os.system("cls")
     print_log(f'Agregador escolhido: {agregador_escolhido}', [f'Obra escolhida: {nome}', f'Capítulo escolhido: {str(capítulo).replace(".0", "")}', f'Até qual capítulo baixar: {str(ate).replace(".0", "")}'])
 
+
+
+print("Compactar:")
+print("[1] - Não")
+print("[2] - Sim")
+try:
+    compact_1 = int(input("\nQuer compactar: "))
+except Exception:
+    compact_1 = 1
+
+if compact_1 == 1:
+    compact_1 = "Não"
+elif compact_1 == 2:
+    compact_1 = "Sim"
+else:
+    compact_1 = "Não"
+
+
+os.system("cls")
+print_log(
+    f'Agregador escolhido: {agregador_escolhido}', 
+    [
+        f'Obra escolhida: {nome}',
+        f'Capítulo escolhido: {str(capítulo).replace(".0", "")}',
+        f'Até qual capítulo baixar: {str(ate).replace(".0", "")}',
+        f'Compactar: {compact_1}'
+    ]
+)
+
+if compact_1 == "Sim":
+    print("Tipo de compactação:")
+    print("[1] - CBZ")
+    print("[2] - ZIP")
+    try:
+        compact_2 = int(input("\nDigite o número do tipo de compactação: "))
+    except Exception:
+        compact_2 = 1
+    
+    if compact_2 == 1:
+        compact = "CBZ"
+    elif compact_2 == 2:
+        compact = "ZIP"
+    else:
+        compact = "CBZ"
+
+os.system("cls")   
+print_log(
+    f'Agregador escolhido: {agregador_escolhido}', 
+    [
+        f'Obra escolhida: {nome}',
+        f'Capítulo escolhido: {str(capítulo).replace(".0", "")}',
+        f'Até qual capítulo baixar: {str(ate).replace(".0", "")}',
+        f'Compactar: {compact_1}',
+        f'Tipo de compactação: {compact}'
+    ]
+)
 
 
 # Precisa de URL
@@ -324,6 +386,24 @@ def organizar(folder_path, nome, numero_capitulo):
     # shutil.move(output_filename, folder_path)
     output_folder2 = os.path.join(folder_path, "temp")
     os.removedirs(output_folder2)
+    
+    if compact_1 == "Sim":
+        if compact == "CBZ":
+            if os.path.exists(f'{folder_path}.cbz'):
+                os.remove(f'{folder_path}.cbz')
+            with zipfile.ZipFile(f'{folder_path}.cbz', 'w') as zipf:
+                for file_name in os.listdir(folder_path):
+                    if file_name.endswith('.jpg'):
+                        zipf.write(os.path.join(folder_path, file_name), file_name)
+            shutil.rmtree(folder_path)
+        elif compact == "ZIP":
+            if os.path.exists(f'{folder_path}.zip'):
+                os.remove(f'{folder_path}.zip')
+            with zipfile.ZipFile(f'{folder_path}.zip', 'w') as zipf:
+                for file_name in os.listdir(folder_path):
+                    if file_name.endswith('.jpg'):
+                        zipf.write(os.path.join(folder_path, file_name), file_name)
+            shutil.rmtree(folder_path)
 
 
 
