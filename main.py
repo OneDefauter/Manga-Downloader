@@ -419,6 +419,7 @@ class MainApp:
         chrome_options = webdriver.ChromeOptions()
         if self.headless_var.get():
             chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-web-security")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
@@ -1645,7 +1646,7 @@ class MainApp:
                     if url_anterior != nova_url:
                         break
                     
-                    if count == 200:
+                    if count == 50:
                         break
                     
                     count += 1
