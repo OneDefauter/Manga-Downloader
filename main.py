@@ -398,7 +398,7 @@ class MainApp:
             "Tsuki",
             "Mangás Chan",
         ]
-            
+        
         extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
             
         if self.debug_var.get():
