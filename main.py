@@ -1604,6 +1604,7 @@ class MainApp:
                     sys.exit()
                 
                 links_das_imagens = []
+                count = 0
                 
                 while True:
                     imagem_leitor = WebDriverWait(driver, 10).until(
@@ -1643,6 +1644,11 @@ class MainApp:
                     
                     if url_anterior != nova_url:
                         break
+                    
+                    if count == 200:
+                        break
+                    
+                    count += 1
                         
                         
                 links_das_imagens = [link.strip() if link is not None else None for link in links_das_imagens]
