@@ -396,6 +396,7 @@ class MainApp:
         
         carregar_imagens = [
             "Tsuki",
+            "Mangás Chan",
         ]
             
         extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
@@ -420,6 +421,7 @@ class MainApp:
         if self.headless_var.get():
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--disable-web-security")
+        # chrome_options.add_argument('--blink-settings=imagesEnabled=false') # Desativa a renderização de iamgens
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
@@ -1238,15 +1240,41 @@ class MainApp:
                 os.makedirs(folder_path, exist_ok=True)
 
                 driver.get(url)
-                driver.refresh()
                 driver.implicitly_wait(10)
                 
                 time.sleep(5)
+                
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}")
                 
                 # Injeta um script JavaScript para simular um pequeno movimento do mouse
                 driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
                 time.sleep(5)
+                
+                # Encontrar o elemento <select>
+                select_element = driver.find_element(By.ID, 'select-paged')
+
+                # Obter todas as opções dentro do <select>
+                options = select_element.find_elements(By.TAG_NAME, 'option')
+
+                # Iterar sobre cada opção
+                for option in options:
+                    try:
+                        # Clicar na opção para selecioná-la
+                        option.click()
+
+                        # Aguardar até que a página seja carregada (aqui estamos esperando por até 10 segundos)
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'selector.pagedsel.r'))
+                        )
+
+                        # Adicione aqui a lógica adicional para processar a página conforme necessário
+                        # ...
+                        time.sleep(1)
+
+                    except Exception as e:
+                        print(f"Erro ao processar a opção: {e}")
                 
                 # Encontra a div que contém as imagens
                 div_imagens = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div/div/div/article/div[3]')
@@ -1606,6 +1634,9 @@ class MainApp:
                 
                 links_das_imagens = []
                 count = 0
+                
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}")
                 
                 while True:
                     imagem_leitor = WebDriverWait(driver, 10).until(
