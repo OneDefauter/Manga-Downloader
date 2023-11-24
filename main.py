@@ -211,16 +211,24 @@ class MainApp:
             
             if hash_sha1 == sha_1_profile_folder:
                 print("Arquivo verificado.")
-                
-                # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
-                shutil.rmtree(profile_folder_2)
-                
-                # Cria a pasta "Mangá Downloader Profile"
-                os.makedirs(profile_folder_2, exist_ok=True)
-                
-                # Exporta o perfil
-                with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                    zip_ref.extractall(profile_folder_2)
+                if os.path.exists(profile_folder):
+                    # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
+                    shutil.rmtree(profile_folder)
+                    
+                    # Cria a pasta "Mangá Downloader Profile"
+                    os.makedirs(profile_folder, exist_ok=True)
+                    
+                    # Exporta o perfil
+                    with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
+                        zip_ref.extractall(profile_folder)
+                        
+                else:
+                    # Cria a pasta "Mangá Downloader Profile"
+                    os.makedirs(profile_folder, exist_ok=True)
+                    
+                    # Exporta o perfil
+                    with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
+                        zip_ref.extractall(profile_folder)
             
             else:
                 os.remove(caminho_arquivo_zip)
@@ -230,14 +238,14 @@ class MainApp:
                     f.write(response.content)
                 
                 # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
-                shutil.rmtree(profile_folder_2)
+                shutil.rmtree(profile_folder)
                 
                 # Cria a pasta "Mangá Downloader Profile"
-                os.makedirs(profile_folder_2, exist_ok=True)
+                os.makedirs(profile_folder, exist_ok=True)
                 
                 # Exporta o perfil
                 with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                    zip_ref.extractall(profile_folder_2)
+                    zip_ref.extractall(profile_folder)
         
         else:
             response = requests.get(zip_manga_downloader_profile_url)
@@ -245,11 +253,11 @@ class MainApp:
                 f.write(response.content)
                 
             # Cria a pasta "Mangá Downloader Profile"
-            os.makedirs(profile_folder_2, exist_ok=True)
+            os.makedirs(profile_folder, exist_ok=True)
             
             # Exporta o perfil
             with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                zip_ref.extractall(profile_folder_2)
+                zip_ref.extractall(profile_folder)
             
         os.makedirs(download_folder, exist_ok=True)
         
