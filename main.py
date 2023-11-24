@@ -14,6 +14,8 @@ import aiohttp
 import zipfile
 import pickle
 import threading
+import zipfile
+import hashlib
 from urllib.parse import urlparse, urlunparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -22,6 +24,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
@@ -64,7 +67,8 @@ if not is_imagick_installed():
     # URL do instalador do ImageMagick
     url = 'https://github.com/OneDefauter/Menu_/releases/download/Req/ImageMagick-7.1.1-21-Q16-HDRI-x64-dll.exe'
 
-    installer_path = 'ImageMagick-Installer.exe'
+    temp_folder = os.environ['TEMP']
+    installer_path = os.path.join(temp_folder, 'ImageMagick-Installer.exe')
 
     response = requests.get(url)
     with open(installer_path, 'wb') as f:
@@ -112,6 +116,14 @@ dic_agregadores = {
     "Projeto Scanlator": "https://projetoscanlator.com/",
 }
 
+def calcular_sha1(file_path):
+    sha1 = hashlib.sha1()
+    with open(file_path, 'rb') as f:
+        # Leitura do arquivo em blocos de 4K para eficiência
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha1.update(byte_block)
+    return sha1.hexdigest()
+
 
 
 class MainApp:
@@ -128,7 +140,7 @@ class MainApp:
         self.root.overrideredirect(False)
         
         # Configuração para centralizar a janela
-        window_width = 850
+        window_width = 900
         window_height = 420
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
@@ -157,7 +169,7 @@ class MainApp:
         self.compact_extension_var = tk.StringVar(value=".zip")
         self.sim_var = tk.BooleanVar(value=False)
         self.nao_var = tk.BooleanVar(value=True)
-        self.debug_var = tk.BooleanVar(value=False)
+        self.debug_var = tk.BooleanVar(value=True)
         self.headless_var = tk.BooleanVar(value=True)
         self.selenium_working = tk.BooleanVar(value=False)
         self.folder_selected = os.path.join(os.path.expanduser("~"), "Downloads")
@@ -183,9 +195,69 @@ class MainApp:
         
     def check_selenium(self):
         # Configurar as opções do Chrome
+        temp_folder = os.environ['TEMP']
+        profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
+        profile_folder_2 = os.path.join(profile_folder, "Default")
+        extension_folder = os.path.join(profile_folder_2, "Extensions", "dhdgffkkebhmkfjojejmpbldmpobfkfo")
+        download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
+        
+        zip_manga_downloader_profile_url = "https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Manga.Downloader.Profile_v1.zip"
+        caminho_arquivo_zip = os.path.join(temp_folder, "Mangá.Downloader.Profile_v1.zip")
+        
+        sha_1_profile_folder = "eb1ece5152ade33cb5fe6abb37505b6f31afeb4a"
+        
+        if os.path.exists(caminho_arquivo_zip):
+            hash_sha1 = calcular_sha1(caminho_arquivo_zip)
+            
+            if hash_sha1 == sha_1_profile_folder:
+                print("Arquivo verificado.")
+                
+                # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
+                shutil.rmtree(profile_folder_2)
+                
+                # Cria a pasta "Mangá Downloader Profile"
+                os.makedirs(profile_folder_2, exist_ok=True)
+                
+                # Exporta o perfil
+                with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
+                    zip_ref.extractall(profile_folder_2)
+            
+            else:
+                os.remove(caminho_arquivo_zip)
+                
+                response = requests.get(zip_manga_downloader_profile_url)
+                with open(caminho_arquivo_zip, 'wb') as f:
+                    f.write(response.content)
+                
+                # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
+                shutil.rmtree(profile_folder_2)
+                
+                # Cria a pasta "Mangá Downloader Profile"
+                os.makedirs(profile_folder_2, exist_ok=True)
+                
+                # Exporta o perfil
+                with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
+                    zip_ref.extractall(profile_folder_2)
+        
+        else:
+            response = requests.get(zip_manga_downloader_profile_url)
+            with open(caminho_arquivo_zip, 'wb') as f:
+                f.write(response.content)
+                
+            # Cria a pasta "Mangá Downloader Profile"
+            os.makedirs(profile_folder_2, exist_ok=True)
+            
+            # Exporta o perfil
+            with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
+                zip_ref.extractall(profile_folder_2)
+            
+        os.makedirs(download_folder, exist_ok=True)
+        
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Execute sem uma janela visível, se desejar
         chrome_options.add_argument("--disable-gpu")  # Desativar a aceleração de hardware, se necessário
+        chrome_options.add_argument(f"user-data-dir={profile_folder}")
+        chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
 
         try:
             # Tente iniciar o driver do Chrome
@@ -227,6 +299,11 @@ class MainApp:
 
         self.agregador_combobox = ttk.Combobox(self.root, textvariable=self.agregador_var, values=agregadores, font=("Helvetica", 14), validate='all', validatecommand=(vcmd2, '%P'))
         self.agregador_combobox.grid(row=0, column=1, padx=10, pady=5)
+        
+        
+        # Agregador site
+        self.url_open =tk.Button(self.root, text="Site", font=("Helvetica", 14), command=self.site_url_open)
+        self.url_open.grid(row=0, column=2, padx=10, pady=5)
         
         
         # Nome da obra
@@ -293,6 +370,15 @@ class MainApp:
         self.save_button.grid(row=9, column=0, padx=10, pady=5)
         
     
+    def site_url_open(self):
+        agregador_escolhido = self.agregador_var.get()
+        
+        for dic_name, dic_url in dic_agregadores.items():
+            
+            if dic_name in agregador_escolhido:
+                webbrowser.open(dic_url)
+    
+    
     def create_settings(self):
         # Configurações
         config = tk.Label(self.root, text="Configurações", font=("Helvetica", 14))
@@ -303,7 +389,7 @@ class MainApp:
         self.check_auto_save.grid(row=1, column=3, padx=0, pady=0)
         
         # Debug
-        self.debug_check = tk.Checkbutton(root, text="Debug", font=("Helvetica", 14), variable=self.debug_var, command=self.update_checkboxes_debug)
+        self.debug_check = tk.Checkbutton(root, text="Info", font=("Helvetica", 14), variable=self.debug_var, command=self.update_checkboxes_debug)
         self.debug_check.grid(row=2, column=3, padx=0, pady=0)
         
         # Navegador
@@ -392,7 +478,7 @@ class MainApp:
         extension = self.extension_var.get()
         compact_extension = self.compact_extension_var.get()
         
-        nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "")
+        nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "")
         
         carregar_imagens = [
             "Tsuki",
@@ -400,6 +486,7 @@ class MainApp:
         ]
         
         extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
+        extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
             
         if self.debug_var.get():
             self.baixando_label.config(text="Iniciando...")
@@ -416,18 +503,27 @@ class MainApp:
             )
             print("\n")
 
+        # Configurações das pastas
+        temp_folder = os.environ['TEMP']
+        profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
+        download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
         
         chrome_options = webdriver.ChromeOptions()
         if self.headless_var.get():
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--disable-web-security")
         # chrome_options.add_argument('--blink-settings=imagesEnabled=false') # Desativa a renderização de iamgens
+        chrome_options.add_argument('--log-level=3')  # Nível 3 indica "sem logs"
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         chrome_options.add_argument('--no-sandbox')
         if agregador_escolhido not in carregar_imagens:
             prefs = {"profile.managed_default_content_settings.images": 2}
             chrome_options.add_experimental_option("prefs", prefs)
+        
+        chrome_options.add_argument(f"user-data-dir={profile_folder}")
+        chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
+        
         driver = webdriver.Chrome(options=chrome_options)
     
         
@@ -435,7 +531,14 @@ class MainApp:
             attempts = 0
             while attempts < max_attempts:
                 try:
-                    image_extension = link.split(".")[-1]
+                    for x in extensoes_permitidas2:
+                        if x in link.lower():
+                            if not f".{x}" in link.lower():
+                                link2 = link.lower().replace(f"{x}", f".{x}")
+                                image_extension = link2.split(".")[-1]
+                            else:
+                                image_extension = link.split(".")[-1]
+                            
                     image_name = f"{counter:02d}.{image_extension}"
                     image_path = os.path.join(folder_path, image_name)
 
@@ -566,8 +669,8 @@ class MainApp:
         print("\nAguarde...")
         
         
-        # Num 01
-        if "BR Mangás" in agregador_escolhido:
+        # Num 01 (BR Mangás)
+        async def agr_01(driver, url, capítulo, ate):
             base_url = 'https://www.brmangas.net/ler/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -690,13 +793,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
 
-
-
-
-        # Num 02
-        elif "Crystal Scan" in agregador_escolhido:
+        
+        # Num 02 (Crystal Scan)
+        async def agr_02(driver, url, capítulo, ate):
             base_url = 'https://crystalscan.net/manga/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -861,13 +964,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 03
-        elif "Argos Comics" in agregador_escolhido:
+        
+        
+        # Num 03 (Argos Comics)
+        async def agr_03(driver, url, capítulo, ate):
             base_url = 'https://argoscomics.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -1016,13 +1119,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
 
-
-
-
-        # Num 04
-        elif "Argos Hentai" in agregador_escolhido:
+        
+        # Num 04 (Argos Hentai)
+        async def agr_04(driver, url, capítulo, ate):
             base_url = 'https://argoshentai.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -1171,17 +1274,22 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
 
-
-
-
-        # Num 05
-        elif "Mangás Chan" in agregador_escolhido:
+        
+        # Num 05 (Mangás Chan)
+        async def agr_05(driver, url, capítulo, ate):
             base_url = 'https://mangaschan.net/manga/'
 
             # Função para obter capítulos dentro de um intervalo
             def obter_capitulos(driver, inicio, fim):
+                if not base_url in url:
+                    print("Erro: URL inválida.")
+                    driver.quit()
+                    return 0
+                
                 # Abre a página
                 driver.get(url)
                 
@@ -1192,7 +1300,7 @@ class MainApp:
                 if "Página não encontrada" in driver.page_source:
                         print("Erro: URL inválida. Status code: 404")
                         driver.quit()
-                        return
+                        return 0
                 
                 os.system("cls")
                 print("Verificando capítulos...")
@@ -1214,6 +1322,10 @@ class MainApp:
                 return capitulos_encontrados
 
             capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            
+            if capitulos_solicitados == 0:
+                driver.quit()
+                self.process_completed.set()
 
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -1314,13 +1426,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 06
-        elif "Ler Mangá" in agregador_escolhido:
+        
+        
+        # Num 06 (Ler Mangá)
+        async def agr_06(driver, url, capítulo, ate):
             base_url = 'https://lermanga.org/mangas/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -1504,13 +1616,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 07
-        elif "Tsuki" in agregador_escolhido:
+        
+        
+        # Num 07 (Tsuki)
+        async def agr_07(driver, url, capítulo, ate):
             base_url = 'https://tsuki-mangas.com/obra/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -1523,18 +1635,21 @@ class MainApp:
                 # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
                 driver.implicitly_wait(5)
                 
+                if "Error code 521" in driver.page_source:
+                    print("Site indisponível. Status code: 521")
+                    messagebox.showerror("Erro", "Site indisponível")
+                    return "Error code 521"
+                    
                 # Verifica se a página contém o texto "Página não encontrada"
-                if "Página não encontrada" in driver.page_source:
+                elif "Página não encontrada" in driver.page_source:
                     print("Erro: URL inválida. Status code: 404")
                     messagebox.showerror("Erro", "URL inválida")
-                    driver.quit()
-                    sys.exit()
+                    return "Error code 404"
                     
-                if "manutenção" in driver.page_source.lower():
+                elif "manutenção" in driver.page_source.lower():
                     print("Erro: Site em manutenção")
                     messagebox.showerror("Erro", "Site em manutenção")
-                    # driver.quit()
-                    sys.exit()
+                    return "Error code 001"
                     
                 time.sleep(5)
                 
@@ -1546,6 +1661,9 @@ class MainApp:
 
                     # Clica no botão
                     close_button.click()
+
+                except:
+                    ...
 
                 finally:
                     driver.refresh()
@@ -1571,8 +1689,7 @@ class MainApp:
                         if chapter_number == '':
                             print("Erro: Houve um erro ao obter o número do capítulo")
                             messagebox.showerror("Erro", "Houve um erro ao obter o número do capítulo")
-                            driver.quit()
-                            sys.exit()
+                            return 998
                         
                         numero_capitulo = float(re.sub(r'[^0-9.,]', '', chapter_number.replace(',', '.')))
 
@@ -1596,10 +1713,26 @@ class MainApp:
 
             capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
 
+            if capitulos_solicitados == "Error code 001":
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Site em manutenção")
+                return 999
+
+            elif capitulos_solicitados == "Error code 404":
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"URL inválida")
+                return 404
+
+            elif capitulos_solicitados == "Error code 521":
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Site indisponível")
+                return 521
+
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
-                driver.quit()
-                sys.exit()
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Nenhum capítulo encontrado")
+                return 3
 
             async def run(url, numero_capitulo, session):
                 folder_path = os.path.join(self.folder_selected, nome_foler, numero_capitulo)
@@ -1621,7 +1754,6 @@ class MainApp:
                 os.makedirs(folder_path, exist_ok=True)
 
                 driver.get(url)
-                driver.implicitly_wait(10)
 
                 time.sleep(3)
                 
@@ -1629,45 +1761,154 @@ class MainApp:
                 text = verify1.find_element(By.XPATH, '/html/body/div/div/div[2]').text
                 if "Capítulo aguardando aprovação." in text:
                     print("Capítulo aguardando aprovação.")
-                    driver.quit()
-                    sys.exit()
+                    return 4
                 
                 links_das_imagens = []
-                count = 0
+                count = 1
                 
                 if self.debug_var.get():
                     self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}")
+                
+                for x in range(1, 11):  # Começando de 1 para evitar /html/body/div[0]/...
+                    try:
+                        elemento_lista_paginas = driver.find_element(By.XPATH, f'/html/body/div[{x}]/div[2]/div/div/div[1]/ul')
+                        itens_lista_paginas = elemento_lista_paginas.find_elements(By.CSS_SELECTOR, 'li')
+                        
+                        numero_ultima_pagina = int(len(itens_lista_paginas))
+                        break  # Sair do loop se encontrar com sucesso
+                    
+                    except:
+                        continue  # Ignorar elementos que não têm o formato esperado
+                    
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nCarregando página: {count} / {numero_ultima_pagina}")
                 
                 while True:
                     imagem_leitor = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CLASS_NAME, 'pagereader'))
                     )
-
+                    
                     # Obtém a URL atual
                     url_anterior = driver.current_url
                 
-                    try:
-                        # Aguardar até que a imagem seja carregada (aqui estamos esperando por até 10 segundos)
-                        element = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'pagereader'))
-                        )
-                        
-                        # Aguardar até que o atributo "complete" seja True
-                        result = WebDriverWait(element, 10).until(
-                            lambda x: element.get_attribute('lazy') == 'loaded'
-                        )
-
-                    except:
-                        pass
+                    # Tente verificar se a imagem foi carregada até 10 vezes
+                    tentativas = 0
+                    max_tentativas = 10
                     
-                    finally:
-                        div_imagens = driver.find_element(By.XPATH, '/html/body/div/div')
-                        imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+                    while tentativas < max_tentativas:
+                        try:
+                            # Aguardar até que a imagem esteja presente no DOM
+                            WebDriverWait(driver, 10).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".manga-reader img.pagereader"))
+                            )
+                            
+                            # Executar um script JavaScript para verificar se a imagem foi carregada
+                            script = """
+                                var imagem = document.querySelector('.manga-reader img.pagereader');
+                                if (imagem.complete) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            """
+                            
+                            imagem_carregada = driver.execute_script(script)
+                            
+                            if imagem_carregada:
+                                # Encontrar o elemento da imagem pelo seletor CSS
+                                imagem_elemento = driver.find_element(By.CSS_SELECTOR, ".manga-reader img.pagereader")
 
-                        links_das_imagens += [imagem.get_attribute('src') for imagem in imagens]
+                                # Obter a URL da imagem do atributo 'src'
+                                imagem_url = imagem_elemento.get_attribute("src")
+
+                                # Abrir a imagem em uma nova guia usando JavaScript
+                                script = f"window.open('{imagem_url}', '_blank');"
+                                driver.execute_script(script)
+                                
+                                time.sleep(1)
+                                
+                                # Obter todas as guias abertas
+                                janelas_abertas = driver.window_handles
+                                
+                                # Mudar para a nova guia (que deve ser a última na lista)
+                                driver.switch_to.window(janelas_abertas[-1])
+                                
+                                action_chains = ActionChains(driver)
+
+                                # Pressione a tecla Alt
+                                action_chains.key_down(Keys.ALT)
+
+                                # Pressione a tecla W
+                                action_chains.send_keys('w')
+
+                                # Libere a tecla Alt
+                                action_chains.key_up(Keys.ALT)
+
+                                # Execute as ações
+                                action_chains.perform()
+                                
+                                time.sleep(0.5)
+                                
+                                download_button = driver.find_element(By.CLASS_NAME, "download-direct")
+                                download_button.click()
+
+                                time.sleep(0.5)
+                                
+                                lista = os.listdir(download_folder)
+                                
+                                for _ in range(1, 300):
+                                    if len(lista) != 0:
+                                        if not ".crdownload" in lista[0]:
+                                            break
+                                        else:
+                                            lista = os.listdir(download_folder)
+                                            time.sleep(1)
+                                    else:
+                                        time.sleep(1)
+                                
+                                file = os.path.join(download_folder, lista[0])
+                                
+                                image_extension = os.path.splitext(lista[0])[1]
+                                
+                                image_name = f"{count:02d}.{image_extension}"
+                                image_path = os.path.join(folder_path, image_name)
+                                
+                                print(f"Baixando {imagem_url} como {image_name}...")
+                                
+                                os.makedirs(folder_path, exist_ok=True)
+                                
+                                shutil.move(file, image_path)
+                                
+                                # Fechar a guia atual
+                                driver.close()
+                                
+                                break  # Sair do loop se a imagem foi carregada com sucesso
+                            else:
+                                tentativas += 1
+                                # print(f"Tentativa {tentativas}: A imagem ainda não foi carregada. Tentando novamente...")
+                                time.sleep(1)
+                        except TimeoutException:
+                            tentativas += 1
+                            # print(f"Tentativa {tentativas}: Tempo limite expirado. Tentando novamente...")
+                            time.sleep(1)
+
+                    driver.switch_to.window(janelas_abertas[0])
+
+                    div_imagens = driver.find_element(By.XPATH, '/html/body/div/div')
+                    imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+
+                    links_das_imagens += [imagem.get_attribute('src') for imagem in imagens]
+                    
+                    if self.debug_var.get():
+                        self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nCarregando página: {count} / {numero_ultima_pagina}")
+                
+                    if count == numero_ultima_pagina:
+                        break
                         
                     # Clica na imagem do leitor para avançar para a próxima página
-                    imagem_leitor.click()
+                    # imagem_leitor.click()
+                    # Clique no elemento usando JavaScript
+                    driver.execute_script("arguments[0].click();", imagem_elemento)
                     
                     time.sleep(1)
 
@@ -1677,33 +1918,37 @@ class MainApp:
                     if url_anterior != nova_url:
                         break
                     
-                    if count == 50:
-                        break
-                    
                     count += 1
-                        
-                        
+                   
                 links_das_imagens = [link.strip() if link is not None else None for link in links_das_imagens]
                 links_das_imagens = [link for link in links_das_imagens if link is not None]
+                links_das_imagens = [link for link in links_das_imagens if not 'data:image' in link]
                 links_das_imagens = [urlunparse(urlparse(url)._replace(query='')) for url in links_das_imagens]
+                links_das_imagens = sorted(links_das_imagens)
                 
                 if len(links_das_imagens) == 0:
                     print("Nenhuma imagem encontrada")
-                    driver.quit()
-                    sys.exit() 
+                    if self.debug_var.get():
+                        self.baixando_label.config(text=f"Erro no capítulo {numero_capitulo}\nNenhuma imagem encontrada")
+                    return 2
 
                 if self.debug_var.get():
                     self.baixando_label.config(text=f"Baixando capítulo {numero_capitulo}")
 
                 # Criar lista de tarefas assíncronas para o download
-                tasks = [download(link, folder_path, session, counter) for counter, link in enumerate(links_das_imagens, start=1)]
+                # tasks = [download(link, folder_path, session, counter) for counter, link in enumerate(links_das_imagens, start=1)]
 
                 # Agendar as tarefas para execução simultânea
-                await asyncio.gather(*tasks)
+                # await asyncio.gather(*tasks)
+                
+                if self.debug_var.get():
+                    self.baixando_label.config(text=f"Organizando capítulo {numero_capitulo}")
 
                 organizar(folder_path, compactar, compact_extension, extension)
 
                 print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
+                
+                return 0
 
             async with aiohttp.ClientSession() as session:
                 os.system("cls")
@@ -1715,16 +1960,16 @@ class MainApp:
                     numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
                     url = capitulo['link']
                     
-                    await run(url, numero_capitulo, session)
+                    result = await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return result
 
-
-
-
-
-        # Num 08
-        elif "YomuMangás" in agregador_escolhido:
+        
+        
+        # Num 08 (YomuMangás)
+        async def agr_08(driver, url, capítulo, ate):
             base_url = 'https://yomumangas.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -1871,13 +2116,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 09
-        elif "SlimeRead" in agregador_escolhido:
+        
+        
+        # Num 09 (SlimeRead)
+        async def agr_09(driver, url, capítulo, ate):
             base_url = 'https://slimeread.com/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -2015,13 +2260,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 10
-        elif "Flower Manga" in agregador_escolhido:
+        
+        
+        # Num 10 (Flower Manga)
+        async def agr_10(driver, url, capítulo, ate):
             base_url = 'https://flowermanga.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -2155,13 +2400,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 11
-        elif "Ler Manga Online" in agregador_escolhido:
+        
+        
+        # Num 11 (Ler Manga Online)
+        async def agr_11(driver, url, capítulo, ate):
             base_url = 'https://lermangaonline.com.br/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -2278,13 +2523,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 12
-        elif "Manga BR" in agregador_escolhido:
+        
+        
+        # Num 12 (Manga BR)
+        async def agr_12(driver, url, capítulo, ate):
             base_url = 'https://mangabr.net/manga/'
 
             # Função para obter capítulos dentro de um intervalo
@@ -2412,13 +2657,13 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
 
-
-
-
-
-        # Num 13
-        elif "Projeto Scanlator" in agregador_escolhido:
+        
+        
+        # Num 13 (Projeto Scanlator)
+        async def agr_13(driver, url, capítulo, ate):
             base_url = 'https://projetoscanlator.com/manga/'
             
             # Função para obter capítulos dentro de um intervalo
@@ -2541,13 +2786,166 @@ class MainApp:
                     await run(url, numero_capitulo, session)
                         
                 driver.quit()
+                
+            return 0
+
+        
+        
+        
+        
+        
+        
+        
+        for dic_name, dic_url in dic_agregadores.items():
+            
+            # Check
+            if not dic_name in agregador_escolhido:
+                continue
+            
+            # Num 01 (BR Mangás)
+            elif "BR Mangás" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_01(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 02 (Crystal Scan)
+            elif "Crystal Scan" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_02(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+                
+            # Num 03 (Argos Comics)
+            elif "Argos Comics" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_03(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 04 (Argos Hentai)
+            elif "Argos Hentai" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_04(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 05 (Mangás Chan)
+            elif "Mangás Chan" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_05(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 06 (Ler Mangá)
+            elif "Ler Mangá" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_06(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 07 (Tsuki)
+            elif "Tsuki" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_07(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 08 (YomuMangás)
+            elif "YomuMangás" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_08(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 09 (SlimeRead)
+            elif "SlimeRead" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_09(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 10 (Flower Manga)
+            elif "Flower Manga" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_10(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 11 (Ler Manga Online)
+            elif "Ler Manga Online" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_11(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 12 (Manga BR)
+            elif "Manga BR" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_12(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+    
+            # Num 13 (Projeto Scanlator)
+            elif "Projeto Scanlator" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_13(driver, url, capítulo, ate)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
+        
 
 
-
-
-
-        if self.debug_var.get():
+        if self.debug_var.get() and result == 0:
             self.baixando_label.config(text="Finalizado")
+        
+        elif self.debug_var.get() and result == 1:
+            self.baixando_label.config(text="URL inválida")
+        
+        elif self.debug_var.get() and result == 3:
+            self.baixando_label.config(text=f"Nenhum capítulo encontrado")
+        
+        elif self.debug_var.get() and result == 4:
+            self.baixando_label.config(text=f"Capítulo não aprovado")
+        
         self.process_completed.set()
 
     
@@ -2726,7 +3124,7 @@ class MainApp:
             self.folder_selected = settings["folder_selected"]
             print("✔ Configurações carregadas")
 
-        except FileNotFoundError:
+        except:
             # Usar valores padrão caso o arquivo de configurações não exista
             print("✘ Erro ao carregar as configurações. Usando valores padrão.")
             self.auto_save.set(False)
@@ -2739,22 +3137,7 @@ class MainApp:
             self.compact_extension_var.set(".zip")
             self.nao_var.set(True)
             self.sim_var.set(False)
-            self.debug_var.set(False)
-            self.headless_var.set(True)
-        except (pickle.PickleError, KeyError):
-            # Tratar qualquer erro de desserialização ou chave ausente
-            print("✘ Erro ao carregar as configurações. Usando valores padrão.")
-            self.auto_save.set(False)
-            self.agregador_var.set("")
-            self.nome_var.set("")
-            self.url_var.set("")
-            self.capitulo_var.set("")
-            self.ate_var.set("")
-            self.extension_var.set(".jpg")
-            self.compact_extension_var.set(".zip")
-            self.nao_var.set(True)
-            self.sim_var.set(False)
-            self.debug_var.set(False)
+            self.debug_var.set(True)
             self.headless_var.set(True)
         
         
