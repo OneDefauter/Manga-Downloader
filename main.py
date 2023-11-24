@@ -1801,7 +1801,7 @@ class MainApp:
                 
                     # Tente verificar se a imagem foi carregada até 10 vezes
                     tentativas = 0
-                    max_tentativas = 10
+                    max_tentativas = 300
                     
                     while tentativas < max_tentativas:
                         try:
