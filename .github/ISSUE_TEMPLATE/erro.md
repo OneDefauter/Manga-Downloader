@@ -2,7 +2,7 @@
 name: Erro
 about: Erro
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
@@ -22,3 +22,5 @@ assignees: ''
 **Compactar**
 [] Sim
 [] Não
+
+**Mensagem de erro**
