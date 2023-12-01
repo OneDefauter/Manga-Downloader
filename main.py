@@ -1,14 +1,42 @@
+import subprocess
+
+def check_modul():
+    # Verificar se os módulos estão instalados
+    required_modules = [
+        'requests', 
+        'pywin32', 
+        'selenium', 
+        'aiohttp', 
+        'asyncio', 
+        'colorama',
+    ]
+
+    for module in required_modules:
+        try:
+            if module == 'pywin32':
+                __import__('win32api')
+                
+            else:
+                __import__(module)
+                
+        except ImportError:
+            print(f"Módulo {module} não encontrado. Instalando...")
+            subprocess.run(['pip', 'install', module])
+
+check_modul()
+
+
+
 import os
 import re
-import subprocess
 import sys
 import time
 import webbrowser
+import winsound
 import requests
 import win32api
 import win32con
 import shutil
-import argparse
 import asyncio
 import aiohttp
 import zipfile
@@ -16,6 +44,7 @@ import pickle
 import threading
 import zipfile
 import hashlib
+import logging
 from urllib.parse import urlparse, urlunparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -26,12 +55,11 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.edge.options import Options as EdgeOptions
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import ttk, messagebox, filedialog, scrolledtext
+from colorama import Fore, Style
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 os.system("cls")
 
@@ -126,7 +154,7 @@ def calcular_sha1(file_path):
 
 
 
-class MainApp:
+class MainApp():
     def __init__(self, root):
         self.root = root
         self.root.title("Mangá Downloader")
@@ -144,9 +172,9 @@ class MainApp:
         window_height = 420
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
-        root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.x = (screen_width - window_width) // 2
+        self.y = (screen_height - window_height) // 2
+        root.geometry(f"{window_width}x{window_height}+{self.x}+{self.y}")
         
         # Diretório onde o arquivo settings.pickle será salvo
         app_dir = os.path.join(os.path.expanduser("~"), "app")
@@ -157,7 +185,6 @@ class MainApp:
         if not os.path.exists(self.settings_dir):
             os.mkdir(self.settings_dir)
             print("✔ Pasta de configuração criada")
-            
         
         # Pré-carregar configurações do usuário
         self.agregador_var = tk.StringVar(value="BR Mangás")
@@ -170,9 +197,13 @@ class MainApp:
         self.sim_var = tk.BooleanVar(value=False)
         self.nao_var = tk.BooleanVar(value=True)
         self.debug_var = tk.BooleanVar(value=True)
+        self.debug2_var = tk.BooleanVar(value=False)
         self.headless_var = tk.BooleanVar(value=True)
         self.selenium_working = tk.BooleanVar(value=False)
         self.folder_selected = os.path.join(os.path.expanduser("~"), "Downloads")
+        
+        self.nav_check = None
+        self.debug2_check = None
         
         self.create_widgets()
         
@@ -183,9 +214,67 @@ class MainApp:
         self.start_download_button.config(state="disabled")
         selenium_process_completed = threading.Thread(target=self.check_selenium)
         selenium_process_completed.start()
+            
+        self.update_checkboxes_debug2()
         
         self.wait_check_selenium()
         
+        self.open_changelog()
+
+
+    def open_changelog(self):
+        # Calcula as coordenadas para a janela secundária ao lado da principal
+        secondary_window_x = 80
+        secondary_window_y = self.y
+
+        secondary_window = tk.Toplevel(self.root)
+        secondary_window.title("Log de Atualizações")
+        secondary_window.geometry(f"400x400+{secondary_window_x}+{secondary_window_y}")
+        secondary_window.resizable(False, False)
+        secondary_window.overrideredirect(False)
+        
+
+        secondary_window.transient(self.root)
+
+        # Adicione um botão para fechar a janela secundária
+        button_close_secondary = tk.Button(secondary_window, text="Fechar", font=("Arial", 12), command=secondary_window.destroy)
+        button_close_secondary.pack(pady=20)
+        
+        # Adicione um widget Text para exibir o log de atualizações
+        text_log = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=70, height=20, font=("Arial", 12))
+        text_log.pack(padx=10, pady=10)
+
+        # Adicione o log de atualizações ao widget Text
+        log_content = """
+        Versão 1.5 (30/11/2023):
+        - Correção feita no agregador 'BR Mangás'.
+        - Melhoria ao carrgar o script do Tampermonkey.
+        - Cores adicionados no prompt.
+        
+        Versão 1.4 (29/11/2023):
+        - Melhoria na velocidade de obter capítulos no agregador 'Tsuki'.
+        - Corrigido erro de perfil.
+        
+        Versão 1.3 (25/11/2023):
+        - Adicionado ChangeLog.
+        - Correção feita no agregador 'BR Mangás'.
+        - Melhoria na velocidade de download no agregador 'Tsuki'.
+        
+        Versão 1.2 (22/11/2023):
+        - Correção no download de capítulos no agregador 'Tsuki'.
+
+        Versão 1.1 (25/10/2023):
+        - Correções de bugs e melhorias de desempenho.
+        - Agregadores adicionados.
+        
+        Versão 1.0 (21/10/2023):
+        - Primeira versão do Mangá Downloader.
+        """
+        text_log.insert(tk.END, log_content)
+        
+        # Desabilita a edição do widget Text
+        text_log.configure(state=tk.DISABLED)
+    
     def wait_check_selenium(self):
         if not self.selenium_process_completed.is_set():
             self.root.after(100, self.wait_check_selenium)
@@ -197,74 +286,24 @@ class MainApp:
         # Configurar as opções do Chrome
         temp_folder = os.environ['TEMP']
         profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
-        profile_folder_2 = os.path.join(profile_folder, "Default")
-        extension_folder = os.path.join(profile_folder_2, "Extensions", "dhdgffkkebhmkfjojejmpbldmpobfkfo")
         download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
+        extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.4.19.0.0.crx'
+        extension_name = "Tampermonkey.4.19.0.0.crx"
+        extension_path = os.path.join(temp_folder, extension_name)
         
-        zip_manga_downloader_profile_url = "https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Manga.Downloader.Profile_v1.zip"
-        caminho_arquivo_zip = os.path.join(temp_folder, "Mangá.Downloader.Profile_v1.zip")
+        if not os.path.exists(extension_path):
+            response = requests.get(extension_url)
+            
+            with open(extension_path, 'wb') as file:
+                file.write(response.content)
         
-        sha_1_profile_folder = "eb1ece5152ade33cb5fe6abb37505b6f31afeb4a"
         
-        if os.path.exists(caminho_arquivo_zip):
-            hash_sha1 = calcular_sha1(caminho_arquivo_zip)
-            
-            if hash_sha1 == sha_1_profile_folder:
-                print("Arquivo verificado.")
-                if os.path.exists(profile_folder):
-                    # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
-                    shutil.rmtree(profile_folder)
-                    
-                    # Cria a pasta "Mangá Downloader Profile"
-                    os.makedirs(profile_folder, exist_ok=True)
-                    
-                    # Exporta o perfil
-                    with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                        zip_ref.extractall(profile_folder)
-                        
-                else:
-                    # Cria a pasta "Mangá Downloader Profile"
-                    os.makedirs(profile_folder, exist_ok=True)
-                    
-                    # Exporta o perfil
-                    with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                        zip_ref.extractall(profile_folder)
-            
-            else:
-                os.remove(caminho_arquivo_zip)
-                
-                response = requests.get(zip_manga_downloader_profile_url)
-                with open(caminho_arquivo_zip, 'wb') as f:
-                    f.write(response.content)
-                
-                # Remove a pasta "Mangá Downloader Profile" e seu conteúdo
-                shutil.rmtree(profile_folder)
-                
-                # Cria a pasta "Mangá Downloader Profile"
-                os.makedirs(profile_folder, exist_ok=True)
-                
-                # Exporta o perfil
-                with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                    zip_ref.extractall(profile_folder)
-        
-        else:
-            response = requests.get(zip_manga_downloader_profile_url)
-            with open(caminho_arquivo_zip, 'wb') as f:
-                f.write(response.content)
-                
-            # Cria a pasta "Mangá Downloader Profile"
-            os.makedirs(profile_folder, exist_ok=True)
-            
-            # Exporta o perfil
-            with zipfile.ZipFile(caminho_arquivo_zip, 'r') as zip_ref:
-                zip_ref.extractall(profile_folder)
-            
         os.makedirs(download_folder, exist_ok=True)
         
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Execute sem uma janela visível, se desejar
         chrome_options.add_argument("--disable-gpu")  # Desativar a aceleração de hardware, se necessário
-        chrome_options.add_argument(f"user-data-dir={profile_folder}")
+        # chrome_options.add_argument(f"user-data-dir={profile_folder}")
         chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
 
         try:
@@ -297,8 +336,8 @@ class MainApp:
         print("✔ Carregado configurações salvas")
         self.load_settings()
         
-        vcmd1 = (root.register(self.validate1))
-        vcmd2 = (root.register(self.validate2))
+        vcmd1 = (self.root.register(self.validate1))
+        vcmd2 = (self.root.register(self.validate2))
         
         
         # Agregadores
@@ -393,28 +432,34 @@ class MainApp:
         config.grid(row=0, column=3, padx=10, pady=5)
         
         # Auto save
-        self.check_auto_save = tk.Checkbutton(root, text="Auto salvar", font=("Helvetica", 14), variable=self.auto_save, command=self.update_checkboxes_save)
+        self.check_auto_save = tk.Checkbutton(self.root, text="Auto salvar", font=("Helvetica", 14), variable=self.auto_save, command=self.update_checkboxes_save)
         self.check_auto_save.grid(row=1, column=3, padx=0, pady=0)
         
-        # Debug
-        self.debug_check = tk.Checkbutton(root, text="Info", font=("Helvetica", 14), variable=self.debug_var, command=self.update_checkboxes_debug)
+        # Info
+        self.debug_check = tk.Checkbutton(self.root, text="Info", font=("Helvetica", 14), variable=self.debug_var, command=self.update_checkboxes_debug)
         self.debug_check.grid(row=2, column=3, padx=0, pady=0)
+
+        # DEBUG
+        self.debug2_check = tk.Checkbutton(self.root, text="DEBUG", font=("Helvetica", 14), variable=self.debug2_var, command=self.update_checkboxes_debug2)
+        self.debug2_check.grid(row=3, column=3, padx=0, pady=0)
         
         # Navegador
-        self.nav_check = tk.Checkbutton(root, text="Navegador\nem segundo plano", font=("Helvetica", 14), variable=self.headless_var, command=self.update_checkboxes_nav)
-        self.nav_check.grid(row=3, column=3, padx=0, pady=0)
+        self.nav_check = tk.Checkbutton(self.root, text="Navegador\nem segundo plano", font=("Helvetica", 14), variable=self.headless_var, command=self.update_checkboxes_nav)
+        self.nav_check.grid(row=4, column=3, padx=0, pady=0)
         
         # Selecionar pasta
         self.select_folder_button = tk.Button(self.root, text="Selecionar pasta", font=("Helvetica", 14), command=self.select_folder)
-        self.select_folder_button.grid(row=4, column=3, padx=10, pady=5)
+        self.select_folder_button.grid(row=5, column=3, padx=10, pady=5)
         
         # Ir para a pasta selecionada
         self.select_folder_go_button = tk.Button(self.root, text="Ir para a pasta", font=("Helvetica", 14), command=self.select_folder_go)
-        self.select_folder_go_button.grid(row=5, column=3, padx=10, pady=5)
+        self.select_folder_go_button.grid(row=6, column=3, padx=10, pady=5)
         
         # Caixa de texto para exibir o caminho da pasta selecionada
         self.selected_folder_text = tk.Entry(self.root, font=("Helvetica", 12), width=40)
-        self.selected_folder_text.grid(row=6, column=3, columnspan=2, padx=10, pady=5)
+        self.selected_folder_text.grid(row=7, column=3, columnspan=2, padx=10, pady=5)
+        self.selected_folder_text.insert(0, self.folder_selected)
+        self.selected_folder_text.config(state=tk.DISABLED)
         
         # Label baixando
         self.baixando_label = tk.Label(self.root, text="", font=("Helvetica", 14))
@@ -430,13 +475,24 @@ class MainApp:
     
     def select_folder(self):
         self.folder_selected = filedialog.askdirectory()
+        self.selected_folder_text.config(state=tk.NORMAL)
         self.selected_folder_text.delete(0, tk.END)
         self.selected_folder_text.insert(0, self.folder_selected)
+        self.selected_folder_text.config(state=tk.DISABLED)
         print("Pasta selecionada:", self.folder_selected)
         self.auto_save_settings()
         
 
     def update_checkboxes_debug(self):
+        self.auto_save_settings()
+    
+    
+    def update_checkboxes_debug2(self):
+        if self.debug2_var.get():
+            logging.disable(logging.NOTSET)
+        else:
+            logging.disable(logging.CRITICAL + 1)
+        
         self.auto_save_settings()
 
 
@@ -458,19 +514,25 @@ class MainApp:
         print("Navegador em segundo plano:", self.headless_var.get())
         print("\n")
         
+        result = None
+        
         if self.nome_var.get() == "":
             print("Erro: Nome inválido.")
             messagebox.showerror("Erro", "Nome inválido")
-            return
+            result = 777
         
-        if self.url_var.get() == "":
+        elif self.url_var.get() == "":
             print("Erro: URL inválida.")
             messagebox.showerror("Erro", "URL inválida")
-            return
+            result = 777
         
-        if self.capitulo_var.get() == "":
+        elif self.capitulo_var.get() == "":
             print("Erro: Capítulo inválido.")
             messagebox.showerror("Erro", "Capítulo inválido")
+            result = 777
+        
+        if result == 777:
+            self.process_completed.set()
             return
         
         if self.ate_var.get() == "":
@@ -486,7 +548,7 @@ class MainApp:
         extension = self.extension_var.get()
         compact_extension = self.compact_extension_var.get()
         
-        nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "")
+        nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "").rstrip()
         
         carregar_imagens = [
             "Tsuki",
@@ -510,15 +572,19 @@ class MainApp:
                 ]
             )
             print("\n")
+            
 
         # Configurações das pastas
         temp_folder = os.environ['TEMP']
         profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
         download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
+        extension_name = "Tampermonkey.4.19.0.0.crx"
+        extension_path = os.path.join(temp_folder, extension_name)
         
         chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--disable-notifications")
         if self.headless_var.get():
-            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--headless=new")
             chrome_options.add_argument("--disable-web-security")
         # chrome_options.add_argument('--blink-settings=imagesEnabled=false') # Desativa a renderização de iamgens
         chrome_options.add_argument('--log-level=3')  # Nível 3 indica "sem logs"
@@ -529,11 +595,77 @@ class MainApp:
             prefs = {"profile.managed_default_content_settings.images": 2}
             chrome_options.add_experimental_option("prefs", prefs)
         
-        chrome_options.add_argument(f"user-data-dir={profile_folder}")
+        # chrome_options.add_argument(f"user-data-dir={profile_folder}")
         chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
         
+        chrome_options.add_argument("--proxy-server='direct://'")
+        chrome_options.add_argument("--proxy-bypass-list=*")
+        chrome_options.add_extension(extension_path)
+        
+        # chrome_options.add_argument("--start-maximized")
+        
         driver = webdriver.Chrome(options=chrome_options)
+
+        dev_extand = False
+
+        if dev_extand:
+            # Emular uma conexão lenta usando o Chrome DevTools Protocol
+            devtools_options = chrome_options.to_capabilities()
+            devtools_options["goog:chromeOptions"]["perfLoggingPrefs"] = {
+                "enableNetwork": True,
+                "enablePage": False,
+                "enableTimeline": False
+            }
     
+            # Configurar a condição de rede lenta (por exemplo, GPRS)
+            driver.execute_cdp_cmd("Network.enable", {})
+            driver.execute_cdp_cmd("Network.emulateNetworkConditions", {
+                "offline": False,
+                "downloadThroughput": 500 * 1024,  # Velocidade de download em bytes por segundo
+                "uploadThroughput": 200 * 1024,  # Velocidade de upload em bytes por segundo
+                "latency": 500  # Atraso em milissegundos
+            })
+        
+        driver.get('https://www.google.com.br/')
+        
+        janelas_abertas = driver.window_handles
+        
+        for _ in range(1, 1200):
+            if len(janelas_abertas) != 1:
+                driver.switch_to.window(janelas_abertas[-1])
+                driver.close()
+                janelas_abertas = driver.window_handles
+                driver.switch_to.window(janelas_abertas[0])
+                break
+            else:
+                janelas_abertas = driver.window_handles
+                time.sleep(0.1)
+        
+        def install_ext():
+            url_extension = 'https://update.greasyfork.org/scripts/419894/Image%20Downloader.user.js'
+            driver.get(url_extension)
+            
+            janelas_abertas = driver.window_handles
+            
+            for _ in range(1, 1200):
+                if len(janelas_abertas) != 1:
+                    driver.switch_to.window(janelas_abertas[-1])
+                    break
+                else:
+                    janelas_abertas = driver.window_handles
+                    time.sleep(0.1)
+            
+            time.sleep(1)
+            
+            # Realiza a ação de pressionar a tecla de espaço
+            ActionChains(driver).send_keys(Keys.SPACE).perform()
+            
+            time.sleep(1)
+            
+            janelas_abertas = driver.window_handles
+            driver.switch_to.window(janelas_abertas[0])
+            time.sleep(1)
+            
         
         async def download(link, folder_path, session, counter, max_attempts=10, sleep_time=5):
             attempts = 0
@@ -556,7 +688,7 @@ class MainApp:
                     async with session.get(link, ssl=False) as response:
                         # Verificar se a resposta tem status 200 (OK)
                         if response.status == 200:
-                            print(f"Baixando {link} como {image_name}...")
+                            print(f"{Fore.GREEN}Baixando {link} como {image_name}...{Style.RESET_ALL}")
                             
                             # Salvar a imagem no disco
                             with open(image_path, "wb") as f:
@@ -565,7 +697,7 @@ class MainApp:
                             # Se chegou até aqui, o download foi bem-sucedido, então saia do loop
                             break
                         else:
-                            print(f"Tentativa {attempts + 1} - Erro ao baixar {link}. Status code: {response.status}")
+                            print(f"{Fore.RED}Tentativa {attempts + 1} - Erro ao baixar {link}. Status code: {response.status}{Style.RESET_ALL}")
                             # Aguardar um tempo antes de tentar novamente
                             await asyncio.sleep(sleep_time)
 
@@ -671,6 +803,10 @@ class MainApp:
                                 zipf.write(os.path.join(folder_path, file_name), file_name)
                     shutil.rmtree(folder_path)
 
+
+
+        install_ext()
+
         
         if self.debug_var.get():
             self.baixando_label.config(text="Aguarde...")
@@ -682,7 +818,7 @@ class MainApp:
             base_url = 'https://www.brmangas.net/ler/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -713,7 +849,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
 
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -730,7 +866,7 @@ class MainApp:
                 # Obtém o valor atual do modo de leitura
                 modo_atual = modo_leitura_dropdown.first_selected_option.get_attribute('value')
 
-                print(f'Modo atual de leitura: {modo_atual}')
+                print(f'{Fore.GREEN}INFO:{Style.RESET_ALL} Modo atual de leitura: {modo_atual}')
 
                 # Verifica se o modo atual é o desejado (por exemplo, 'Páginas abertas')
                 if modo_atual != '2':
@@ -740,7 +876,7 @@ class MainApp:
                     # Espera até que o novo conteúdo seja carregado após a seleção
                     driver.implicitly_wait(10)
                     
-                    print("Modo de leitura alterado para: Páginas abertas")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} Modo de leitura alterado para: Páginas abertas\n")
 
                     time.sleep(3)
 
@@ -753,7 +889,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
                 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -767,7 +903,48 @@ class MainApp:
                 driver.implicitly_wait(10)
 
                 time.sleep(1)
+                
+                try:
+                    # Espera até que o botão esteja presente na página
+                    btn_next = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "btn_next"))
+                    )
 
+                    # Abre o link em uma nova guia
+                    btn_next.send_keys(Keys.CONTROL + Keys.RETURN)
+                    
+                    # Espera até que a nova guia seja carregada
+                    WebDriverWait(driver, 10).until(
+                        EC.number_of_windows_to_be(2)  # Aguarda até que haja duas guias abertas
+                    )
+    
+                    driver.close()
+                    janelas_abertas = driver.window_handles
+                    driver.switch_to.window(janelas_abertas[0])
+                    
+                    # Aguarda até que a página esteja completamente carregada
+                    WebDriverWait(driver, 30).until(
+                        lambda x: x.execute_script("return document.readyState") == "complete"
+                    )
+
+                    # Espera até que um elemento específico esteja presente na nova página
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "ver000"))
+                    )
+                    
+                    driver.refresh()
+
+                except Exception as e:
+                    print(f"Erro: {e}")
+                
+                try:
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "modo_leitura"))
+                    )
+                except Exception as e:
+                    print(e)
+                    input()
+                
                 mudar()
 
                 # Agora você pode encontrar a div que contém as imagens
@@ -811,7 +988,7 @@ class MainApp:
             base_url = 'https://crystalscan.net/manga/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -866,7 +1043,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
 
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -882,7 +1059,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -982,7 +1159,7 @@ class MainApp:
             base_url = 'https://argoscomics.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -1061,7 +1238,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
 
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -1077,7 +1254,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -1232,7 +1409,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -1292,7 +1469,7 @@ class MainApp:
             base_url = 'https://mangaschan.net/manga/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 if not base_url in url:
                     print("Erro: URL inválida.")
                     driver.quit()
@@ -1329,7 +1506,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
             
             if capitulos_solicitados == 0:
                 driver.quit()
@@ -1349,7 +1526,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -1444,7 +1621,7 @@ class MainApp:
             base_url = 'https://lermanga.org/mangas/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -1506,7 +1683,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
 
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -1522,7 +1699,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -1634,7 +1811,7 @@ class MainApp:
             base_url = 'https://tsuki-mangas.com/obra/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -1659,7 +1836,7 @@ class MainApp:
                     messagebox.showerror("Erro", "Site em manutenção")
                     return "Error code 001"
                     
-                time.sleep(5)
+                time.sleep(1)
                 
                 try:
                     # Aguarda até que o botão esteja presente na página
@@ -1675,7 +1852,7 @@ class MainApp:
 
                 finally:
                     driver.refresh()
-                    time.sleep(3)
+                    time.sleep(1)
                 
                 
                 print("Verificando capítulos...")
@@ -1687,6 +1864,14 @@ class MainApp:
                 
                 # Loop para percorrer todas as páginas
                 while True:
+                    try:
+                        WebDriverWait(driver, 30).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, '.datechapter'))
+                        )
+                    except:
+                        print("Erro")
+                        input()
+                    
                     # Localiza os elementos que contêm as informações dos capítulos
                     chapter_elements = driver.find_elements(By.CSS_SELECTOR, '.cardchapters')
 
@@ -1715,11 +1900,20 @@ class MainApp:
                     
                     count += 1
                     # Aguarde um pouco para garantir que a próxima página seja totalmente carregada
-                    time.sleep(5)
+                    
+                    try:
+                        WebDriverWait(driver, 30).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, '.datechapter'))
+                        )
+                    except:
+                        print("Erro")
+                        input()
+                    
+                    # time.sleep(1)
 
                 return capitulos_encontrados
-
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
 
             if capitulos_solicitados == "Error code 001":
                 if self.debug_var.get():
@@ -1751,7 +1945,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -1762,8 +1956,9 @@ class MainApp:
                 os.makedirs(folder_path, exist_ok=True)
 
                 driver.get(url)
+                driver.implicitly_wait(5)
 
-                time.sleep(3)
+                time.sleep(0.5)
                 
                 verify1 = driver.find_element(By.XPATH, '/html/body/div/div')
                 text = verify1.find_element(By.XPATH, '/html/body/div/div/div[2]').text
@@ -1777,21 +1972,24 @@ class MainApp:
                 if self.debug_var.get():
                     self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}")
                 
-                for x in range(1, 11):  # Começando de 1 para evitar /html/body/div[0]/...
+                wait = WebDriverWait(driver, 10)
+                
+                # Espera o leitor carregar
+                while True:
                     try:
-                        elemento_lista_paginas = driver.find_element(By.XPATH, f'/html/body/div[{x}]/div[2]/div/div/div[1]/ul')
-                        itens_lista_paginas = elemento_lista_paginas.find_elements(By.CSS_SELECTOR, 'li')
-                        
-                        numero_ultima_pagina = int(len(itens_lista_paginas))
-                        break  # Sair do loop se encontrar com sucesso
-                    
-                    except:
-                        continue  # Ignorar elementos que não têm o formato esperado
-                    
-                if self.debug_var.get():
-                    self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nCarregando página: {count} / {numero_ultima_pagina}")
+                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'img.pagereader')))
+                    finally:
+                        break
+                
+                # Descobrir a quantidade de paginas
+                elemento_lista_paginas = driver.find_element(By.CSS_SELECTOR, 'div[id^="el-popper-container-"] div:nth-child(2) div div div:nth-child(1) ul')
+                itens_lista_paginas = elemento_lista_paginas.find_elements(By.CSS_SELECTOR, 'li')
+                numero_ultima_pagina = int(len(itens_lista_paginas))
                 
                 while True:
+                    if self.debug_var.get():
+                        self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nCarregando página: {count} / {numero_ultima_pagina}")
+                
                     imagem_leitor = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CLASS_NAME, 'pagereader'))
                     )
@@ -1833,13 +2031,68 @@ class MainApp:
                                 script = f"window.open('{imagem_url}', '_blank');"
                                 driver.execute_script(script)
                                 
-                                time.sleep(1)
-                                
                                 # Obter todas as guias abertas
                                 janelas_abertas = driver.window_handles
                                 
+                                if len(janelas_abertas) == 2:
+                                    time.sleep(0.2)
+                                    janelas_abertas = driver.window_handles
+                                    if len(janelas_abertas) == 1:
+                                        if self.debug_var.get():
+                                            self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {numero_ultima_pagina}")
+                
+                                        lista = os.listdir(download_folder)
+                                
+                                        for _ in range(1, 300):
+                                            if len(lista) != 0:
+                                                if not ".crdownload" in lista[0]:
+                                                    break
+                                                else:
+                                                    lista = os.listdir(download_folder)
+                                                    time.sleep(1)
+                                            else:
+                                                time.sleep(1)
+                                        
+                                        file = os.path.join(download_folder, lista[0])
+                                        
+                                        image_extension = os.path.splitext(lista[0])[1]
+                                        
+                                        image_name = f"{count:02d}.{image_extension}"
+                                        image_path = os.path.join(folder_path, image_name)
+                                        
+                                        print(f"Baixando {imagem_url} como {image_name}...")
+                                        
+                                        os.makedirs(folder_path, exist_ok=True)
+                                        
+                                        shutil.move(file, image_path)
+                                        
+                                        break
+                                        
+                                
                                 # Mudar para a nova guia (que deve ser a última na lista)
                                 driver.switch_to.window(janelas_abertas[-1])
+                                
+                                if self.debug_var.get():
+                                    self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {numero_ultima_pagina}")
+                
+                                while True:
+                                    try:
+                                        # Executar um script JavaScript para verificar se a imagem foi carregada
+                                        script2 = """
+                                            var imagem = document.querySelector('img');
+                                            if (imagem.complete) {
+                                                return true;
+                                            } else {
+                                                return false;
+                                            }
+                                        """
+                                    
+                                        imagem_carregada2 = driver.execute_script(script2)
+                                        
+                                        if imagem_carregada2:
+                                            break
+                                    except:
+                                        ...
                                 
                                 action_chains = ActionChains(driver)
 
@@ -1854,9 +2107,9 @@ class MainApp:
 
                                 # Execute as ações
                                 action_chains.perform()
-                                
+
                                 time.sleep(0.5)
-                                
+
                                 download_button = driver.find_element(By.CLASS_NAME, "download-direct")
                                 download_button.click()
 
@@ -1883,9 +2136,11 @@ class MainApp:
                                 
                                 print(f"Baixando {imagem_url} como {image_name}...")
                                 
-                                os.makedirs(folder_path, exist_ok=True)
+                                time.sleep(0.5)
                                 
                                 shutil.move(file, image_path)
+                                
+                                time.sleep(0.2)
                                 
                                 # Fechar a guia atual
                                 driver.close()
@@ -1907,9 +2162,6 @@ class MainApp:
 
                     links_das_imagens += [imagem.get_attribute('src') for imagem in imagens]
                     
-                    if self.debug_var.get():
-                        self.baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nCarregando página: {count} / {numero_ultima_pagina}")
-                
                     if count == numero_ultima_pagina:
                         break
                         
@@ -1940,8 +2192,8 @@ class MainApp:
                         self.baixando_label.config(text=f"Erro no capítulo {numero_capitulo}\nNenhuma imagem encontrada")
                     return 2
 
-                if self.debug_var.get():
-                    self.baixando_label.config(text=f"Baixando capítulo {numero_capitulo}")
+                # if self.debug_var.get():
+                    # self.baixando_label.config(text=f"Baixando capítulo {numero_capitulo}")
 
                 # Criar lista de tarefas assíncronas para o download
                 # tasks = [download(link, folder_path, session, counter) for counter, link in enumerate(links_das_imagens, start=1)]
@@ -1981,7 +2233,7 @@ class MainApp:
             base_url = 'https://yomumangas.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -2047,7 +2299,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
 
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -2063,7 +2315,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -2132,9 +2384,32 @@ class MainApp:
         # Num 09 (SlimeRead)
         async def agr_09(driver, url, capítulo, ate):
             base_url = 'https://slimeread.com/'
+            
+            username = "yenic25188@frandin.com"
+            password = "M8e.Dcd4.Wd$vdj"
+            
+            try:
+                driver.get('https://slimeread.com/login')
+                
+                time.sleep(1)
+                
+                # Encontra os campos de entrada de nome de usuário e senha usando seus nomes
+                campo_username = driver.find_element("name", "name")
+                campo_password = driver.find_element("name", "password")
+                
+                # Insere o nome de usuário e senha
+                campo_username.send_keys(username)
+                campo_password.send_keys(password)
+                
+                # Submete o formulário de login
+                campo_password.send_keys(Keys.RETURN)
+                
+                time.sleep(1)
+            except:
+                ...
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -2186,7 +2461,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
             
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -2202,7 +2477,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -2278,7 +2553,7 @@ class MainApp:
             base_url = 'https://flowermanga.com/manga/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -2337,7 +2612,7 @@ class MainApp:
                     
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
             
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -2353,7 +2628,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -2384,7 +2659,7 @@ class MainApp:
 
                 if self.debug_var.get():
                     self.baixando_label.config(text=f"Baixando capítulo {numero_capitulo}")
-
+                    
                 # Criar lista de tarefas assíncronas para o download
                 tasks = [download(link, folder_path, session, counter) for counter, link in enumerate(links_das_imagens, start=1)]
 
@@ -2418,7 +2693,7 @@ class MainApp:
             base_url = 'https://lermangaonline.com.br/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -2458,7 +2733,7 @@ class MainApp:
                     
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
             
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -2474,7 +2749,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -2541,7 +2816,7 @@ class MainApp:
             base_url = 'https://mangabr.net/manga/'
 
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -2581,7 +2856,7 @@ class MainApp:
                     
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
             
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -2597,7 +2872,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -2675,7 +2950,7 @@ class MainApp:
             base_url = 'https://projetoscanlator.com/manga/'
             
             # Função para obter capítulos dentro de um intervalo
-            def obter_capitulos(driver, inicio, fim):
+            def obter_capitulos(driver, url, inicio, fim):
                 # Abre a página
                 driver.get(url)
                 
@@ -2718,7 +2993,7 @@ class MainApp:
 
                 return capitulos_encontrados
 
-            capitulos_solicitados = obter_capitulos(driver, capítulo, ate)
+            capitulos_solicitados = obter_capitulos(driver, url, capítulo, ate)
             
             if len(capitulos_solicitados) == 0:
                 print("Nenhum capítulo encontrado")
@@ -2734,7 +3009,7 @@ class MainApp:
                 print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
                 if contents:
-                    print(f"Info: a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
+                    print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
                     for item in contents:
                         item_path = os.path.join(folder_path, item)
                         if os.path.isdir(item_path):
@@ -2944,6 +3219,7 @@ class MainApp:
 
         if self.debug_var.get() and result == 0:
             self.baixando_label.config(text="Finalizado")
+            winsound.Beep(1000, 500)  # O primeiro argumento é a frequência em Hz e o segundo é a duração em milissegundos
         
         elif self.debug_var.get() and result == 1:
             self.baixando_label.config(text="URL inválida")
@@ -2953,6 +3229,7 @@ class MainApp:
         
         elif self.debug_var.get() and result == 4:
             self.baixando_label.config(text=f"Capítulo não aprovado")
+        
         
         self.process_completed.set()
 
@@ -2997,8 +3274,9 @@ class MainApp:
         self.name.config(state=tk.DISABLED)
         self.agregador_combobox.config(state=tk.DISABLED)
         self.url.config(state=tk.DISABLED)
-        self.debug_check.config(state=tk.DISABLED)
         self.nav_check.config(state=tk.DISABLED)
+        self.debug2_check.config(state=tk.DISABLED)
+        self.debug_check.config(state=tk.DISABLED)
         self.select_folder_button.config(state=tk.DISABLED)
 
     def enable_gui(self):
@@ -3018,6 +3296,7 @@ class MainApp:
         self.url.config(state=tk.NORMAL)
         self.debug_check.config(state=tk.NORMAL)
         self.nav_check.config(state=tk.NORMAL)
+        self.debug2_check.config(state=tk.NORMAL)
         self.select_folder_button.config(state=tk.NORMAL)
 
             
@@ -3102,6 +3381,7 @@ class MainApp:
             "nao_var": self.nao_var.get(),
             "sim_var": self.sim_var.get(),
             "debug": self.debug_var.get(),
+            "debug2": self.debug2_var.get(),
             "headless": self.headless_var.get(),
             "folder_selected": self.folder_selected
             # Adicione outros dados que você deseja salvar automaticamente aqui
@@ -3128,6 +3408,7 @@ class MainApp:
             self.nao_var.set(settings["nao_var"])
             self.sim_var.set(settings["sim_var"])
             self.debug_var.set(settings["debug"])
+            self.debug2_var.set(settings["debug2"])
             self.headless_var.set(settings["headless"])
             self.folder_selected = settings["folder_selected"]
             print("✔ Configurações carregadas")
@@ -3146,6 +3427,7 @@ class MainApp:
             self.nao_var.set(True)
             self.sim_var.set(False)
             self.debug_var.set(True)
+            self.debug2_var.set(False)
             self.headless_var.set(True)
         
         
@@ -3156,4 +3438,5 @@ class MainApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = MainApp(root)
+    
     root.mainloop()
