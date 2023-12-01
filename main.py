@@ -248,7 +248,7 @@ class MainApp():
         log_content = """
         Versão 1.5 (30/11/2023):
         - Correção feita no agregador 'BR Mangás'.
-        - Melhoria ao carrgar o script do Tampermonkey.
+        - Melhoria ao carregar o script do Tampermonkey.
         - Cores adicionados no prompt.
         
         Versão 1.4 (29/11/2023):
