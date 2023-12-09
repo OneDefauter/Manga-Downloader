@@ -1,9 +1,5 @@
-import src.check as mdi
-mdi.setup()
-
 import os
 import requests
-import urllib.request
 
 temp_folder = os.environ['TEMP']
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
@@ -464,6 +460,9 @@ for name, value in urls4.items():
 
 
 os.system('cls')
+
+import src.check as mdi
+mdi.setup()
 
 # Importações da pasta 'src'
 import src.imagemagick_check as imc
