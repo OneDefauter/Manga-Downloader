@@ -1,6 +1,0 @@
-requests
-pywin32
-selenium
-aiohttp
-asyncio
-colorama
