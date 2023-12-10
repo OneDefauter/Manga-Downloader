@@ -16,7 +16,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-def obter_capitulos(driver, url, inicio, fim, ate, debug_var, baixando_label):
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     # Abre a página
     driver.get(url)
     

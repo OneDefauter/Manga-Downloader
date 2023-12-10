@@ -41,6 +41,9 @@ async def setup(driver, url, numero_capitulo, session, folder_selected, nome_fol
 
     time.sleep(1)
     
+    if debug_var.get():
+        baixando_label.config(text=f"Carregando capítulo {numero_capitulo}...")
+    
     try:
         # Espera até que o botão esteja presente na página
         btn_next = WebDriverWait(driver, 10).until(
@@ -58,18 +61,6 @@ async def setup(driver, url, numero_capitulo, session, folder_selected, nome_fol
         driver.close()
         janelas_abertas = driver.window_handles
         driver.switch_to.window(janelas_abertas[0])
-        
-        # Aguarda até que a página esteja completamente carregada
-        WebDriverWait(driver, 30).until(
-            lambda x: x.execute_script("return document.readyState") == "complete"
-        )
-
-        # Espera até que um elemento específico esteja presente na nova página
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "ver000"))
-        )
-        
-        driver.refresh()
 
     except Exception as e:
         print(f"Erro: {e}")
