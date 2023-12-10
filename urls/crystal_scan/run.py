@@ -43,53 +43,30 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     time.sleep(1)
 
-    # Função para realizar a rolagem até determinado ponto
-    def scroll_to_position(position):
-        script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
-        driver.execute_script(script)
-        time.sleep(2)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
-    
-    # Rolar até 25% da página e esperar
-    scroll_to_position(0.25)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
-    
-    # Rolar até 50% da página e esperar
-    scroll_to_position(0.5)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
-    
-    # Rolar até 75% da página e esperar
-    scroll_to_position(0.75)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
+    leitor = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "reading-content"))
+    )
 
-    # Encontra a div que contém as imagens
-    div_imagens = driver.find_element(By.CLASS_NAME, 'reading-content')
+    paginas = leitor.find_elements(By.CLASS_NAME, 'page-break')
+    links_das_imagens = []
 
-    # Encontra todas as tags de imagem dentro da div
-    imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+    # Função para rolar até a imagem e aguardar o carregamento
+    def scroll_to_image(image_element):
+        driver.execute_script("arguments[0].scrollIntoView();", image_element)
+        wait_time = 0
+        while not image_element.get_attribute("complete") and wait_time < 10:
+            time.sleep(1)
+            wait_time += 1
 
+    # Itera sobre as imagens
+    for pagina in paginas:
+        imagem = pagina.find_element(By.TAG_NAME, 'img')
+        scroll_to_image(imagem)
+        
+        # Aqui você pode adicionar o código para baixar a imagem ou qualquer outra ação desejada
+        links_das_imagens.append(str(imagem.get_attribute('src')))
+        
     # Extrai os links das imagens
-    links_das_imagens = [imagem.get_attribute('data-src') for imagem in imagens]
     links_das_imagens = [link.strip() for link in links_das_imagens]
 
     if debug_var.get():
