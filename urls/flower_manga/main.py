@@ -19,7 +19,7 @@ from colorama import Fore, Style
 import urls.flower_manga.search as obter_capitulos
 import urls.flower_manga.run as run
 
-async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension):
+async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder):
     base_url = 'https://flowermanga.com/manga/'
 
     # Função para obter capítulos dentro de um intervalo
@@ -40,7 +40,7 @@ async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_s
             numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
             url = capitulo['link']
             
-            await run.run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension)
+            await run.run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder)
                 
         driver.quit()
         

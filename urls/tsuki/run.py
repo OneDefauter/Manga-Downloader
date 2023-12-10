@@ -144,7 +144,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                             image_name = f"{count:02d}.{image_extension}"
                             image_path = os.path.join(folder_path, image_name)
                             
-                            print(f"Baixando {imagem_url} como {image_name}...")
+                            print(f"{Fore.GREEN}Baixando {imagem_url} como {image_name}...{Style.RESET_ALL}")
                             
                             os.makedirs(folder_path, exist_ok=True)
                             

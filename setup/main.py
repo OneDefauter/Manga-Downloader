@@ -279,7 +279,7 @@ class AppMainTheme0():
         chrome_options.add_argument("--proxy-server='direct://'")
         chrome_options.add_argument("--proxy-bypass-list=*")
         
-        if agregador_escolhido in ['Tsuki']:
+        if agregador_escolhido in ['Tsuki', 'Flower Manga']:
             chrome_options.add_extension(extension_path)
         
         # chrome_options.add_argument("--start-maximized")
@@ -306,7 +306,7 @@ class AppMainTheme0():
                 "latency": 500  # Atraso em milissegundos
             })
     
-        if agregador_escolhido in ['Tsuki']:
+        if agregador_escolhido in ['Tsuki', 'Flower Manga']:
             ins_ext.setup(driver)
         
         if self.debug_var.get():
@@ -414,7 +414,7 @@ class AppMainTheme0():
             # Num 10 (Flower Manga)
             elif "Flower Manga" in agregador_escolhido:
                 if dic_url in url:
-                    result = await agr_10.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension)
+                    result = await agr_10.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder)
                     break
                 else:
                     result = 1
