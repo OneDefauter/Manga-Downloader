@@ -2,7 +2,7 @@ Versão 1.7 (10/12/2023):
 - Pequenas correções.
 - Agregador 'Flower manga' corrigido.
 
-Versão 1.6 (04/11/2023):
+Versão 1.6 (24/11/2023):
 - Código reformulado.
 - Bug's corrigidos.
 - Correção no agregador 'BR Mangás'.
