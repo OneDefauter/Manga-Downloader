@@ -28,6 +28,8 @@ async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_s
     # Função para obter capítulos dentro de um intervalo
     capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label)
 
+    if capitulos_solicitados == 'e1':
+        return 1
 
     if len(capitulos_solicitados) == 0:
         print("Nenhum capítulo encontrado")

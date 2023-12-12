@@ -28,10 +28,16 @@ async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_s
     # Função para obter capítulos dentro de um intervalo
     capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label)
     
+    if capitulos_solicitados == 'e1':
+        return 1
+    
+    if capitulos_solicitados == 'e3':
+        return 3
+    
     if len(capitulos_solicitados) == 0:
         print("Nenhum capítulo encontrado")
         driver.quit()
-        sys.exit()
+        return 3
 
     async with aiohttp.ClientSession() as session:
         os.system("cls")
@@ -43,7 +49,11 @@ async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_s
             numero_capitulo = str(capitulo['numero_capitulo']).replace('.0', '')
             url = capitulo['link']
             
-            await run.run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension)
+            result = await run.run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension)
+            if result == 'i1':
+                driver.quit()
+                return 5
+                
                 
         driver.quit()
         

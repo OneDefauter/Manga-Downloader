@@ -27,11 +27,12 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     if "Página não encontrada" in driver.page_source:
         print("Erro: URL inválida. Status code: 404")
         driver.quit()
-        sys.exit()
+        return 'e1'
     
-    time.sleep(5)
+    time.sleep(3)
     
     os.system("cls")
+    
     print("Verificando capítulos...")
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
@@ -39,22 +40,26 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     capitulos_encontrados = []
     turn = False
 
+    # Espera a lista de capítulos carregar
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//section[@class='mt-8']"))
+    )
+    
     # Localiza os elementos que contêm as informações dos capítulos
-    for i in range(10):
-        xpath = f'/html/body/div/div/main/section[{i}]/div[2]/div/div'
-        chapter_elements = driver.find_elements(By.XPATH, xpath)
+    xpath = f'//html//body//div//div//main//section[@class="mt-8"]//div[@class="mt-2"]//div//div'
+    chapter_elements = driver.find_elements(By.XPATH, xpath)
         
-        if len(chapter_elements) == 0:
-            continue
+    if chapter_elements:
+        # Mantém apenas o primeiro elemento e descarta os outros
+        chapter_elements = [chapter_elements[0]]
         
-        if "Cap" in chapter_elements[0].text:
-            turn = True
-            break
+    if "Cap" in chapter_elements[0].text:
+        turn = True
     
     if turn is False:
         print("Erro: Nenhum capítulo encontrado")
         driver.quit()
-        sys.exit()
+        return 'e3'
     
     # Extrai os dados dos capítulos
     for element in chapter_elements:

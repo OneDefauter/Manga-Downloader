@@ -66,7 +66,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     if len(links_das_imagens) == 0:
         print("Nenhuma imagem encontrada")
         driver.quit()
-        sys.exit() 
+        return 'i1'
 
     if debug_var.get():
         baixando_label.config(text=f"Baixando capítulo {numero_capitulo}")

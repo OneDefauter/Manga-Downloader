@@ -465,6 +465,9 @@ class AppMainTheme0():
         
         elif self.debug_var.get() and result == 4:
             self.baixando_label.config(text=f"Capítulo não aprovado")
+            
+        elif self.debug_var.get() and result == 5:
+            self.baixando_label.config(text=f"Imagens não foram carregadas")
         
         
         self.process_completed.set()

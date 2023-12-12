@@ -12,7 +12,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     if "Página não encontrada" in driver.page_source:
             print("Erro: URL inválida. Status code: 404")
             driver.quit()
-            return
+            return 'e1'
     
     # Esperar a lista de capítulos carregar
     capitulos = driver.find_elements(By.XPATH, '//div[@class="lista_manga"]//li[@class="row lista_ep"]')
