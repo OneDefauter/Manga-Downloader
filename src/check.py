@@ -10,17 +10,14 @@ def setup():
         'aiohttp', 
         'asyncio', 
         'colorama',
-        'sv-ttk',
         'pytz',
+        'ttkbootstrap',
     ]
 
     for module in required_modules:
         try:
             if module == 'pywin32':
                 __import__('win32api')
-                
-            elif module == 'sv-ttk':
-                __import__('sv_ttk')
             
             else:
                 __import__(module)

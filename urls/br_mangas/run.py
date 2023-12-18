@@ -47,11 +47,12 @@ async def setup(driver, url, numero_capitulo, session, folder_selected, nome_fol
     try:
         # Espera até que o botão esteja presente na página
         btn_next = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "btn_next"))
+            EC.presence_of_element_located((By.XPATH, "//a[@id='thePicLink']"))
         )
 
-        # Abre o link em uma nova guia
-        btn_next.send_keys(Keys.CONTROL + Keys.RETURN)
+        btn_next.click()
+        
+        time.sleep(3)
         
         # Espera até que a nova guia seja carregada
         WebDriverWait(driver, 10).until(
