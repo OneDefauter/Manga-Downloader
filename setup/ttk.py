@@ -20,7 +20,7 @@ import src.print as print_log
 import src.time_zone as hora_agora
 import src.execute_driver as ins_ext
 import src.changelog as open_change
-import src.reload as reload_main
+# import src.reload as reload_main
 
 
 # Importações das URLs
