@@ -20,6 +20,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **asyncio**
 
+● **ttkbootstrap**
+
 ***Nota: os módulos são instalados caso não tenha.***
 
 # Sites suportados
