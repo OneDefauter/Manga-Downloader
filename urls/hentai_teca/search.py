@@ -40,7 +40,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
     try:
-        btn = WebDriverWait(driver, 30).until(
+        btn = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "chapter-readmore"))
         )
         
