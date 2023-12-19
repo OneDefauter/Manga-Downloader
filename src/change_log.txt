@@ -1,3 +1,6 @@
+Versão 2.0 (19/12/2023):
+- Agregador 'Hentai Teca' foi adicionada.
+
 Versão 1.9 (15/12/2023 — 17/12/2023):
 - Atualização na GUI.
 - Atualização no agregador 'BR Mangás'.

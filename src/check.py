@@ -12,6 +12,7 @@ def setup():
         'colorama',
         'pytz',
         'ttkbootstrap',
+        'undetected_chromedriver',
     ]
 
     for module in required_modules:

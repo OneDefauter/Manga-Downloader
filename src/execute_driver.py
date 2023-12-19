@@ -35,6 +35,31 @@ def install_ext(driver):
     driver.switch_to.window(janelas_abertas[0])
     time.sleep(1)
     
+    
+    url_extension = 'https://update.greasyfork.org/scripts/482691/Teste.user.js'
+    driver.get(url_extension)
+    
+    janelas_abertas = driver.window_handles
+    
+    for _ in range(1, 1200):
+        if len(janelas_abertas) != 1:
+            driver.switch_to.window(janelas_abertas[-1])
+            break
+        else:
+            janelas_abertas = driver.window_handles
+            time.sleep(0.1)
+    
+    time.sleep(1)
+    
+    # Realiza a ação de pressionar a tecla de espaço
+    ActionChains(driver).send_keys(Keys.SPACE).perform()
+    
+    time.sleep(1)
+    
+    janelas_abertas = driver.window_handles
+    driver.switch_to.window(janelas_abertas[0])
+    time.sleep(1)
+    
 
 def setup(driver):
     driver.get('https://www.google.com.br/')

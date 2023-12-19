@@ -5,7 +5,7 @@ temp_folder = os.environ['TEMP']
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Configuração de pastas
-folder = ['setup', 'src', 'themes', 'urls']
+folder = ['setup', 'src', 'themes', 'urls', 'engine']
 url_folder = [
     'argos_comics',
     'argos_hentai',
@@ -20,12 +20,14 @@ url_folder = [
     'slimeread',
     'tsuki',
     'yomumangás',
+    'hentai_teca',
 ]
 
 context = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/urls/'
 context2 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/src/'
 context3 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/themes/'
 context4 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/setup/'
+context5 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/engine/'
 
 urls = {
     'argos_comics': {'main': f'{context}/argos_comics/main.py', 'run':f'{context}/argos_comics/run.py', 'search':f'{context}/argos_comics/search.py'},
@@ -40,7 +42,8 @@ urls = {
     'projeto_scanlator': {'main': f'{context}/projeto_scanlator/main.py', 'run':f'{context}/projeto_scanlator/run.py', 'search':f'{context}/projeto_scanlator/search.py'},
     'slimeread': {'main': f'{context}/slimeread/main.py', 'run':f'{context}/slimeread/run.py', 'search':f'{context}/slimeread/search.py', 'login':f'{context}/slimeread/login.py'},
     'tsuki': {'main': f'{context}/tsuki/main.py', 'run':f'{context}/tsuki/run.py', 'search':f'{context}/tsuki/search.py'},
-    'yomumangás': {'main': f'{context}/yomumangás/main.py', 'run':f'{context}/yomumangás/run.py', 'search':f'{context}/yomumangás/search.py'}
+    'yomumangás': {'main': f'{context}/yomumangás/main.py', 'run':f'{context}/yomumangás/run.py', 'search':f'{context}/yomumangás/search.py'},
+    'hentai_teca': {'main': f'{context}/hentai_teca/main.py', 'run':f'{context}/hentai_teca/run.py', 'search':f'{context}/hentai_teca/search.py'}
 }
 
 urls2 = {
@@ -56,12 +59,19 @@ urls2 = {
     'print':f'{context2}/print.py',
     'save':f'{context2}/save.py',
     'theme':f'{context2}/theme.py',
-    'time_zone':f'{context2}/time_zone.py'
+    'time_zone':f'{context2}/time_zone.py',
+    'clean':f'{context2}/clean.py',
+    'move':f'{context2}/move.py'
 }
 
 urls4 = {
     'main': f'{context4}/main.py',
     'ttk': f'{context4}/ttk.py'
+}
+
+urls5 = {
+    'default': f'{context5}/default.py',
+    'undetected': f'{context5}/undetected.py'
 }
 
 
@@ -111,6 +121,11 @@ for name, value in urls2.items():
 
 for name, value in urls4.items():
     file_path = os.path.join(app_folder, 'setup', f'{name}.py')
+    
+    download(file_path, value, name)
+
+for name, value in urls5.items():
+    file_path = os.path.join(app_folder, 'engine', f'{name}.py')
     
     download(file_path, value, name)
 

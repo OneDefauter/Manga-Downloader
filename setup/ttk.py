@@ -6,6 +6,7 @@ import requests
 import asyncio
 import threading
 import logging
+import zipfile
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from tkinter import *
@@ -21,6 +22,7 @@ import src.time_zone as hora_agora
 import src.execute_driver as ins_ext
 import src.changelog as open_change
 # import src.reload as reload_main
+import src.clean as clean
 
 
 # Importações das URLs
@@ -37,6 +39,15 @@ import urls.flower_manga.main as agr_10
 import urls.ler_manga_online.main as agr_11
 import urls.manga_br.main as agr_12
 import urls.projeto_scanlator.main as agr_13
+import urls.hentai_teca.main as agr_14
+
+
+
+# Ensines
+import engine.default as engine_default
+import engine.undetected as engine_undetected
+
+
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -59,6 +70,7 @@ dic_agregadores = {
     "Ler Manga Online": "https://lermangaonline.com.br/",
     "Manga BR": "https://mangabr.net/",
     "Projeto Scanlator": "https://projetoscanlator.com/",
+    "Hentai Teca": "https://hentaiteca.net/",
 }
 
 
@@ -170,15 +182,30 @@ class AppMainTheme0():
         temp_folder = os.environ['TEMP']
         profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
         download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-        extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.4.19.0.0.crx'
-        extension_name = "Tampermonkey.4.19.0.0.crx"
+        extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.crx'
+        extension_zip_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.zip'
+        extension_name = "Tampermonkey.5.0.0.0.crx"
         extension_path = os.path.join(temp_folder, extension_name)
+        extension_folder_path = os.path.join(temp_folder, 'Tampermonkey.5.0.0.0')
         
         if not os.path.exists(extension_path):
             response = requests.get(extension_url)
             
             with open(extension_path, 'wb') as file:
                 file.write(response.content)
+        
+        if not os.path.exists(extension_folder_path):
+            response = requests.get(extension_zip_url)
+            
+            with open(f'{extension_folder_path}.zip', 'wb') as file:
+                file.write(response.content)
+                
+            os.makedirs(extension_folder_path, exist_ok=True)
+            
+            # Abre o arquivo ZIP
+            with zipfile.ZipFile(f'{extension_folder_path}.zip', 'r') as zip_ref:
+                # Extrai todos os arquivos na pasta de destino
+                zip_ref.extractall(extension_folder_path)
         
         
         os.makedirs(download_folder, exist_ok=True)
@@ -301,59 +328,24 @@ class AppMainTheme0():
         extension_name = "Tampermonkey.4.19.0.0.crx"
         extension_path = os.path.join(temp_folder, extension_name)
         
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--disable-notifications")
-        if self.headless_var.get():
-            chrome_options.add_argument("--headless=new")
-            chrome_options.add_argument("--disable-web-security")
-        # chrome_options.add_argument('--blink-settings=imagesEnabled=false') # Desativa a renderização de iamgens
-        chrome_options.add_argument('--log-level=3')  # Nível 3 indica "sem logs"
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        chrome_options.add_argument('--no-sandbox')
-        if agregador_escolhido not in carregar_imagens:
-            prefs = {"profile.managed_default_content_settings.images": 2}
-            chrome_options.add_experimental_option("prefs", prefs)
         
-        # chrome_options.add_argument(f"user-data-dir={profile_folder}")
-        chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
+        if not agregador_escolhido in ['Hentai Teca']:
+            driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, carregar_imagens, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
+        else:
+            driver = engine_undetected.setup(self.headless_var.get(), agregador_escolhido, carregar_imagens, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
         
-        chrome_options.add_argument("--proxy-server='direct://'")
-        chrome_options.add_argument("--proxy-bypass-list=*")
         
-        if agregador_escolhido in ['Tsuki', 'Flower Manga']:
-            chrome_options.add_extension(extension_path)
-        
-        # chrome_options.add_argument("--start-maximized")
-        
-        driver = webdriver.Chrome(options=chrome_options)
-        
-        if self.net_option_var.get():
-            # Emular uma conexão lenta usando o Chrome DevTools Protocol
-            devtools_options = chrome_options.to_capabilities()
-            devtools_options["goog:chromeOptions"]["perfLoggingPrefs"] = {
-                "enableNetwork": True,
-                "enablePage": False,
-                "enableTimeline": False
-            }
-    
-            # Configurar a condição de rede lenta (por exemplo, GPRS)
-            driver.execute_cdp_cmd("Network.enable", {})
-            driver.execute_cdp_cmd("Network.emulateNetworkConditions", {
-                "offline": False,
-                "downloadThroughput": int(self.net_limit_down_var.get()) * 1024,  # Velocidade de download em bytes por segundo
-                "uploadThroughput": int(self.net_limit_up_var.get()) * 1024,  # Velocidade de upload em bytes por segundo
-                "latency": int(self.net_lat_var.get())  # Atraso em milissegundos
-            })
-    
-        if agregador_escolhido in ['Tsuki', 'Flower Manga']:
+        if agregador_escolhido in ['Tsuki', 'Flower Manga', 'Hentai Teca']:
+            if self.debug_var.get():
+                self.baixando_label.config(text="Instalando extensão...")
+                
             ins_ext.setup(driver)
         
         if self.debug_var.get():
             self.baixando_label.config(text="Aguarde...")
         print("\nAguarde...")
         
-        
+        clean.setup(download_folder)
         
         for dic_name, dic_url in dic_agregadores.items():
             
@@ -490,6 +482,16 @@ class AppMainTheme0():
                     result = 1
                     print("Erro: URL inválida")
                     break
+    
+            # Num 14 (Hentai Teca)
+            elif "Hentai Teca" in agregador_escolhido:
+                if dic_url in url:
+                    result = await agr_14.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder)
+                    break
+                else:
+                    result = 1
+                    print("Erro: URL inválida")
+                    break
         
 
 
@@ -567,6 +569,18 @@ class AppMainTheme0():
         self.theme_4.config(state=tb.DISABLED)
         self.theme_5.config(state=tb.DISABLED)
         self.theme_6.config(state=tb.DISABLED)
+        self.theme_7.config(state=tb.DISABLED)
+        self.theme_8.config(state=tb.DISABLED)
+        self.theme_9.config(state=tb.DISABLED)
+        self.theme_10.config(state=tb.DISABLED)
+        self.theme_11.config(state=tb.DISABLED)
+        self.theme_12.config(state=tb.DISABLED)
+        self.theme_13.config(state=tb.DISABLED)
+        self.theme_14.config(state=tb.DISABLED)
+        self.theme_15.config(state=tb.DISABLED)
+        self.theme_16.config(state=tb.DISABLED)
+        self.theme_17.config(state=tb.DISABLED)
+        self.theme_18.config(state=tb.DISABLED)
 
 
     def enable_gui(self):
@@ -598,6 +612,18 @@ class AppMainTheme0():
         self.theme_4.config(state=tb.NORMAL)
         self.theme_5.config(state=tb.NORMAL)
         self.theme_6.config(state=tb.NORMAL)
+        self.theme_7.config(state=tb.NORMAL)
+        self.theme_8.config(state=tb.NORMAL)
+        self.theme_9.config(state=tb.NORMAL)
+        self.theme_10.config(state=tb.NORMAL)
+        self.theme_11.config(state=tb.NORMAL)
+        self.theme_12.config(state=tb.NORMAL)
+        self.theme_13.config(state=tb.NORMAL)
+        self.theme_14.config(state=tb.NORMAL)
+        self.theme_15.config(state=tb.NORMAL)
+        self.theme_16.config(state=tb.NORMAL)
+        self.theme_17.config(state=tb.NORMAL)
+        self.theme_18.config(state=tb.NORMAL)
 
             
     def validate1(self, P):
