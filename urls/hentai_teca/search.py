@@ -39,11 +39,14 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     # Injeta um script JavaScript para simular um pequeno movimento do mouse
     driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
-    btn = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, "chapter-readmore"))
-    )
-    
-    btn.click()
+    try:
+        btn = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "chapter-readmore"))
+        )
+        
+        btn.click()
+    except:
+        ...
     
     time.sleep(2)
 
