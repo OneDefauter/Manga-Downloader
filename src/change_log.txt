@@ -1,3 +1,7 @@
+Versão 2.1 (20/12/2023):
+- Melhorias foram feitas nos agregadores 'Flower Mangá', 'Hentai Teca' e 'Tsuki'.
+- Correções foram feitas.
+
 Versão 2.0 (19/12/2023):
 - Agregador 'Hentai Teca' foi adicionada.
 

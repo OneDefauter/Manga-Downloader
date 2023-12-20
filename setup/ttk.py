@@ -101,13 +101,19 @@ class AppMainTheme0():
         self.root.title("Mangá Downloader")
         self.style = ttk.Style(root)
     
+        # Style
+        button_1 = tb.Style()
+        button_1.configure('b1.TButton', font=("Segoe UI", 14, "bold"))
+        button_1.configure('b2.TButton', font=("Segoe UI", 10, "bold"))
+        
+        button_1.configure('c1.TCheckbutton', font=("Segoe UI", 14, "bold"))
+    
+    
         self.windows()
         
         self.settings_global()
         
-        self.options()
-        
-        # self.options_advanced()
+        self.options_agreg()
         
         self.load_selenium()
             
@@ -325,7 +331,7 @@ class AppMainTheme0():
         temp_folder = os.environ['TEMP']
         profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
         download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-        extension_name = "Tampermonkey.4.19.0.0.crx"
+        extension_name = "Tampermonkey.5.0.0.0.crx"
         extension_path = os.path.join(temp_folder, extension_name)
         
         
@@ -562,6 +568,7 @@ class AppMainTheme0():
         self.net_limit_down.config(state=tb.DISABLED)
         self.net_limit_up.config(state=tb.DISABLED)
         self.net_lat.config(state=tb.DISABLED)
+        self.reset_config_button.config(state=tb.DISABLED)
         self.theme_0.config(state=tb.DISABLED)
         self.theme_1.config(state=tb.DISABLED)
         self.theme_2.config(state=tb.DISABLED)
@@ -605,6 +612,7 @@ class AppMainTheme0():
         self.net_limit_down.config(state=tb.NORMAL)
         self.net_limit_up.config(state=tb.NORMAL)
         self.net_lat.config(state=tb.NORMAL)
+        self.reset_config_button.config(state=tb.NORMAL)
         self.theme_0.config(state=tb.NORMAL)
         self.theme_1.config(state=tb.NORMAL)
         self.theme_2.config(state=tb.NORMAL)
@@ -726,57 +734,12 @@ class AppMainTheme0():
             if dic_name in agregador_escolhido:
                 webbrowser.open(dic_url)
     
-        
-    def options_advanced(self):
-        # Configurações
-        config = tb.Label(self.root, text="Configurações", font=("Helvetica", 14))
-        config.grid(row=0, column=3, padx=10, pady=5)
-        
-        # Auto save
-        self.check_auto_save = tb.Checkbutton(self.root, text="Auto salvar", font=("Helvetica", 14), variable=self.auto_save, command=self.update_checkboxes_save)
-        self.check_auto_save.grid(row=1, column=3, padx=0, pady=0)
-        
-        # Info
-        self.debug_check = tb.Checkbutton(self.root, text="Info", font=("Helvetica", 14), variable=self.debug_var, command=self.update_checkboxes_debug)
-        self.debug_check.grid(row=2, column=3, padx=0, pady=0)
-
-        # DEBUG
-        self.debug2_check = tb.Checkbutton(self.root, text="DEBUG", font=("Helvetica", 14), variable=self.debug2_var, command=self.update_checkboxes_debug2)
-        self.debug2_check.grid(row=3, column=3, padx=0, pady=0)
-        
-        # Navegador
-        self.nav_check = tb.Checkbutton(self.root, text="Navegador\nem segundo plano", font=("Helvetica", 14), variable=self.headless_var, command=self.update_checkboxes_nav)
-        self.nav_check.grid(row=4, column=3, padx=0, pady=0)
-        
-        # Selecionar pasta
-        self.select_folder_button = tb.Button(self.root, text="Selecionar pasta", font=("Helvetica", 14), command=self.select_folder)
-        self.select_folder_button.grid(row=5, column=3, padx=10, pady=5)
-        
-        # Ir para a pasta selecionada
-        self.select_folder_go_button = tb.Button(self.root, text="Ir para a pasta", font=("Helvetica", 14), command=self.select_folder_go)
-        self.select_folder_go_button.grid(row=6, column=3, padx=10, pady=5)
-        
-        # Caixa de texto para exibir o caminho da pasta selecionada
-        self.selected_folder_text = tb.Entry(self.root, font=("Helvetica", 12), width=40)
-        self.selected_folder_text.grid(row=7, column=3, columnspan=2, padx=10, pady=5)
-        self.selected_folder_text.insert(0, self.folder_selected)
-        self.selected_folder_text.config(state=tb.DISABLED)
-        
-        # Label baixando
-        self.baixando_label = tb.Label(self.root, text="", font=("Helvetica", 14))
-        self.baixando_label.grid(row=9, column=3, padx=10, pady=5)
-        
     
-    def options(self):
-        vcmd1 = (self.root.register(self.validate1))
-        vcmd2 = (self.root.register(self.validate2))
+    def options_agreg(self):
+        self.vcmd1 = (self.root.register(self.validate1))
+        self.vcmd2 = (self.root.register(self.validate2))
         
-        # Style
-        button_1 = tb.Style()
-        button_1.configure('b1.TButton', font=("Segoe UI", 14, "bold"))
-        button_1.configure('b2.TButton', font=("Segoe UI", 10, "bold"))
         
-        button_1.configure('c1.TCheckbutton', font=("Segoe UI", 14, "bold"))
         
         # Agregadores
         self.agregador_text = tb.Label(self.root)
@@ -801,7 +764,7 @@ class AppMainTheme0():
         self.agregador_combobox.configure(textvariable=self.agregador_var)
         self.agregador_combobox.configure(values=agregadores)
         self.agregador_combobox.configure(validate='all')
-        self.agregador_combobox.configure(validatecommand=(vcmd2, '%P'))
+        self.agregador_combobox.configure(validatecommand=(self.vcmd2, '%P'))
         
         
         
@@ -893,7 +856,7 @@ class AppMainTheme0():
         # self.cap.configure(selectforeground="black")
         self.cap.configure(textvariable=self.capitulo_var)
         self.cap.configure(validate='all')
-        self.cap.configure(validatecommand=(vcmd1, '%P'))
+        self.cap.configure(validatecommand=(self.vcmd1, '%P'))
         
         
         
@@ -925,7 +888,7 @@ class AppMainTheme0():
         # self.ate.configure(selectforeground="black")
         self.ate.configure(textvariable=self.ate_var)
         self.ate.configure(validate='all')
-        self.ate.configure(validatecommand=(vcmd1, '%P'))
+        self.ate.configure(validatecommand=(self.vcmd1, '%P'))
         
         
         
@@ -984,8 +947,18 @@ class AppMainTheme0():
         self.save_button.configure(style="b1.TButton")
         
         
+        # Carrega os abas de opções
+        self.not_options()
         
+        # Carrega as opções
+        self.options_agreg_config()
+        self.options_config()
+        self.options_config_rede()
+        self.options_theme()
+        self.options_info()
         
+    
+    def not_options(self):
         # Lista de opções
         self.TNotebook1 = ttk.Notebook(self.root)
         self.TNotebook1.place(relx=0.454, rely=0.043, relheight=0.657
@@ -996,7 +969,7 @@ class AppMainTheme0():
         
         # Configure o tamanho da fonte para as abas do notebook
         estilo_abas = ttk.Style()
-        estilo_abas.configure('TNotebook.Tab', font=('Arial', 12))  # Substitua 'Arial' pelo tipo de fonte desejado e 12 pelo tamanho desejado
+        estilo_abas.configure('TNotebook.Tab', font=('Arial', 12, 'bold'))  # Substitua 'Arial' pelo tipo de fonte desejado e 12 pelo tamanho desejado
         
         
         
@@ -1047,11 +1020,9 @@ class AppMainTheme0():
         # self.TNotebook1_t5.configure(background="#f0f0f0")
         # self.TNotebook1_t5.configure(highlightbackground="#d9d9d9")
         # self.TNotebook1_t5.configure(highlightcolor="black")
-        
-        
-        
-        
-        
+    
+    
+    def options_agreg_config(self):
         # Compactar
         self.comapt_text = tb.Label(self.TNotebook1_t1)
         self.comapt_text.place(relx=0.035, rely=0.036, height=64, width=195)
@@ -1111,7 +1082,7 @@ class AppMainTheme0():
         self.comapct_extension_combobox.configure(textvariable=self.compact_extension_var)
         self.comapct_extension_combobox.configure(values=compact_extensions)
         self.comapct_extension_combobox.configure(validate='all')
-        self.comapct_extension_combobox.configure(validatecommand=(vcmd1, '%P'))
+        self.comapct_extension_combobox.configure(validatecommand=(self.vcmd1, '%P'))
         
         
         
@@ -1138,7 +1109,7 @@ class AppMainTheme0():
         self.extension_combobox.configure(textvariable=self.extension_var)
         self.extension_combobox.configure(values=extensions)
         self.extension_combobox.configure(validate='all')
-        self.extension_combobox.configure(validatecommand=(vcmd1, '%P'))
+        self.extension_combobox.configure(validatecommand=(self.vcmd1, '%P'))
         
         
         
@@ -1196,9 +1167,9 @@ class AppMainTheme0():
         self.select_folder_go_button.configure(text='''Ir para a pasta''')
         self.select_folder_go_button.configure(command=self.select_folder_go)
         self.select_folder_go_button.configure(style="b1.TButton")
-        
-        
-        
+
+
+    def options_config(self):
         # Auto save
         self.check_auto_save_text = tb.Label(self.TNotebook1_t2)
         self.check_auto_save_text.place(relx=0.035, rely=0.036, height=64, width=196)
@@ -1395,8 +1366,9 @@ class AppMainTheme0():
         self.reset_config_button.configure(text='''Resetar Configurações''')
         self.reset_config_button.configure(command=self.reset_config)
         self.reset_config_button.configure(style="b1.TButton")
-        
-        
+
+
+    def options_config_rede(self):
         # Opções de rede
         self.net_option_text = tb.Label(self.TNotebook1_t3)
         self.net_option_text.place(relx=0.053, rely=0.071, height=34, width=246)
@@ -1462,7 +1434,7 @@ class AppMainTheme0():
         # self.net_limit_down.configure(selectforeground="black")
         self.net_limit_down.configure(textvariable=self.net_limit_down_var)
         self.net_limit_down.configure(validate='all')
-        self.net_limit_down.configure(validatecommand=(vcmd1, '%P'))
+        self.net_limit_down.configure(validatecommand=(self.vcmd1, '%P'))
         
         
         
@@ -1496,7 +1468,7 @@ class AppMainTheme0():
         # self.net_limit_up.configure(selectforeground="black")
         self.net_limit_up.configure(textvariable=self.net_limit_up_var)
         self.net_limit_up.configure(validate='all')
-        self.net_limit_up.configure(validatecommand=(vcmd1, '%P'))
+        self.net_limit_up.configure(validatecommand=(self.vcmd1, '%P'))
         
         
         
@@ -1530,10 +1502,10 @@ class AppMainTheme0():
         # self.net_lat.configure(selectforeground="black")
         self.net_lat.configure(textvariable=self.net_lat_var)
         self.net_lat.configure(validate='all')
-        self.net_lat.configure(validatecommand=(vcmd1, '%P'))
-        
-        
-        
+        self.net_lat.configure(validatecommand=(self.vcmd1, '%P'))
+
+    
+    def options_theme(self):
         # Temas
         self.light_text = tb.Label(self.TNotebook1_t4)
         self.light_text.place(relx=0.088, rely=0.0, height=33, width=66)
@@ -1887,105 +1859,21 @@ class AppMainTheme0():
         self.theme_18.configure(text='''Vapor''')
         self.theme_18.configure(command=self.theme_18_b)
         self.theme_18.configure(style="b2.TButton")
-        
-        
-        
+    
+    
+    def options_info(self):
         # Label baixando
         self.baixando_label = tb.Label(self.TNotebook1_t5)
         self.baixando_label.place(relx=0.035, rely=0.071, height=241, width=534)
-        self.baixando_label.configure(anchor='w')
+        self.baixando_label.configure(anchor='center')
         # self.baixando_label.configure(background="#f0f0f0")
-        self.baixando_label.configure(font=("Helvetica", 14))
+        self.baixando_label.configure(font=("Helvetica", 14, 'bold'))
         self.baixando_label.configure(compound='left')
         # self.baixando_label.configure(disabledforeground="#a3a3a3")
         # self.baixando_label.configure(foreground="#000000")
         self.baixando_label.configure(justify='center')
         self.baixando_label.configure(text='''''')
-
-        
-
-    def options2(self):
-        vcmd1 = (self.root.register(self.validate1))
-        vcmd2 = (self.root.register(self.validate2))
-        
-        
-        # Agregadores
-        tb.Label(self.root, text="Agregador:", font=("Helvetica", 14)).grid(row=0, column=0, padx=10, pady=5)
-        agregadores = list(dic_agregadores.keys())
-
-        self.agregador_combobox = ttk.Combobox(self.root, textvariable=self.agregador_var, values=agregadores, font=("Helvetica", 14), validate='all', validatecommand=(vcmd2, '%P'))
-        self.agregador_combobox.grid(row=0, column=1, padx=10, pady=5)
-        
-        
-        # Agregador site
-        self.url_open =tb.Button(self.root, text="Site", font=("Helvetica", 14), command=self.site_url_open)
-        self.url_open.grid(row=0, column=2, padx=10, pady=5)
-        
-        
-        # Nome da obra
-        tb.Label(self.root, text="Nome da obra:", font=("Helvetica", 14)).grid(row=1, column=0, padx=10, pady=5)
-        self.name = tb.Entry(self.root, textvariable=self.nome_var, font=("Helvetica", 14))
-        self.name.grid(row=1, column=1, padx=10, pady=5)
-        
-        
-        # URL da obra
-        tb.Label(self.root, text="URL da obra:", font=("Helvetica", 14)).grid(row=2, column=0, padx=10, pady=5)
-        self.url = tb.Entry(self.root, textvariable=self.url_var, font=("Helvetica", 14))
-        self.url.grid(row=2, column=1, padx=10, pady=5)
-        
-        
-        # Capítulo
-        tb.Label(self.root, text="Capítulo:", font=("Helvetica", 14)).grid(row=3, column=0, padx=10, pady=5)
-        self.cap = tb.Entry(self.root, textvariable=self.capitulo_var, font=("Helvetica", 14), validate='all', validatecommand=(vcmd1, '%P'))
-        self.cap.grid(row=3, column=1, padx=10, pady=5)
-        
-        
-        # Até qual capítulo baixar
-        tb.Label(self.root, text="Até qual capítulo baixar:", font=("Helvetica", 14)).grid(row=4, column=0, padx=10, pady=5)
-        self.ate = tb.Entry(self.root, textvariable=self.ate_var, font=("Helvetica", 14), validate='all', validatecommand=(vcmd1, '%P'))
-        self.ate.grid(row=4, column=1, padx=10, pady=5)
-        
-        
-        # Label "Compactar"
-        tb.Label(self.root, text="Compactar:", font=("Helvetica", 14)).grid(row=5, column=0, padx=10, pady=5)
-
-        # Checkbutton para "Sim"
-        self.comapt_check_yes = tb.Checkbutton(self.root, text="Sim", font=("Helvetica", 14), variable=self.sim_var, command=self.update_checkboxes_sim)
-        self.comapt_check_yes.grid(row=5, column=1, padx=10, pady=5)
-
-        # Checkbutton para "Não"
-        self.comapt_check_no = tb.Checkbutton(self.root, text="Não", font=("Helvetica", 14), variable=self.nao_var, command=self.update_checkboxes_nao)
-        self.comapt_check_no.grid(row=5, column=2, padx=10, pady=5)
-        
-        
-        # Lista com as extensões de saída disponíveis
-        tb.Label(self.root, text="Extensão da compactação:", font=("Helvetica", 14)).grid(row=6, column=0, padx=10, pady=5)
-        compact_extensions = [".zip", ".rar", ".cbz"]
-
-        self.comapct_extension_combobox = ttk.Combobox(self.root, textvariable=self.compact_extension_var, values=compact_extensions, font=("Helvetica", 14), validate='all', validatecommand=(vcmd1, '%P'))
-        self.comapct_extension_combobox.grid(row=6, column=1, padx=10, pady=5)
-        
-        
-        # Lista com as extensões de saída disponíveis
-        tb.Label(self.root, text="Extensão de saída:", font=("Helvetica", 14)).grid(row=7, column=0, padx=10, pady=5)
-        extensions = [".png", ".jpg"]
-
-        self.extension_combobox = ttk.Combobox(self.root, textvariable=self.extension_var, values=extensions, font=("Helvetica", 14), validate='all', validatecommand=(vcmd1, '%P'))
-        self.extension_combobox.grid(row=7, column=1, padx=10, pady=5)
-        
-        # Configuração da linha 2 como vazia
-        self.root.rowconfigure(8, weight=1)
-        
-        # Iniciar download
-        self.start_download_button = tb.Button(self.root, text="Iniciar download", font=("Helvetica", 14), command=self.start_download)
-        self.start_download_button.grid(row=9, column=1, padx=10, pady=5)
-        
-        
-        # Salvar configurações
-        self.save_button =tb.Button(self.root, text="Salvar configurações", font=("Helvetica", 14), command=self.save_settings)
-        self.save_button.grid(row=9, column=0, padx=10, pady=5)
-
-
+    
     
     def settings_global(self):
         auto_save = self.auto_save
@@ -2060,7 +1948,6 @@ class AppMainTheme0():
         self.x = (screen_width - window_width) // 2
         self.y = (screen_height - window_height) // 2
         self.root.geometry(f"{window_width}x{window_height}+{self.x}+{self.y}")
-
 
 
     def theme_default(self):

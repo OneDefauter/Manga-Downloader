@@ -28,6 +28,9 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
+    if debug_var.get():
+        baixando_label.config(text=f"Verificando pasta do capítulo {numero_capitulo}")
+        
     if contents:
         print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
         for item in contents:
@@ -39,16 +42,16 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     os.makedirs(folder_path, exist_ok=True)
 
+    if debug_var.get():
+        baixando_label.config(text=f"Aguardando página do capítulo {numero_capitulo}")
+    
     driver.get(url)
     driver.implicitly_wait(10)
-
-    if debug_var.get():
-        baixando_label.config(text=f"Verificando capítulo {numero_capitulo}")
 
     time.sleep(1)
 
 
-    def load_iamge():
+    def load_image():
         count_repet = 0
         
         while count_repet < 10:
@@ -77,6 +80,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                 
             count_repet += 1
         
+    load_image()
     
     while True:
         leitor = WebDriverWait(driver, 10).until(
@@ -107,7 +111,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         links_count = str(len(links_das_imagens))
         
         if 'None' in links_das_imagens:
-            load_iamge()
+            load_image()
         else:
             break
         
@@ -201,23 +205,30 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             
             print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.png...{Style.RESET_ALL}")
             
-            time.sleep(0.2)
+            # time.sleep(0.2)
             
             count += 1
         
+        if debug_var.get():
+            baixando_label.config(text=f"Arrumando páginas...")
+            
         time.sleep(3)
         
-        while True:
+        close = 0
+        max_close = 60
+        
+        while close < max_close:
             lista = os.listdir(download_folder)
             
             if count == len(lista) + 1:
                 if not ".crdownload" in lista:
                     break
                 
-            time.sleep(0.2)
+            time.sleep(1)
+            close += 1
             
-        if debug_var.get():
-            baixando_label.config(text=f"Arrumando páginas...")
+            if debug_var.get():
+                baixando_label.config(text=f"Arrumando páginas...\nAguarde {close} / {max_close}")
         
         move.setup(download_folder, folder_path)
             
@@ -235,6 +246,9 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         baixando_label.config(text=f"Organizando capítulo {numero_capitulo}")
 
     organizar.organizar(folder_path, compactar, compact_extension, extension)
+
+    if debug_var.get():
+        baixando_label.config(text=f"Aguarde...")
 
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
     

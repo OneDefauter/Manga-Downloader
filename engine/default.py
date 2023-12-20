@@ -33,8 +33,6 @@ def setup(headless_var, agregador_escolhido, carregar_imagens, download_folder, 
     # chrome_options.add_argument(f"user-data-dir={profile_folder}")
     chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
     
-    
-    
     if agregador_escolhido in ['Tsuki', 'Flower Manga']:
         chrome_options.add_extension(extension_path)
     
