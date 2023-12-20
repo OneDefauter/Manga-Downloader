@@ -74,6 +74,8 @@ dic_agregadores = {
 }
 
 
+version_ = 'Versão 2.1'
+
 
 class AppMainTheme0():
     def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var):
@@ -98,6 +100,8 @@ class AppMainTheme0():
         self.net_lat_var = net_lat_var
         self.change_log_var = change_log_var
         
+        self.ipo9 = False
+        
         self.root.title("Mangá Downloader")
         self.style = ttk.Style(root)
     
@@ -108,6 +112,8 @@ class AppMainTheme0():
         
         button_1.configure('c1.TCheckbutton', font=("Segoe UI", 14, "bold"))
     
+        self.root.bind("<Control-s>", self.save_shortcut)
+        self.root.bind("<Control-i>", self.start_shortcut)
     
         self.windows()
         
@@ -547,6 +553,7 @@ class AppMainTheme0():
 
 
     def disable_gui(self):
+        self.ipo9 = True
         # Desabilitar os elementos da GUI durante o processamento
         # ... (desabilitar elementos conforme necessário)
         self.start_download_button.config(state=tb.DISABLED)
@@ -591,6 +598,7 @@ class AppMainTheme0():
 
 
     def enable_gui(self):
+        self.ipo9 = False
         # Habilitar os elementos da GUI que estavam desabilitados durante o processamento
         # ... (habilitar elementos conforme necessário)
         self.start_download_button.config(state=tb.NORMAL)
@@ -956,6 +964,9 @@ class AppMainTheme0():
         self.options_config_rede()
         self.options_theme()
         self.options_info()
+        
+        # Animação text
+        self.animation_text()
         
     
     def not_options(self):
@@ -2130,6 +2141,46 @@ class AppMainTheme0():
         sys.exit()
 
 
+    def animation_text(self):
+        self.text_info = tb.Label(self.root)
+        self.text_info.place(relx=-0.32, rely=0.93, height=30, width=350)
+        self.text_info.configure(text=version_)
+        self.text_info.configure(font=("Segoe UI", 14, "bold"))
+        
+        self.relx_text = -0.32
+        
+        # Inicia a animação após um curto período
+        self.root.after(1000, self.move_text)
+
+    def move_text(self):
+        while float(self.relx_text) < float(0.0):
+            mov = 0.002 + self.relx_text
+            self.relx_text = mov
+            self.text_info.place(relx=mov, rely=0.93)
+            self.root.update()
+            
+        self.root.after(3000, self.move_text2)
+
+    def move_text2(self):
+        while float(self.relx_text) > float(-0.32):  # Corrigido o sinal aqui
+            mov = -0.002 + self.relx_text  # Corrigido o sinal aqui
+            self.relx_text = mov
+            self.text_info.place(relx=mov, rely=0.93)
+            self.root.update()
+        
+    def save_shortcut(self, event=None):
+        if self.ipo9 is False:
+            self.text_info.configure(text='Configurações salvas')
+            self.move_text()
+        
+    def start_shortcut(self, event=None):
+        if self.ipo9 is False:
+            self.text_info.configure(text='Iniciando Download')
+            self.move_text()
+            self.start_download()
+        
+        
+        
 def setup(auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var):
     root = None
     
