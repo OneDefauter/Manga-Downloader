@@ -48,6 +48,7 @@ urls = {
     'tsuki': {'main': f'{context}/tsuki/main.py', 'run':f'{context}/tsuki/run.py', 'search':f'{context}/tsuki/search.py'},
     'yomumangás': {'main': f'{context}/yomumangás/main.py', 'run':f'{context}/yomumangás/run.py', 'search':f'{context}/yomumangás/search.py'},
     'hentai_teca': {'main': f'{context}/hentai_teca/main.py', 'run':f'{context}/hentai_teca/run.py', 'search':f'{context}/hentai_teca/search.py'},
+    'argos_scan': {'main': f'{context}/argos_scan/main.py', 'run':f'{context}/argos_scan/run.py', 'search':f'{context}/argos_scan/search.py'},
     'download_methods': {'madara': f'{context}/download_methods/madara.py'}
 }
 
