@@ -5,7 +5,7 @@ temp_folder = os.environ['TEMP']
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Configuração de pastas
-folder = ['setup', 'src', 'themes', 'urls', 'engine', 'images']
+folder = ['setup', 'src', 'urls', 'engine', 'images']
 url_folder = [
     'argos_comics',
     'argos_hentai',
