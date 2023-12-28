@@ -13,6 +13,7 @@ def setup():
         'pytz',
         'ttkbootstrap',
         'undetected_chromedriver',
+        'bs4',
     ]
 
     for module in required_modules:
