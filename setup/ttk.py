@@ -7,6 +7,8 @@ import asyncio
 import threading
 import logging
 import zipfile
+import shutil
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from tkinter import *
@@ -23,6 +25,7 @@ import src.execute_driver as ins_ext
 import src.changelog as open_change
 # import src.reload as reload_main
 import src.clean as clean
+import src.animation as anm
 
 
 # Importações das URLs
@@ -40,17 +43,20 @@ import urls.ler_manga_online.main as agr_11
 import urls.manga_br.main as agr_12
 import urls.projeto_scanlator.main as agr_13
 import urls.hentai_teca.main as agr_14
+import urls.argos_scan.main as agr_15
 
 
 
 # Ensines
 import engine.default as engine_default
 import engine.undetected as engine_undetected
+import engine.cloudflare as engine_cloudflare
 
 
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
+os.system('cls')
 
 # Defiine o path da pasta confiigurações do app
 settings_dir = first.setup()
@@ -71,11 +77,22 @@ dic_agregadores = {
     "Manga BR": "https://mangabr.net/",
     "Projeto Scanlator": "https://projetoscanlator.com/",
     "Hentai Teca": "https://hentaiteca.net/",
+    "Argos Scan": "https://argosscan.com/",
 }
 
+extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
+extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
-version_ = 'Versão 2.1'
 
+version_ = 'Versão 2.2'
+# icon = os.path.join()
+
+
+def abrir_link1(*args):
+    webbrowser.open('https://github.com/OneDefauter/Manga-Downloader/blob/main/README.md')
+    
+def abrir_link2(*args):
+    webbrowser.open('https://discordapp.com/users/367504043691606016')
 
 class AppMainTheme0():
     def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var):
@@ -100,7 +117,10 @@ class AppMainTheme0():
         self.net_lat_var = net_lat_var
         self.change_log_var = change_log_var
         
-        self.ipo9 = False
+        self.ipo9 = True
+        self.ian = False
+        self.result = 0
+        self.app_instance = anm.AnimationNotification(root, version_, self.ian)
         
         self.root.title("Mangá Downloader")
         self.style = ttk.Style(root)
@@ -138,6 +158,9 @@ class AppMainTheme0():
             if self.selenium_working.get():
                 self.start_download_button.config(state="normal")
                 
+                self.app_instance.move_text_wait('Navegador pronto')
+                
+            self.ipo9 = False
             self.reset_config_button.config(state="normal")
             self.theme_0.config(state="normal")
             self.theme_1.config(state="normal")
@@ -158,7 +181,7 @@ class AppMainTheme0():
             self.theme_16.config(state="normal")
             self.theme_17.config(state="normal")
             self.theme_18.config(state="normal")
-        
+    
     
     def load_selenium(self):
         self.selenium_process_completed = threading.Event()
@@ -188,6 +211,8 @@ class AppMainTheme0():
         selenium_process_completed = threading.Thread(target=self.check_selenium)
         selenium_process_completed.start()
         
+        self.root.after(2000, self.selenium_load_message)
+        
     
     def check_selenium(self):
         # Configurar as opções do Chrome
@@ -199,6 +224,13 @@ class AppMainTheme0():
         extension_name = "Tampermonkey.5.0.0.0.crx"
         extension_path = os.path.join(temp_folder, extension_name)
         extension_folder_path = os.path.join(temp_folder, 'Tampermonkey.5.0.0.0')
+        
+        try:
+            shutil.rmtree(profile_folder)
+        except:
+            ...
+        
+        os.makedirs(profile_folder, exist_ok=True)
         
         if not os.path.exists(extension_path):
             response = requests.get(extension_url)
@@ -223,9 +255,11 @@ class AppMainTheme0():
         os.makedirs(download_folder, exist_ok=True)
         
         chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Execute sem uma janela visível, se desejar
+        chrome_options.add_argument("--headless=new")  # Execute sem uma janela visível, se desejar
         chrome_options.add_argument("--disable-gpu")  # Desativar a aceleração de hardware, se necessário
-        # chrome_options.add_argument(f"user-data-dir={profile_folder}")
+        chrome_options.add_argument('--log-level=3')
+        chrome_options.add_extension(extension_path)
+        chrome_options.add_argument(f"user-data-dir={profile_folder}")
         chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
 
         try:
@@ -234,31 +268,34 @@ class AppMainTheme0():
             # Abra uma página de teste para garantir que o Chrome está funcionando
             # teste.get("https://www.google.com")
             
+            ins_ext.setup(teste)
+            
+            self.app_instance.move_text_wait('Extensão carregada')
+            
+            time.sleep(3)
+            
             # Se não houver exceção até aqui, o Chrome está funcionando
             self.selenium_working.set(True)
             teste.quit()
-
-        except Exception:
+            self.selenium_process_completed.set()
+            
+        except:
             os.system("cls")
             if not self.selenium_working.get():
                 self.baixando_label.config(text="Erro:\n Selenium não está\n funcionando corretamente")
                 messagebox.showerror("Erro", "Selenium não está funcionando corretamente")
             self.selenium_working.set(False)
             self.selenium_process_completed.set()
-            
-        finally:
-            os.system("cls")
-            if not self.selenium_working.get():
-                self.baixando_label.config(text="Erro:\n Selenium não está\n funcionando corretamente")
-                messagebox.showerror("Erro", "Selenium não está funcionando corretamente")
-            self.selenium_process_completed.set()
     
     
     def save_settings(self):
+        self.app_instance.move_text_wait(f'Configurações foram salvas')
         save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var)
     
         
     async def TkApp(self):
+        os.system('cls')
+        
         print("Agregador escolhido:", self.agregador_var.get())
         print("Obra escolhida:", self.nome_var.get())
         print("URL da obra:", self.url_var.get())
@@ -272,260 +309,272 @@ class AppMainTheme0():
         print("Navegador em segundo plano:", self.headless_var.get())
         print("\n")
         
-        result = None
-        
         if self.nome_var.get() == "":
             print("Erro: Nome inválido.")
+            self.app_instance.move_text_wait('Erro: Nome inválido')
             messagebox.showerror("Erro", "Nome inválido")
-            result = 777
+            self.result = 777
         
         elif self.url_var.get() == "":
             print("Erro: URL inválida.")
+            self.app_instance.move_text_wait('Erro: URL inválida')
             messagebox.showerror("Erro", "URL inválida")
-            result = 777
+            self.result = 777
         
-        elif self.capitulo_var.get() == "":
+        elif self.capitulo_var.get() == "" and self.ate_var.get() == "":
             print("Erro: Capítulo inválido.")
+            self.app_instance.move_text_wait('Erro: Capítulo inválido')
             messagebox.showerror("Erro", "Capítulo inválido")
-            result = 777
+            self.result = 777
         
-        if result == 777:
+        if self.result == 777:
             self.process_completed.set()
-            return
         
-        if self.ate_var.get() == "":
+        
+        if self.capitulo_var.get() == "" and self.ate_var.get() != "":
+             capítulo = 0.0
+             ate = float(self.ate_var.get())
+        elif self.ate_var.get() == "" and self.capitulo_var.get() != "":
+            capítulo = float(self.capitulo_var.get())
             ate = float(self.capitulo_var.get())
         else:
+            capítulo = float(self.capitulo_var.get())
             ate = float(self.ate_var.get())
         
+        chekin = True
         
-        agregador_escolhido = self.agregador_var.get()
-        nome = self.nome_var.get()
-        url = self.url_var.get()
-        capítulo = float(self.capitulo_var.get())
-        compactar = self.compact_var.get()
-        extension = self.extension_var.get()
-        compact_extension = self.compact_extension_var.get()
+        if ate <= capítulo:
+            self.app_instance.move_text_wait('Erro: Capítulo inválido')
+            self.result = 777
+            chekin = False
+            self.process_completed.set()
         
-        nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "").rstrip()
-        
-        carregar_imagens = [
-            "Tsuki",
-            "Mangás Chan",
-        ]
-        
-        extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
-        extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
+        if chekin:
+            agregador_escolhido = self.agregador_var.get()
+            nome = self.nome_var.get()
+            url = self.url_var.get()
+            # capítulo = float(self.capitulo_var.get())
+            compactar = self.compact_var.get()
+            extension = self.extension_var.get()
+            compact_extension = self.compact_extension_var.get()
             
-        if self.debug_var.get():
-            self.baixando_label.config(text="Iniciando...")
-            print_log.setup(
-                f'Agregador escolhido: {agregador_escolhido}', 
-                [
-                    f'Obra escolhida: {nome}',
-                    f'Capítulo escolhido: {str(capítulo).replace(".0", "")}',
-                    f'Até qual capítulo baixar: {str(ate).replace(".0", "")}',
-                    f'Compactar: {compactar}',
-                    f'Tipo de compactação: {compact_extension}',
-                    f'Extensão de saída: {extension}'
-                ]
-            )
-            print("\n")
+            nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "").rstrip()
             
-
-        # Configurações das pastas
-        temp_folder = os.environ['TEMP']
-        profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
-        download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-        extension_name = "Tampermonkey.5.0.0.0.crx"
-        extension_path = os.path.join(temp_folder, extension_name)
-        
-        
-        if not agregador_escolhido in ['Hentai Teca']:
-            driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, carregar_imagens, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-        else:
-            driver = engine_undetected.setup(self.headless_var.get(), agregador_escolhido, carregar_imagens, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-        
-        
-        if agregador_escolhido in ['Tsuki', 'Flower Manga', 'Hentai Teca']:
             if self.debug_var.get():
-                self.baixando_label.config(text="Instalando extensão...")
+                self.baixando_label.config(text="Iniciando...")
+                print_log.setup(
+                    f'Agregador escolhido: {agregador_escolhido}', 
+                    [
+                        f'Obra escolhida: {nome}',
+                        f'Capítulo escolhido: {str(capítulo).replace(".0", "")}',
+                        f'Até qual capítulo baixar: {str(ate).replace(".0", "")}',
+                        f'Compactar: {compactar}',
+                        f'Tipo de compactação: {compact_extension}',
+                        f'Extensão de saída: {extension}'
+                    ]
+                )
+                print("\n")
+            self.app_instance.move_text_wait('Iniciando')
+    
+            # Configurações das pastas
+            temp_folder = os.environ['TEMP']
+            profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
+            download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
+            extension_name = "Tampermonkey.5.0.0.0.crx"
+            extension_path = os.path.join(temp_folder, extension_name)
+            
+            
+            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan']:
+                driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
+            
+            elif agregador_escolhido in ['Mangás Chan']:
+                driver = engine_cloudflare.setup()
+            
+            else:
+                driver = engine_undetected.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
+            
+            # Instala a extensão e os scripts
+            # ins_ext.setup(driver)
+            
+            if self.debug_var.get():
+                self.baixando_label.config(text="Aguarde...")
+            print("\nAguarde...")
+            
+            clean.setup(download_folder)
+            
+            for dic_name, dic_url in dic_agregadores.items():
                 
-            ins_ext.setup(driver)
-        
-        if self.debug_var.get():
-            self.baixando_label.config(text="Aguarde...")
-        print("\nAguarde...")
-        
-        clean.setup(download_folder)
-        
-        for dic_name, dic_url in dic_agregadores.items():
-            
-            # Check
-            if not dic_name in agregador_escolhido:
-                continue
-            
-            # Num 01 (BR Mangás)
-            elif "BR Mangás" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_01.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 02 (Crystal Scan)
-            elif "Crystal Scan" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_02.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
+                # Check
+                if not dic_name in agregador_escolhido:
+                    continue
                 
-            # Num 03 (Argos Comics)
-            elif "Argos Comics" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_03.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 04 (Argos Hentai)
-            elif "Argos Hentai" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_04.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 05 (Mangás Chan)
-            elif "Mangás Chan" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_05.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 06 (Ler Mangá)
-            elif "Ler Mangá" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_06.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 07 (Tsuki)
-            elif "Tsuki" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_07.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 08 (YomuMangás)
-            elif "YomuMangás" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_08.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 09 (SlimeRead)
-            elif "SlimeRead" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_09.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 10 (Flower Manga)
-            elif "Flower Manga" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_10.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 11 (Ler Manga Online)
-            elif "Ler Manga Online" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_11.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 12 (Manga BR)
-            elif "Manga BR" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_12.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 13 (Projeto Scanlator)
-            elif "Projeto Scanlator" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_13.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
-    
-            # Num 14 (Hentai Teca)
-            elif "Hentai Teca" in agregador_escolhido:
-                if dic_url in url:
-                    result = await agr_14.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder)
-                    break
-                else:
-                    result = 1
-                    print("Erro: URL inválida")
-                    break
+                # Num 01 (BR Mangás)
+                elif "BR Mangás" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_01.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
         
-
-
-        if self.debug_var.get() and result == 0:
-            self.baixando_label.config(text="Finalizado")
-            winsound.Beep(1000, 500)  # O primeiro argumento é a frequência em Hz e o segundo é a duração em milissegundos
+                # Num 02 (Crystal Scan)
+                elif "Crystal Scan" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_02.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+                    
+                # Num 03 (Argos Comics)
+                elif "Argos Comics" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_03.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
         
-        elif self.debug_var.get() and result == 1:
-            self.baixando_label.config(text="URL inválida")
+                # Num 04 (Argos Hentai)
+                elif "Argos Hentai" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_04.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
         
-        elif self.debug_var.get() and result == 3:
-            self.baixando_label.config(text=f"Nenhum capítulo encontrado")
+                # Num 05 (Mangás Chan)
+                elif "Mangás Chan" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_05.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
         
-        elif self.debug_var.get() and result == 4:
-            self.baixando_label.config(text=f"Capítulo não aprovado")
+                # Num 06 (Ler Mangá)
+                elif "Ler Mangá" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_06.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 07 (Tsuki)
+                elif "Tsuki" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_07.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 08 (YomuMangás)
+                elif "YomuMangás" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_08.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 09 (SlimeRead)
+                elif "SlimeRead" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_09.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 10 (Flower Manga)
+                elif "Flower Manga" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_10.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 11 (Ler Manga Online)
+                elif "Ler Manga Online" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_11.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 12 (Manga BR)
+                elif "Manga BR" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_12.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 13 (Projeto Scanlator)
+                elif "Projeto Scanlator" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_13.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 14 (Hentai Teca)
+                elif "Hentai Teca" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_14.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 15 (Argos Scan)
+                elif "Argos Scan" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_15.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
             
-        elif self.debug_var.get() and result == 5:
-            self.baixando_label.config(text=f"Imagens não foram carregadas")
+            self.process_completed.set()
         
-        
-        self.process_completed.set()
-            
     
     def start_download(self):
         self.disable_gui()
@@ -548,7 +597,97 @@ class AppMainTheme0():
     def wait_run_async_loop(self):
         if not self.process_completed.is_set():
             self.root.after(100, self.wait_run_async_loop)
+            
         else:
+            # Resultado
+            if self.debug_var.get():
+                # Bem-sucedido
+                if self.result == 0:
+                    self.baixando_label.config(text="Finalizado")
+                    winsound.Beep(1000, 500)
+                    self.app_instance.move_text_wait('Processo finalizado')
+                    
+                # URL inválida
+                if self.result == 1:
+                    self.baixando_label.config(text="URL inválida")
+                    self.app_instance.move_text_wait('Erro: URL inválida')
+                
+                # Nenhum capítulo encontrado
+                elif self.result == 3:
+                    self.baixando_label.config(text="Nenhum capítulo encontrado")
+                    self.app_instance.move_text_wait('Nenhum capítulo encontrado')
+                    
+                # Capítulo não aprovado
+                elif self.result == 4:
+                    self.baixando_label.config(text="Capítulo não aprovado")
+                    self.app_instance.move_text_wait('Capítulo não aprovado')
+                
+                # Erro 4xx
+                elif self.result == 'e400':
+                    self.baixando_label.config(text="Erro: URL inválida. Status code: 400")
+                    self.app_instance.move_text_wait("Erro: URL inválida. Status code: 400")
+                elif self.result == 'e401':
+                    self.baixando_label.config(text="Erro: Sem acesso. Status code: 401")
+                    self.app_instance.move_text_wait("Erro: Sem acesso. Status code: 401")
+                elif self.result == 'e403':
+                    self.baixando_label.config(text="Erro: Sem acesso. Status code: 403")
+                    self.app_instance.move_text_wait("Erro: Sem acesso. Status code: 403")
+                elif self.result == 'e404':
+                    self.baixando_label.config(text="Erro: URL inválida. Status code: 404")
+                    self.app_instance.move_text_wait("Erro: URL inválida. Status code: 404")
+                    
+                # Erro 5xx
+                elif self.result == 'e500':
+                    self.baixando_label.config(text="Erro: Serviço indisponível. Status code: 500")
+                    self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 500")
+                elif self.result == 'e502':
+                    self.baixando_label.config(text="Erro: Serviço indisponível. Status code: 502")
+                    self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 502")
+                elif self.result == 'e403':
+                    self.baixando_label.config(text="Erro: Serviço indisponível. Status code: 503")
+                    self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 503")
+                elif self.result == 'e523':
+                    self.baixando_label.config(text="Erro: Acesso bloqueado. Status code: 523")
+                    self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
+                
+            else:
+                # Bem-sucedido
+                if self.result == 0:
+                    winsound.Beep(1000, 500)
+                    self.app_instance.move_text_wait('Processo finalizado')
+                
+                # URL inválida
+                if self.result == 1:
+                    self.app_instance.move_text_wait('Erro: URL inválida')
+                
+                # Nenhum capítulo encontrado
+                elif self.result == 3:
+                    self.app_instance.move_text_wait('Nenhum capítulo encontrado')
+                    
+                # Capítulo não aprovado
+                elif self.result == 4:
+                    self.app_instance.move_text_wait('Capítulo não aprovado')
+                
+                # Erro 4xx
+                elif self.result == 'e400':
+                    self.app_instance.move_text_wait("Erro: URL inválida. Status code: 400")
+                elif self.result == 'e401':
+                    self.app_instance.move_text_wait("Erro: Sem acesso. Status code: 401")
+                elif self.result == 'e403':
+                    self.app_instance.move_text_wait("Erro: Sem acesso. Status code: 403")
+                elif self.result == 'e404':
+                    self.app_instance.move_text_wait("Erro: URL inválida. Status code: 404")
+                    
+                # Erro 5xx
+                elif self.result == 'e500':
+                    self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 500")
+                elif self.result == 'e502':
+                    self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 502")
+                elif self.result == 'e403':
+                    self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 503")
+                elif self.result == 'e523':
+                    self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
+                
             self.enable_gui()
 
 
@@ -697,7 +836,7 @@ class AppMainTheme0():
     def auto_save_settings(self):
         # Salva as configurações apenas se o "Auto salvar" estiver ativado
         if self.auto_save.get():
-            self.save_settings()
+            save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var)
     
     
     def select_folder_go(self):
@@ -964,9 +1103,10 @@ class AppMainTheme0():
         self.options_config_rede()
         self.options_theme()
         self.options_info()
+        self.options_about()
         
         # Animação text
-        self.animation_text()
+        self.app_instance.animation_text()
         
     
     def not_options(self):
@@ -980,7 +1120,7 @@ class AppMainTheme0():
         
         # Configure o tamanho da fonte para as abas do notebook
         estilo_abas = ttk.Style()
-        estilo_abas.configure('TNotebook.Tab', font=('Arial', 12, 'bold'))  # Substitua 'Arial' pelo tipo de fonte desejado e 12 pelo tamanho desejado
+        estilo_abas.configure('TNotebook.Tab', font=('Arial', 11, 'bold'))  # Substitua 'Arial' pelo tipo de fonte desejado e 12 pelo tamanho desejado
         
         
         
@@ -1027,6 +1167,16 @@ class AppMainTheme0():
         self.TNotebook1_t5 = tb.Frame(self.TNotebook1)
         self.TNotebook1.add(self.TNotebook1_t5, padding=3)
         self.TNotebook1.tab(4, text='''Info''', compound="left"
+                ,underline='''-1''', )
+        # self.TNotebook1_t5.configure(background="#f0f0f0")
+        # self.TNotebook1_t5.configure(highlightbackground="#d9d9d9")
+        # self.TNotebook1_t5.configure(highlightcolor="black")
+        
+        
+        
+        self.TNotebook1_t6 = tb.Frame(self.TNotebook1)
+        self.TNotebook1.add(self.TNotebook1_t6, padding=3)
+        self.TNotebook1.tab(5, text='''Sobre''', compound="left"
                 ,underline='''-1''', )
         # self.TNotebook1_t5.configure(background="#f0f0f0")
         # self.TNotebook1_t5.configure(highlightbackground="#d9d9d9")
@@ -1886,6 +2036,60 @@ class AppMainTheme0():
         self.baixando_label.configure(text='''''')
     
     
+    def options_about(self):
+        self.version_text = tb.Label(self.TNotebook1_t6)
+        self.version_text.place(relx=0.07, rely=0.05, height=75, width=350)
+        # self.version_text.configure(activebackground="#f0f0f0")
+        self.version_text.configure(anchor='w')
+        # self.version_text.configure(background="#f0f0f0")
+        self.version_text.configure(compound='left')
+        self.version_text.configure(cursor="hand2")
+        # self.version_text.configure(disabledforeground="#a3a3a3")
+        self.version_text.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        # self.version_text.configure(foreground="#000000")
+        # self.version_text.configure(highlightbackground="#d9d9d9")
+        # self.version_text.configure(highlightcolor="black")
+        self.version_text.configure(justify='left')
+        self.version_text.configure(text=f'''Mangá Downloader\n{version_}''')
+        self.version_text.bind('<Button-1>', abrir_link1)
+        
+        
+        
+        self.version_text_1 = tb.Label(self.TNotebook1_t6)
+        self.version_text_1.place(relx=0.07, rely=0.5, height=43, width=196)
+        # self.version_text_1.configure(activebackground="#f9f9f9")
+        self.version_text_1.configure(anchor='center')
+        # self.version_text_1.configure(background="#f0f0f0")
+        self.version_text_1.configure(compound='left')
+        self.version_text_1.configure(cursor="hand2")
+        # self.version_text_1.configure(disabledforeground="#a3a3a3")
+        self.version_text_1.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        # self.version_text_1.configure(foreground="#000000")
+        # self.version_text_1.configure(highlightbackground="#d9d9d9")
+        # self.version_text_1.configure(highlightcolor="black")
+        self.version_text_1.configure(justify='center')
+        self.version_text_1.configure(text='''Github''')
+        self.version_text_1.bind('<Button-1>', abrir_link1)
+        
+        
+        
+        self.version_text_1_1 = tb.Label(self.TNotebook1_t6)
+        self.version_text_1_1.place(relx=0.578, rely=0.5, height=43, width=196)
+        # self.version_text_1_1.configure(activebackground="#f9f9f9")
+        self.version_text_1_1.configure(anchor='center')
+        # self.version_text_1_1.configure(background="#f0f0f0")
+        self.version_text_1_1.configure(compound='left')
+        self.version_text_1_1.configure(cursor="hand2")
+        # self.version_text_1_1.configure(disabledforeground="#a3a3a3")
+        self.version_text_1_1.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        # self.version_text_1_1.configure(foreground="#000000")
+        # self.version_text_1_1.configure(highlightbackground="#d9d9d9")
+        # self.version_text_1_1.configure(highlightcolor="black")
+        self.version_text_1_1.configure(justify='center')
+        self.version_text_1_1.configure(text='''Discord''')
+        self.version_text_1_1.bind('<Button-1>', abrir_link2)
+    
+    
     def settings_global(self):
         auto_save = self.auto_save
         agregador_var = self.agregador_var
@@ -2140,44 +2344,21 @@ class AppMainTheme0():
         # reload_main.setup()
         sys.exit()
 
-
-    def animation_text(self):
-        self.text_info = tb.Label(self.root)
-        self.text_info.place(relx=-0.32, rely=0.93, height=30, width=350)
-        self.text_info.configure(text=version_)
-        self.text_info.configure(font=("Segoe UI", 14, "bold"))
-        
-        self.relx_text = -0.32
-        
-        # Inicia a animação após um curto período
-        self.root.after(1000, self.move_text)
-
-    def move_text(self):
-        while float(self.relx_text) < float(0.0):
-            mov = 0.002 + self.relx_text
-            self.relx_text = mov
-            self.text_info.place(relx=mov, rely=0.93)
-            self.root.update()
-            
-        self.root.after(3000, self.move_text2)
-
-    def move_text2(self):
-        while float(self.relx_text) > float(-0.32):  # Corrigido o sinal aqui
-            mov = -0.002 + self.relx_text  # Corrigido o sinal aqui
-            self.relx_text = mov
-            self.text_info.place(relx=mov, rely=0.93)
-            self.root.update()
         
     def save_shortcut(self, event=None):
         if self.ipo9 is False:
-            self.text_info.configure(text='Configurações salvas')
-            self.move_text()
+            self.app_instance.move_text_wait('Configurações salvas')
         
     def start_shortcut(self, event=None):
         if self.ipo9 is False:
-            self.text_info.configure(text='Iniciando Download')
-            self.move_text()
             self.start_download()
+        
+    def selenium_load_message(self, event=None):
+        if self.ian is False:
+            self.app_instance.move_text_wait('Verificando navegador')
+        else:
+            self.root.after(1000, self.selenium_load_message)
+    
         
         
         
@@ -2185,6 +2366,8 @@ def setup(auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, ex
     root = None
     
     root = tb.Window(themename=theme)
+    root.iconbitmap('images/icon.ico')
+    
     # root.option_add("*tearOff", False)
     app = AppMainTheme0(root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var)
     

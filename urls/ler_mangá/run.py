@@ -19,7 +19,7 @@ from colorama import Fore, Style
 import src.download as download
 import src.organizar as organizar
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -40,20 +40,50 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     driver.get(url)
     driver.implicitly_wait(10)
-
-    time.sleep(2)
     
+    time.sleep(2)
+
+    driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+    
+    try:
+        botao_leitura = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.LINK_TEXT, "INICIAR LEITURA"))
+            )
+        botao_leitura.click()
+    except:
+        pass
+
+    time.sleep(1)
+
     # Seleciona o modo "Modo Scroll"
     select_element = Select(driver.find_element(By.ID, 'slch'))
     select_element.select_by_value('2')
 
+    # time.sleep(5)
+    
+    while True:
+        try:
+            pagina = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'reader-area'))
+            )
+        except:
+            continue
+        
+        driver.execute_script("arguments[0].scrollIntoView();", pagina)
+        wait_time = 0
+        while not pagina.get_attribute("complete") and wait_time < 10:
+            time.sleep(0.5)
+            wait_time += 1
+        
+        break
+    
     # Aguarde um pouco após a seleção (opcional)
     time.sleep(1)
 
     driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
     time.sleep(1)
-
+    
     # Função para realizar a rolagem até determinado ponto
     def scroll_to_position(position):
         script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
@@ -112,6 +142,8 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     # Agendar as tarefas para execução simultânea
     await asyncio.gather(*tasks)
+
+    app_instance.move_text_wait(f'Capítulo {numero_capitulo} baixado com sucesso')
 
     organizar.organizar(folder_path, compactar, compact_extension, extension)
 

@@ -1,25 +1,10 @@
 import os
-import re
-import sys
-import time
 import shutil
-import asyncio
-import aiohttp
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-import src.download as download
-import src.organizar as organizar
+import urls.download_methods.madara as madara
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -41,27 +26,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     driver.get(url)
     driver.implicitly_wait(10)
 
-    time.sleep(5)
-    
-    # Encontra a div que contém as imagens
-    div_reading_content = driver.find_element(By.CLASS_NAME, 'reading-content')
-
-    # Encontra todas as tags de imagem dentro da div
-    imagens = div_reading_content.find_elements(By.CLASS_NAME, 'wp-manga-chapter-img')
-
-    # Extrai os links das imagens
-    links_das_imagens = [imagem.get_attribute('src') for imagem in imagens]
-
-    if debug_var.get():
-        baixando_label.config(text=f"Baixando capítulo {numero_capitulo}")
-    
-    # Criar lista de tarefas assíncronas para o download
-    tasks = [download.download(link, folder_path, session, counter) for counter, link in enumerate(links_das_imagens, start=1)]
-
-    # Agendar as tarefas para execução simultânea
-    await asyncio.gather(*tasks)
-
-    organizar.organizar(folder_path, compactar, compact_extension, extension)
-
+    madara.setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance)
+        
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
 

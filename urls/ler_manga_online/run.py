@@ -20,7 +20,7 @@ from colorama import Fore, Style
 import src.download as download
 import src.organizar as organizar
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -68,6 +68,8 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     # Agendar as tarefas para execução simultânea
     await asyncio.gather(*tasks)
+            
+    app_instance.move_text_wait(f'Capítulo {numero_capitulo} baixado com sucesso')
 
     organizar.organizar(folder_path, compactar, compact_extension, extension)
 

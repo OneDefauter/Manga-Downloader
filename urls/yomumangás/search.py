@@ -16,20 +16,22 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
+import src.status_check as status_check
+
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
     # Abre a página
     driver.get(url)
     
     # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
     driver.implicitly_wait(5)
     
-    # Verifica se a página contém o texto "Página não encontrada"
-    if "Página não encontrada" in driver.page_source:
-        print("Erro: URL inválida. Status code: 404")
+    # Verifica o status do site
+    result = status_check.setup(driver, url)
+    if result != 200:
         driver.quit()
-        return 'e1'
+        return result
     
-    time.sleep(5)
+    # time.sleep(5)
     
     for _ in range(3):
         script = 'document.querySelector(\'button[title="Alterar a quantidade de capítulos a vista"]\').click();'
@@ -38,6 +40,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     
     os.system("cls")
     print("Verificando capítulos...")
+    app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
 
@@ -47,7 +50,12 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     # Loop para percorrer todas as páginas
     while True:
         # Localiza os elementos que contêm as informações dos capítulos
-        chapter_elements = driver.find_elements(By.CSS_SELECTOR, '[class^="styles_Chapters__"]')
+        chapter_elements = []
+        
+        try:
+            chapter_elements = driver.find_elements(By.CSS_SELECTOR, '[class^="styles_Chapters__"]')
+        except:
+            pass
 
         # Extrai os dados dos capítulos
         for element in chapter_elements:

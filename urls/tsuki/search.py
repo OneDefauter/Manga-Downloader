@@ -16,27 +16,20 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
+import src.status_check as status_check
+
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
     # Abre a página
     driver.get(url)
-    
-    driver.refresh()
     
     # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
     driver.implicitly_wait(5)
     
-    if "Error code 521" in driver.page_source:
-        print("Site indisponível. Status code: 521")
-        return "Error code 521"
-        
-    # Verifica se a página contém o texto "Página não encontrada"
-    elif "Página não encontrada" in driver.page_source:
-        print("Erro: URL inválida. Status code: 404")
-        return "Error code 404"
-        
-    elif "manutenção" in driver.page_source.lower():
-        print("Erro: Site em manutenção")
-        return "Error code 001"
+    # Verifica o status do site
+    result = status_check.setup(driver, url)
+    if result != 200:
+        driver.quit()
+        return result
         
     time.sleep(1)
     
@@ -50,12 +43,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
         close_button.click()
 
     except:
-        ...
-
-    finally:
-        driver.refresh()
-        time.sleep(1)
-    
+        pass
     
     print("Verificando capítulos...")
     if debug_var.get():
@@ -66,13 +54,14 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     
     # Loop para percorrer todas as páginas
     while True:
+        chapter_elements = []
         try:
-            WebDriverWait(driver, 30).until(
+            # Localiza os elementos que contêm as informações dos capítulos
+            chapter_elements = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.datechapter'))
             )
         except:
-            print("Erro")
-            input()
+            pass
         
         # Localiza os elementos que contêm as informações dos capítulos
         chapter_elements = driver.find_elements(By.CSS_SELECTOR, '.cardchapters')
@@ -82,8 +71,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
             chapter_number = chapter_element.find_element(By.CSS_SELECTOR, 'a').text
             
             if chapter_number == '':
-                print("Erro: Houve um erro ao obter o número do capítulo")
-                return 998
+                continue
             
             numero_capitulo = float(re.sub(r'[^0-9.,]', '', chapter_number.replace(',', '.')))
 

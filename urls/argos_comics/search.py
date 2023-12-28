@@ -16,18 +16,20 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
+import src.status_check as status_check
+
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
     # Abre a página
     driver.get(url)
     
     # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
     driver.implicitly_wait(5)
     
-    # Verifica se a página contém o texto "Página não encontrada"
-    if "Página não encontrada" in driver.page_source:
-            print("Erro: URL inválida. Status code: 404")
-            driver.quit()
-            return 'e1'
+    # Verifica o status do site
+    result = status_check.setup(driver, url)
+    if result != 200:
+        driver.quit()
+        return result
     
     # Injeta um script JavaScript para simular um pequeno movimento do mouse
     driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
@@ -41,14 +43,27 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
         # Clique no botão
         element.click()
 
-    except TimeoutException:
-        # print("O botão não está presente ou não é visível. Ignorando o clique.")
+    except:
         pass
+    
+    janelas_abertas = driver.window_handles
+    
+    for _ in range(1, 15):
+        if len(janelas_abertas) != 1:
+            driver.switch_to.window(janelas_abertas[-1])
+            driver.close()
+            janelas_abertas = driver.window_handles
+            driver.switch_to.window(janelas_abertas[0])
+            break
+        else:
+            janelas_abertas = driver.window_handles
+            time.sleep(1)
     
     time.sleep(5)
     
     os.system("cls")
     print("Verificando capítulos...")
+    app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
 
@@ -68,13 +83,18 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     
     time.sleep(5)
 
-    # Esperar a lista de capítulos carregar
-    wait = WebDriverWait(driver, 10)
-    lista_capitulos = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'sub-chap-list')))
+    lista_capitulos = []
 
-    # Selecionar os elementos de capítulo
-    lista_capitulos = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'sub-chap-list')))
-
+    try:
+        # Esperar a lista de capítulos carregar
+        wait = WebDriverWait(driver, 10)
+        lista_capitulos = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'sub-chap-list')))
+    
+        # Selecionar os elementos de capítulo
+        lista_capitulos = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'sub-chap-list')))
+    except:
+        pass
+    
     capitulos_encontrados = []
 
     for sub_chap_list in lista_capitulos:

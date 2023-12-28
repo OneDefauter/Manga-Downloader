@@ -20,7 +20,7 @@ from colorama import Fore, Style
 import src.download as download
 import src.organizar as organizar
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -42,13 +42,52 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     driver.get(url)
     
     # Localize o elemento select
-    select_element = driver.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div/div/div/div/div/div[1]/div[3]/div/div[1]/div[2]/label/select")
+    select_element = driver.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div/div/div/div/div/div[1]/div[1]/div/div[2]/div[2]/label/select")
     
     # Crie um objeto Select
     select = Select(select_element)
     select.select_by_visible_text("Estilo lista")
         
     time.sleep(5)
+    
+    # Função para realizar a rolagem até determinado ponto
+    def scroll_to_position(position):
+        script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
+        driver.execute_script(script)
+        time.sleep(0.750)
+    
+    # Rolar até o final da página e esperar
+    scroll_to_position(1)
+    
+    # Rolar até o início da página e esperar
+    scroll_to_position(0)
+    
+    # Rolar até 25% da página e esperar
+    scroll_to_position(0.25)
+    
+    # Rolar até o final da página e esperar
+    scroll_to_position(1)
+    
+    # Rolar até o início da página e esperar
+    scroll_to_position(0)
+    
+    # Rolar até 50% da página e esperar
+    scroll_to_position(0.5)
+    
+    # Rolar até o final da página e esperar
+    scroll_to_position(1)
+    
+    # Rolar até o início da página e esperar
+    scroll_to_position(0)
+    
+    # Rolar até 75% da página e esperar
+    scroll_to_position(0.75)
+    
+    # Rolar até o final da página e esperar
+    scroll_to_position(1)
+    
+    # Rolar até o início da página e esperar
+    scroll_to_position(0)
     
     # Encontra a div que contém as imagens
     div_imagens = driver.find_element(By.CLASS_NAME, 'reading-content')
@@ -70,6 +109,8 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     # Agendar as tarefas para execução simultânea
     await asyncio.gather(*tasks)
+            
+    app_instance.move_text_wait(f'Capítulo {numero_capitulo} baixado com sucesso')
 
     organizar.organizar(folder_path, compactar, compact_extension, extension)
 

@@ -1,42 +1,28 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-def setup(headless_var, agregador_escolhido, carregar_imagens, download_folder, extension_path, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var):
+def setup(headless_var, agregador_escolhido, profile_folder, download_folder, extension_path, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var):
     chrome_options = webdriver.ChromeOptions()
     
-    chrome_options.add_argument("--disable-notifications")
-    
-    if headless_var:
-        chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--disable-web-security")
-        
-    # chrome_options.add_argument('--blink-settings=imagesEnabled=false') # Desativa a renderização de iamgens
-    
-    chrome_options.add_argument('--log-level=3')  # Nível 3 indica "sem logs"
-    
-    chrome_options.add_argument("--disable-gpu")
-    
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    
+    chrome_options.add_experimental_option("detach", True)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    # options.add_argument("--headless=new")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    # options.add_argument('--disable-extensions')
     chrome_options.add_argument('--no-sandbox')
-    
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
-    
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    
-    if agregador_escolhido not in carregar_imagens:
-        prefs = {"profile.managed_default_content_settings.images": 2}
-        chrome_options.add_experimental_option("prefs", prefs)
-    
-    
-    
-    # chrome_options.add_argument(f"user-data-dir={profile_folder}")
+    chrome_options.add_argument('--disable-infobars')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-browser-side-navigation')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    chrome_options.add_argument('--log-level=3')
+    chrome_options.add_argument(f"user-data-dir={profile_folder}")
     chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
+    chrome_options.add_extension(extension_path)
     
-    if agregador_escolhido in ['Tsuki', 'Flower Manga']:
-        chrome_options.add_extension(extension_path)
-    
-    # chrome_options.add_argument("--start-maximized")
+    if headless_var and agregador_escolhido != 'Mangás Chan':
+        chrome_options.add_argument("--headless=new")
     
     if net_option_var:
         chrome_options.add_argument("--proxy-server='direct://'")

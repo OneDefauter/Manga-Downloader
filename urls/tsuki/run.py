@@ -21,7 +21,7 @@ import src.download as download
 import src.organizar as organizar
 import src.move as move
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -144,7 +144,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         
         print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.png...{Style.RESET_ALL}")
         
-        # time.sleep(0.2)
+        time.sleep(0.5)
         
         count += 1
     
@@ -171,10 +171,9 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     
     move.setup(download_folder, folder_path)
             
+    app_instance.move_text_wait(f'Capítulo {numero_capitulo} baixado com sucesso')
+    
     organizar.organizar(folder_path, compactar, compact_extension, extension)
-
-    if debug_var.get():
-        baixando_label.config(text=f"Aguarde...")
 
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
     

@@ -5,13 +5,16 @@ temp_folder = os.environ['TEMP']
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Configuração de pastas
-folder = ['setup', 'src', 'themes', 'urls', 'engine']
+folder = ['setup', 'src', 'themes', 'urls', 'engine', 'images']
 url_folder = [
     'argos_comics',
     'argos_hentai',
+    'argos_scan',
     'br_mangas',
     'crystal_scan',
+    'download_methods',
     'flower_manga',
+    'hentai_teca',
     'ler_manga_online',
     'ler_mangá',
     'manga_br',
@@ -20,7 +23,6 @@ url_folder = [
     'slimeread',
     'tsuki',
     'yomumangás',
-    'hentai_teca',
 ]
 
 context = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/urls/'
@@ -28,11 +30,13 @@ context2 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/
 context3 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/themes/'
 context4 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/setup/'
 context5 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/engine/'
+context6 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/images/'
 
+# Agregadores
 urls = {
     'argos_comics': {'main': f'{context}/argos_comics/main.py', 'run':f'{context}/argos_comics/run.py', 'search':f'{context}/argos_comics/search.py'},
     'argos_hentai': {'main': f'{context}/argos_hentai/main.py', 'run':f'{context}/argos_hentai/run.py', 'search':f'{context}/argos_hentai/search.py'},
-    'br_mangas': {'main': f'{context}/br_mangas/main.py', 'run':f'{context}/br_mangas/run.py', 'search':f'{context}/br_mangas/search.py', 'change':f'{context}/br_mangas/change.py'},
+    'br_mangas': {'main': f'{context}/br_mangas/main.py', 'run':f'{context}/br_mangas/run.py', 'search':f'{context}/br_mangas/search.py', 'change':f'{context}/br_mangas/change.py', 'ads':f'{context}/br_mangas/ads.py'},
     'crystal_scan': {'main': f'{context}/crystal_scan/main.py', 'run':f'{context}/crystal_scan/run.py', 'search':f'{context}/crystal_scan/search.py'},
     'flower_manga': {'main': f'{context}/flower_manga/main.py', 'run':f'{context}/flower_manga/run.py', 'search':f'{context}/flower_manga/search.py'},
     'ler_mangá': {'main': f'{context}/ler_mangá/main.py', 'run':f'{context}/ler_mangá/run.py', 'search':f'{context}/ler_mangá/search.py'},
@@ -43,9 +47,12 @@ urls = {
     'slimeread': {'main': f'{context}/slimeread/main.py', 'run':f'{context}/slimeread/run.py', 'search':f'{context}/slimeread/search.py', 'login':f'{context}/slimeread/login.py'},
     'tsuki': {'main': f'{context}/tsuki/main.py', 'run':f'{context}/tsuki/run.py', 'search':f'{context}/tsuki/search.py'},
     'yomumangás': {'main': f'{context}/yomumangás/main.py', 'run':f'{context}/yomumangás/run.py', 'search':f'{context}/yomumangás/search.py'},
-    'hentai_teca': {'main': f'{context}/hentai_teca/main.py', 'run':f'{context}/hentai_teca/run.py', 'search':f'{context}/hentai_teca/search.py'}
+    'hentai_teca': {'main': f'{context}/hentai_teca/main.py', 'run':f'{context}/hentai_teca/run.py', 'search':f'{context}/hentai_teca/search.py'},
+    'download_methods': {'madara': f'{context}/download_methods/madara.py'}
 }
 
+
+# Src
 urls2 = {
     'changelog':f'{context2}/changelog.py',
     'change_log':f'{context2}/change_log.txt',
@@ -61,17 +68,30 @@ urls2 = {
     'theme':f'{context2}/theme.py',
     'time_zone':f'{context2}/time_zone.py',
     'clean':f'{context2}/clean.py',
-    'move':f'{context2}/move.py'
+    'move':f'{context2}/move.py',
+    'animation':f'{context2}/animation.py',
+    'status_check':f'{context2}/status_check.py'
 }
 
+
+# Setup
 urls4 = {
     'main': f'{context4}/main.py',
     'ttk': f'{context4}/ttk.py'
 }
 
+
+# Engine
 urls5 = {
     'default': f'{context5}/default.py',
-    'undetected': f'{context5}/undetected.py'
+    'undetected': f'{context5}/undetected.py',
+    'cloudflare': f'{context5}/cloudflare.py'
+}
+
+
+# Imagens
+urls6 = {
+    'icon': f'{context6}/icon.ico'
 }
 
 
@@ -126,6 +146,11 @@ for name, value in urls4.items():
 
 for name, value in urls5.items():
     file_path = os.path.join(app_folder, 'engine', f'{name}.py')
+    
+    download(file_path, value, name)
+
+for name, value in urls6.items():
+    file_path = os.path.join(app_folder, 'images', f'{name}.ico')
     
     download(file_path, value, name)
 

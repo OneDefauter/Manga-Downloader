@@ -16,18 +16,20 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
+import src.status_check as status_check
+
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
     # Abre a página
     driver.get(url)
     
     # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
     driver.implicitly_wait(5)
     
-    # Verifica se a página contém o texto "Página não encontrada"
-    if "Página não encontrada" in driver.page_source:
-        print("Erro: URL inválida. Status code: 404")
+    # Verifica o status do site
+    result = status_check.setup(driver, url)
+    if result != 200:
         driver.quit()
-        return 'e1'
+        return result
     
     time.sleep(3)
     
@@ -41,9 +43,12 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
     turn = False
 
     # Espera a lista de capítulos carregar
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//section[@class='mt-8']"))
-    )
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//section[@class='mt-8']"))
+        )
+    except:
+        pass
     
     # Localiza os elementos que contêm as informações dos capítulos
     xpath = f'//html//body//div//div//main//section[@class="mt-8"]//div[@class="mt-2"]//div//div'
@@ -57,9 +62,8 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label):
         turn = True
     
     if turn is False:
-        print("Erro: Nenhum capítulo encontrado")
         driver.quit()
-        return 'e3'
+        return capitulos_encontrados
     
     # Extrai os dados dos capítulos
     for element in chapter_elements:
