@@ -69,3 +69,5 @@ Baixe o arquivo [**run.py**](https://github.com/OneDefauter/Manga-Downloader/rel
 ![WindowsSandboxClient_2p3jqtcmG1](https://github.com/OneDefauter/Manga-Downloader/assets/27703239/b2940bec-2a38-4f1f-b016-862146f1cc3d)
 
 
+# Nota de atualizações
+[Veja aqui](/src/change_log.txt)
