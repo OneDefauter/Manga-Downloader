@@ -23,6 +23,8 @@ url_folder = [
     'slimeread',
     'tsuki',
     'yomumangás',
+    'nicomanga',
+    'momo_no_hana'
 ]
 
 context = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/urls/'
@@ -49,7 +51,9 @@ urls = {
     'yomumangás': {'main': f'{context}/yomumangás/main.py', 'run':f'{context}/yomumangás/run.py', 'search':f'{context}/yomumangás/search.py'},
     'hentai_teca': {'main': f'{context}/hentai_teca/main.py', 'run':f'{context}/hentai_teca/run.py', 'search':f'{context}/hentai_teca/search.py'},
     'argos_scan': {'main': f'{context}/argos_scan/main.py', 'run':f'{context}/argos_scan/run.py', 'search':f'{context}/argos_scan/search.py'},
-    'download_methods': {'madara': f'{context}/download_methods/madara.py'}
+    'download_methods': {'madara': f'{context}/download_methods/madara.py'},
+    'nicomanga': {'main': f'{context}/nicomanga/main.py', 'run':f'{context}/nicomanga/run.py', 'search':f'{context}/nicomanga/search.py'},
+    'momo_no_hana': {'main': f'{context}/momo_no_hana/main.py', 'run':f'{context}/momo_no_hana/run.py', 'search':f'{context}/momo_no_hana/search.py'}
 }
 
 
@@ -71,7 +75,8 @@ urls2 = {
     'clean':f'{context2}/clean.py',
     'move':f'{context2}/move.py',
     'animation':f'{context2}/animation.py',
-    'status_check':f'{context2}/status_check.py'
+    'status_check':f'{context2}/status_check.py',
+    'folder_delete':f'{context2}/folder_delete.py'
 }
 
 

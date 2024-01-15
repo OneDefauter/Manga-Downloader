@@ -26,6 +26,7 @@ import src.changelog as open_change
 # import src.reload as reload_main
 import src.clean as clean
 import src.animation as anm
+import src.folder_delete as del_folder
 
 
 # Importações das URLs
@@ -44,6 +45,9 @@ import urls.manga_br.main as agr_12
 import urls.projeto_scanlator.main as agr_13
 import urls.hentai_teca.main as agr_14
 import urls.argos_scan.main as agr_15
+import urls.nicomanga.main as agr_16
+import urls.momo_no_hana.main as agr_17
+import urls.manhastro.main as agr_18
 
 
 
@@ -78,13 +82,16 @@ dic_agregadores = {
     "Projeto Scanlator": "https://projetoscanlator.com/",
     "Hentai Teca": "https://hentaiteca.net/",
     "Argos Scan": "https://argosscan.com/",
+    "NicoManga": "https://nicomanga.com/",
+    "Momo no Hana": "https://momonohanascan.com/",
+    "Manhastro": "https://manhastro.com/"
 }
 
 extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
 extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
 
-version_ = 'Versão 2.2'
+version_ = 'Versão 2.3'
 # icon = os.path.join()
 
 
@@ -296,6 +303,8 @@ class AppMainTheme0():
     async def TkApp(self):
         os.system('cls')
         
+        self.result = None
+        
         print("Agregador escolhido:", self.agregador_var.get())
         print("Obra escolhida:", self.nome_var.get())
         print("URL da obra:", self.url_var.get())
@@ -321,7 +330,7 @@ class AppMainTheme0():
             messagebox.showerror("Erro", "URL inválida")
             self.result = 777
         
-        elif self.capitulo_var.get() == "" and self.ate_var.get() == "":
+        elif self.capitulo_var.get() == "":
             print("Erro: Capítulo inválido.")
             self.app_instance.move_text_wait('Erro: Capítulo inválido')
             messagebox.showerror("Erro", "Capítulo inválido")
@@ -331,23 +340,25 @@ class AppMainTheme0():
             self.process_completed.set()
         
         
-        if self.capitulo_var.get() == "" and self.ate_var.get() != "":
-             capítulo = 0.0
-             ate = float(self.ate_var.get())
-        elif self.ate_var.get() == "" and self.capitulo_var.get() != "":
-            capítulo = float(self.capitulo_var.get())
-            ate = float(self.capitulo_var.get())
-        else:
-            capítulo = float(self.capitulo_var.get())
-            ate = float(self.ate_var.get())
+        if self.result is None:
+            if self.capitulo_var.get() == "" and self.ate_var.get() != "":
+                 capítulo = 0.0
+                 ate = float(self.ate_var.get())
+            elif self.ate_var.get() == "" and self.capitulo_var.get() != "":
+                capítulo = float(self.capitulo_var.get())
+                ate = float(self.capitulo_var.get())
+            else:
+                capítulo = float(self.capitulo_var.get())
+                ate = float(self.ate_var.get())
+            
+            chekin = True
+            
+            if ate < capítulo:
+                self.app_instance.move_text_wait('Erro: Capítulo inválido')
+                self.result = 777
+                chekin = False
+                self.process_completed.set()
         
-        chekin = True
-        
-        if ate <= capítulo:
-            self.app_instance.move_text_wait('Erro: Capítulo inválido')
-            self.result = 777
-            chekin = False
-            self.process_completed.set()
         
         if chekin:
             agregador_escolhido = self.agregador_var.get()
@@ -384,7 +395,7 @@ class AppMainTheme0():
             extension_path = os.path.join(temp_folder, extension_name)
             
             
-            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan']:
+            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro']:
                 driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
             
             elif agregador_escolhido in ['Mangás Chan']:
@@ -572,6 +583,42 @@ class AppMainTheme0():
                         driver.quit()
                         print("Erro: URL inválida")
                         break
+        
+                # Num 16 (NicoManga)
+                elif "NicoManga" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_16.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 17 (Momo no Hana)
+                elif "Momo no Hana" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_17.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 18 (Manhastro)
+                elif "Manhastro" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_18.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+            
+            folder_path = os.path.join(self.folder_selected, nome_foler)
+            del_folder.delete_empty_folders(folder_path.replace('/', '\\'))
             
             self.process_completed.set()
         

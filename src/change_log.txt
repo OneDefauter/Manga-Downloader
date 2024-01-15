@@ -1,3 +1,7 @@
+Versão 2.3 (14/01/2024):
+- Adicionado agregadores 'NicoManga', 'Momo no Hana' e 'Manhastro'.
+- Pequenas correções.
+
 Versão 2.2 (22/12/2023 — 28/12/2023):
 - Adicionado o uso de perfil.
 - Melhorias e correções em todos os agregadores.

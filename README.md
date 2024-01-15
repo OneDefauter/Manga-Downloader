@@ -55,6 +55,12 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Hentai Teca](https://hentaiteca.net/)**
 
+● **[NicoManga](https://nicomanga.com/)**
+
+● **[Momo no Hana](https://momonohanascan.com/)**
+
+● **[Manhastro](https://manhastro.com/)**
+
 
 
 # Instalação
