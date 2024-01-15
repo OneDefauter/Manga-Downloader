@@ -1,6 +1,6 @@
 Versão 2.4 (15/01/2024):
 - Adicionado atualização para ImageMagick.
-- Corrigido bug ao cortar imagens.
+- Corrigido erro ao cortar imagens.
 - Adicionado verificação de imagem.
 
 Versão 2.3 (14/01/2024):

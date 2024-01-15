@@ -2,7 +2,7 @@
 
 - Adicionado atualização para ImageMagick.
 
-- Corrigido bug ao cortar imagens.
+- Corrigido erro ao cortar imagens.
 
 - Adicionado verificação de imagem.
 
