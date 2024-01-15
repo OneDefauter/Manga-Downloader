@@ -18,11 +18,15 @@ def cortar_imagens(input_images, output_folder, extension):
 
 def converter_imagens(input_images, extension):
     for image in input_images:        
-        subprocess.run(f'magick mogrify -format {extension.replace(".", "")} "{image}"', check=True)
+        try:
+            subprocess.run(f'magick mogrify -format {extension.replace(".", "")} "{image}"', check=True)
+        except:
+            ...
+        
         os.remove(image)
 
 
-def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff'], bug = False):
+def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
     # Verifique se há arquivos de imagem na pasta
     image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
@@ -70,7 +74,6 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
         cortar = any(int(subprocess.check_output(["magick", "identify", "-format", "%h", image]).decode("utf-8").strip()) > altura_maxima for image in input_images)
     except:
         cortar = False
-        bug = True
     print(f"{Style.RESET_ALL}")
     
     
@@ -97,11 +100,10 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
 
         
     else:
-        if bug is False:
-            for image in input_images:
-                if not extension in image:
-                    converter_imagens(input_images, extension)
-                    break
+        for image in input_images:
+            if not extension in image:
+                converter_imagens(input_images, extension)
+                break
         
         
     # shutil.move(output_filename, folder_path)
