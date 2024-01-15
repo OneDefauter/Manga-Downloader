@@ -70,4 +70,4 @@ Baixe o arquivo [**run.py**](https://github.com/OneDefauter/Manga-Downloader/rel
 
 
 # Nota de atualizações
-[Veja aqui](/src/change_log.txt)
+[Veja aqui](/src/change_log.md)
