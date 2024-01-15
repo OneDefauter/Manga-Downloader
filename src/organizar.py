@@ -5,9 +5,24 @@ import win32api
 import win32con
 import subprocess
 import zipfile
+from colorama import Fore, Style
+
+def cortar_imagens(input_images, output_folder, extension):
+    output_filename = os.path.join(output_folder, f"0{extension}")
+    command = ["magick", "convert", "-quality", "100", "-crop", "32000x5000"]
+    
+    command += input_images + [output_filename]
+    
+    subprocess.run(command, check=True)
 
 
-def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
+def converter_imagens(input_images, extension):
+    for image in input_images:        
+        subprocess.run(f'magick mogrify -format {extension.replace(".", "")} "{image}"', check=True)
+        os.remove(image)
+
+
+def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff'], bug = False):
     # Verifique se há arquivos de imagem na pasta
     image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
@@ -48,37 +63,52 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     win32api.SetFileAttributes(output_folder, atributos_atuais | win32con.FILE_ATTRIBUTE_HIDDEN)
 
 
+    # Verificar a altura das imagens
+    altura_maxima = 10000
+    try:
+        print(f"{Fore.RED}")
+        cortar = any(int(subprocess.check_output(["magick", "identify", "-format", "%h", image]).decode("utf-8").strip()) > altura_maxima for image in input_images)
+    except:
+        cortar = False
+        bug = True
+    print(f"{Style.RESET_ALL}")
+    
+    
+    if cortar:
+        cortar_imagens(input_images, output_folder)
+        for image_file in input_images:
+            os.remove(image_file)
+            
+        # Contador para numerar os arquivos
+        count = 1
 
-    output_filename = os.path.join(output_folder, f"0.jpg")
-    command = ["magick", "convert", "-quality", "100", "-crop", f"32000x5000"]
+        output_files = sorted([f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
-    command += input_images + [output_filename]
+        for filename in output_files:
+            base, ext = os.path.splitext(filename)
+            new_filename = f"{count:02d}{ext}"
+            os.rename(os.path.join(output_folder, filename), os.path.join(output_folder, new_filename))
+            count += 1
 
-    subprocess.run(command, check=True)
+        output_files = [f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))]
+        for image in output_files:
+            output_pathfile = os.path.join(output_folder, image)
+            shutil.move(output_pathfile, folder_path)
 
-    for image_file in input_images:
-        os.remove(image_file)
-
-    # Contador para numerar os arquivos
-    count = 1
-
-    output_files = sorted([f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
-
-    for filename in output_files:
-        base, ext = os.path.splitext(filename)
-        new_filename = f"{count:02d}{ext}"
-        os.rename(os.path.join(output_folder, filename), os.path.join(output_folder, new_filename))
-        count += 1
-
-    output_files = [f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))]
-    for image in output_files:
-        output_pathfile = os.path.join(output_folder, image)
-        shutil.move(output_pathfile, folder_path)
-
+        
+    else:
+        if bug is False:
+            for image in input_images:
+                if not extension in image:
+                    converter_imagens(input_images, extension)
+                    break
+        
+        
     # shutil.move(output_filename, folder_path)
     output_folder2 = os.path.join(folder_path, "temp")
     os.removedirs(output_folder2)
-    
+
+
     if compactar:
         if compact_extension == ".cbz":
             if os.path.exists(f'{folder_path}.cbz'):

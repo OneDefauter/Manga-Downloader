@@ -117,7 +117,12 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
         )
         download_button.click()
         
-        print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.png...{Style.RESET_ALL}")
+        extension_match = re.search(r'\.(jpg|jpeg|png|gif|bmp|webp)$', imagem, re.IGNORECASE)
+        
+        if extension_match:
+            file_extension = extension_match.group(1)
+        
+        print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
         
         time.sleep(0.5)
         
