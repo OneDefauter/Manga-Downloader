@@ -17,13 +17,16 @@ def cortar_imagens(input_images, output_folder, extension):
 
 
 def converter_imagens(input_images, extension):
-    for image in input_images:        
+    for image in input_images:
+        if extension in image:
+            continue
+        
         try:
             subprocess.run(f'magick mogrify -format {extension.replace(".", "")} "{image}"', check=True)
         except:
             ...
-        
-        os.remove(image)
+        finally:
+            os.remove(image)
 
 
 def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
