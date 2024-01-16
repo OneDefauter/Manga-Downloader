@@ -15,7 +15,7 @@ def setup(origem, destino):
             caminho_origem = os.path.join(origem, arquivo)
 
             # Verifica se o arquivo é uma imagem (pode ser ajustado para outros tipos de arquivo)
-            if os.path.isfile(caminho_origem) and arquivo.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+            if os.path.isfile(caminho_origem) and arquivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff')):
                 caminho_destino = os.path.join(destino, arquivo)
 
                 # Move o arquivo para a pasta de destino

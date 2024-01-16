@@ -131,58 +131,65 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     
     count = 1
             
-    for imagem in links_das_imagens:
-        if debug_var.get():
-            baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
+    def download_images(count):
+        for imagem in links_das_imagens:
+            if debug_var.get():
+                baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
+                
+            driver.get(imagem)
             
-        driver.get(imagem)
-        
-        try:
-            input_element = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
-            )
-        except:
-            driver.refresh()
-            time.sleep(1)
+            try:
+                input_element = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
+                )
+            except:
+                driver.refresh()
+                time.sleep(1)
+                
+                input_element = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
+                )
             
-            input_element = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
+            input_element.clear()  # Limpa qualquer valor existente no campo
+            input_element.send_keys(count)
+            
+            download_button = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, "/html/body/button"))
             )
-        
-        input_element.clear()  # Limpa qualquer valor existente no campo
-        input_element.send_keys(count)
-        
-        download_button = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/button"))
-        )
-        download_button.click()
-        
-        print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.png...{Style.RESET_ALL}")
-        
-        time.sleep(0.5)
-        
-        count += 1
+            download_button.click()
+            
+            extension_match = re.search(r'\.(jpg|jpeg|png|gif|bmp|webp)$', imagem, re.IGNORECASE)
+            
+            if extension_match:
+                file_extension = extension_match.group(1)
+            
+            print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
+            
+            time.sleep(0.5)
+            
+            count += 1
+            
+        return count
+    
+    
+    count = download_images(count)
     
     if debug_var.get():
         baixando_label.config(text=f"Arrumando páginas...")
+    
+    while True:
+        time.sleep(2)
         
-    time.sleep(2)
-    
-    close = 0
-    max_close = 60
-    
-    while close < max_close:
         lista = os.listdir(download_folder)
-        
         if count == len(lista) + 1:
-            if not ".crdownload" in lista:
-                break
-            
-        time.sleep(1)
-        close += 1
+            break
         
-        if debug_var.get():
-            baixando_label.config(text=f"Arrumando páginas...\nAguarde {close} / {max_close}")
+        else:
+            for image in lista:
+                image = os.path.join(download_folder, image)
+                os.remove(image)
+            
+            count = download_images(1)
     
     move.setup(download_folder, folder_path)
             
