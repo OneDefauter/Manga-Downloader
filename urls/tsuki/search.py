@@ -35,7 +35,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     
     try:
         # Aguarda até que o botão esteja presente na página
-        close_button = WebDriverWait(driver, 10).until(
+        close_button = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Close this dialog"]'))
         )
 

@@ -434,6 +434,10 @@ class AppMainTheme0():
                 elif "Crystal Scan" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_02.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -445,6 +449,10 @@ class AppMainTheme0():
                 elif "Argos Comics" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_03.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -456,6 +464,10 @@ class AppMainTheme0():
                 elif "Argos Hentai" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_04.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -467,6 +479,10 @@ class AppMainTheme0():
                 elif "Mangás Chan" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_05.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -478,6 +494,10 @@ class AppMainTheme0():
                 elif "Ler Mangá" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_06.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -489,6 +509,10 @@ class AppMainTheme0():
                 elif "Tsuki" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_07.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -500,6 +524,10 @@ class AppMainTheme0():
                 elif "YomuMangás" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_08.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -511,6 +539,10 @@ class AppMainTheme0():
                 elif "SlimeRead" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_09.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -522,6 +554,10 @@ class AppMainTheme0():
                 elif "Flower Manga" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_10.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -533,6 +569,10 @@ class AppMainTheme0():
                 elif "Ler Manga Online" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_11.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -544,6 +584,10 @@ class AppMainTheme0():
                 elif "Manga BR" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_12.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -555,6 +599,10 @@ class AppMainTheme0():
                 elif "Projeto Scanlator" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_13.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -566,6 +614,10 @@ class AppMainTheme0():
                 elif "Hentai Teca" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_14.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -577,6 +629,10 @@ class AppMainTheme0():
                 elif "Argos Scan" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_15.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -588,6 +644,10 @@ class AppMainTheme0():
                 elif "NicoManga" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_16.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -599,6 +659,10 @@ class AppMainTheme0():
                 elif "Momo no Hana" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_17.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -610,6 +674,10 @@ class AppMainTheme0():
                 elif "Manhastro" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_18.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
                         break
                     else:
                         self.result = 1
@@ -734,6 +802,8 @@ class AppMainTheme0():
                     self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 503")
                 elif self.result == 'e523':
                     self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
+                
+                self.driver
                 
             self.enable_gui()
 
@@ -898,7 +968,7 @@ class AppMainTheme0():
         self.selected_folder_text.config(state=tb.NORMAL)
         self.selected_folder_text.delete(0, tb.END)
         self.selected_folder_text.insert(0, self.folder_selected)
-        self.selected_folder_text.config(state=tb.DISABLED)
+        self.selected_folder_text.config(state=tb.READONLY)
         print(hora_agora.setup(), "INFO:", "✔ Pasta selecionada:", self.folder_selected)
         self.auto_save_settings()
         
