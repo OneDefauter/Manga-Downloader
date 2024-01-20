@@ -9,24 +9,30 @@ from colorama import Fore, Style
 
 def cortar_imagens(input_images, output_folder, extension):
     output_filename = os.path.join(output_folder, f"0{extension}")
-    command = ["magick", "convert", "-quality", "100", "-define format={extension.replace('.', '')}", "-crop", "32000x5000"]
+    command = ["magick", "convert", "-quality", "100", "-crop", "32000x5000"]
     
     command += input_images + [output_filename]
     
     subprocess.run(command, check=True)
 
 
-def converter_imagens(input_images, extension):
+def converter_imagens(input_images, extension, output_folder, folder_path):
     for image in input_images:
-        if extension in image:
-            continue
-        
         try:
-            subprocess.run(f'magick convert -define format={extension.replace(".", "")} "{image}"', check=True)
-        except:
-            ...
-        finally:
+            base_name, _ = os.path.splitext(os.path.basename(image))
+            out = os.path.join(output_folder, f"{base_name}{extension}", )
+            subprocess.run(f'magick convert "{image}" "{out}"', check=True)
+        except Exception as e:
+            print(f"{Fore.RED}Erro ao converter a imagem {image}:{Style.RESET_ALL} {e}")
+        else:
             os.remove(image)
+    
+    arquivos = os.listdir(output_folder)
+    
+    for arquivo in arquivos:
+        caminho_origem = os.path.join(output_folder, arquivo)
+        caminho_destino = os.path.join(folder_path, arquivo)
+        shutil.move(caminho_origem, caminho_destino)
 
 
 def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
@@ -103,10 +109,7 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
 
         
     else:
-        for image in input_images:
-            if not extension in image:
-                converter_imagens(input_images, extension)
-                break
+        converter_imagens(input_images, extension, output_folder, folder_path)
         
         
     # shutil.move(output_filename, folder_path)
