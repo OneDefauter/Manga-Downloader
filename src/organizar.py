@@ -9,7 +9,7 @@ from colorama import Fore, Style
 
 def cortar_imagens(input_images, output_folder, extension):
     output_filename = os.path.join(output_folder, f"0{extension}")
-    command = ["magick", "convert", "-quality", "100", "-crop", "32000x5000"]
+    command = ["magick", "convert", "-quality", "100", "-define format={extension.replace('.', '')}", "-crop", "32000x5000"]
     
     command += input_images + [output_filename]
     
@@ -22,7 +22,7 @@ def converter_imagens(input_images, extension):
             continue
         
         try:
-            subprocess.run(f'magick mogrify -format {extension.replace(".", "")} "{image}"', check=True)
+            subprocess.run(f'magick mogrify -define format={extension.replace(".", "")} "{image}"', check=True)
         except:
             ...
         finally:
