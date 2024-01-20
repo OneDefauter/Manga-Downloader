@@ -22,7 +22,7 @@ def converter_imagens(input_images, extension):
             continue
         
         try:
-            subprocess.run(f'magick mogrify -define format={extension.replace(".", "")} "{image}"', check=True)
+            subprocess.run(f'magick convert -define format={extension.replace(".", "")} "{image}"', check=True)
         except:
             ...
         finally:
