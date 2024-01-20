@@ -37,6 +37,9 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                 os.remove(item_path)  # Exclui arquivo
 
     os.makedirs(folder_path, exist_ok=True)
+    
+    if debug_var.get():
+        baixando_label.config(text=f"Carregando capítulo {numero_capitulo}")
 
     driver.get(url)
     driver.implicitly_wait(10)
@@ -44,7 +47,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     time.sleep(2)
 
     driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
-    
+
     try:
         botao_leitura = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.LINK_TEXT, "INICIAR LEITURA"))
@@ -59,75 +62,48 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     select_element = Select(driver.find_element(By.ID, 'slch'))
     select_element.select_by_value('2')
 
-    # time.sleep(5)
+    time.sleep(2)
+
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    time.sleep(2)
     
-    while True:
-        try:
-            pagina = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'reader-area'))
+    
+    def load_images():
+        count_repet = 0
+        count_limit = 10
+        
+        while count_repet < count_limit:
+            
+            if debug_var.get():
+                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {count_limit}")
+
+            leitor = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "reader-area"))
             )
-        except:
-            continue
-        
-        driver.execute_script("arguments[0].scrollIntoView();", pagina)
-        wait_time = 0
-        while not pagina.get_attribute("complete") and wait_time < 10:
-            time.sleep(0.5)
-            wait_time += 1
-        
-        break
-    
-    # Aguarde um pouco após a seleção (opcional)
-    time.sleep(1)
 
-    driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+            imagens = leitor.find_elements(By.TAG_NAME, 'img')
 
-    time.sleep(1)
-    
-    # Função para realizar a rolagem até determinado ponto
-    def scroll_to_position(position):
-        script = f"window.scrollTo(0, document.body.scrollHeight * {position});"
-        driver.execute_script(script)
-        time.sleep(0.750)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
-    
-    # Rolar até 25% da página e esperar
-    scroll_to_position(0.25)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
-    
-    # Rolar até 50% da página e esperar
-    scroll_to_position(0.5)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
-    
-    # Rolar até 75% da página e esperar
-    scroll_to_position(0.75)
-    
-    # Rolar até o final da página e esperar
-    scroll_to_position(1)
-    
-    # Rolar até o início da página e esperar
-    scroll_to_position(0)
+            # Função para rolar até a imagem e aguardar o carregamento
+            def scroll_to_image(image_element):
+                driver.execute_script("arguments[0].scrollIntoView();", image_element)
+                wait_time = 0
+                while not image_element.get_attribute("complete") and wait_time < 10:
+                    time.sleep(0.5)
+                    wait_time += 1
+                
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-    # Encontra a div que contém as imagens
-    div_imagens = driver.find_element(By.CLASS_NAME, 'reader-area')
+            # Itera sobre as imagens
+            for imagem in imagens:
+                scroll_to_image(imagem)
 
-    # Encontra todas as tags de imagem dentro da div
-    imagens = div_imagens.find_elements(By.TAG_NAME, 'img')
+            count_repet += 1
+            
+        return imagens
+            
+
+    imagens = load_images()
 
     # Extrai os links das imagens
     links_das_imagens = [imagem.get_attribute('src') for imagem in imagens]

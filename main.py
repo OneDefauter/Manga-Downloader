@@ -53,7 +53,8 @@ urls = {
     'argos_scan': {'main': f'{context}/argos_scan/main.py', 'run':f'{context}/argos_scan/run.py', 'search':f'{context}/argos_scan/search.py'},
     'download_methods': {'madara': f'{context}/download_methods/madara.py'},
     'nicomanga': {'main': f'{context}/nicomanga/main.py', 'run':f'{context}/nicomanga/run.py', 'search':f'{context}/nicomanga/search.py'},
-    'momo_no_hana': {'main': f'{context}/momo_no_hana/main.py', 'run':f'{context}/momo_no_hana/run.py', 'search':f'{context}/momo_no_hana/search.py'}
+    'momo_no_hana': {'main': f'{context}/momo_no_hana/main.py', 'run':f'{context}/momo_no_hana/run.py', 'search':f'{context}/momo_no_hana/search.py'},
+    'manhastro': {'main': f'{context}/manhastro/main.py', 'run':f'{context}/manhastro/run.py', 'search':f'{context}/manhastro/search.py'}
 }
 
 
