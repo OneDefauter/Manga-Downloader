@@ -1,19 +1,20 @@
 import os
 import sys
-import webbrowser
-import winsound
-import requests
-import asyncio
-import threading
+import time
+import shutil
 import logging
 import zipfile
-import shutil
-import time
+import asyncio
+import winsound
+import requests
+import threading
+import webbrowser
+from tkinter import *
+import ttkbootstrap as tb
+from datetime import datetime
+from tkinter import ttk, messagebox, filedialog
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from tkinter import *
-from tkinter import ttk, messagebox, filedialog
-import ttkbootstrap as tb
 
 
 # Importações da pasta 'src'
@@ -91,8 +92,20 @@ extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avi
 extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
 
-version_ = 'Versão 2.4'
+version_ = 'Versão 2.5'
 # icon = os.path.join()
+
+
+# Extensão
+temp_folder = os.environ['TEMP']
+profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
+download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
+extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.crx'
+extension_zip_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.zip'
+extension_name = "Tampermonkey.5.0.0.0.crx"
+extension_path = os.path.join(temp_folder, extension_name)
+extension_folder_path = os.path.join(temp_folder, "Tampermonkey.5.0.0.0")
+
 
 
 def abrir_link1(*args):
@@ -101,8 +114,8 @@ def abrir_link1(*args):
 def abrir_link2(*args):
     webbrowser.open('https://discordapp.com/users/367504043691606016')
 
-class AppMainTheme0():
-    def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var):
+class AppMain():
+    def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, window_width, window_height, screen_width, screen_height, x, y):
         self.root = root
         self.auto_save = auto_save
         self.agregador_var = agregador_var
@@ -122,14 +135,22 @@ class AppMainTheme0():
         self.net_limit_down_var = net_limit_down_var
         self.net_limit_up_var = net_limit_up_var
         self.net_lat_var = net_lat_var
+        
+        # Tamanho da GUI
         self.change_log_var = change_log_var
+        self.window_width = window_width
+        self.window_height = window_height
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.x = x
+        self.y = y
         
         self.ipo9 = True
         self.ian = False
         self.result = 0
         self.app_instance = anm.AnimationNotification(root, version_, self.ian)
         
-        self.root.title("Mangá Downloader")
+        # self.root.title("Mangá Downloader")
         self.style = ttk.Style(root)
     
         # Style
@@ -142,21 +163,31 @@ class AppMainTheme0():
         self.root.bind("<Control-s>", self.save_shortcut)
         self.root.bind("<Control-i>", self.start_shortcut)
     
-        self.windows()
+        button = tb.Button(self.root)
+        button.place(relx=0.966, rely=0.0, height=40, width=40)
+        button.configure(text='''X''')
+        button.configure(command=self.close)
+        button.configure(style="b1.TButton")
+        
+    
+        # self.windows()
         
         self.settings_global()
         
         self.options_agreg()
-        
-        self.load_selenium()
             
         self.update_checkboxes_debug2()
+        
+        self.load_selenium()
         
         self.wait_check_selenium()
         
         if self.change_log_var.get():
             open_change.setup(self.root, self.y)
         
+    def close(self):
+        self.root.quit()
+        sys.exit()
     
     def wait_check_selenium(self):
         if not self.selenium_process_completed.is_set():
@@ -222,16 +253,6 @@ class AppMainTheme0():
         
     
     def check_selenium(self):
-        # Configurar as opções do Chrome
-        temp_folder = os.environ['TEMP']
-        profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
-        download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-        extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.crx'
-        extension_zip_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.zip'
-        extension_name = "Tampermonkey.5.0.0.0.crx"
-        extension_path = os.path.join(temp_folder, extension_name)
-        extension_folder_path = os.path.join(temp_folder, 'Tampermonkey.5.0.0.0')
-        
         try:
             shutil.rmtree(profile_folder)
         except:
@@ -277,13 +298,40 @@ class AppMainTheme0():
             
             ins_ext.setup(teste)
             
-            self.app_instance.move_text_wait('Extensão carregada')
+            teste.quit()
+            time.sleep(1)
             
-            time.sleep(3)
+            teste2 = webdriver.Chrome(options=chrome_options)
+            teste2.get('https://www.google.com.br/')
+    
+            # Pega o tempo inicial
+            tempo_inicial = datetime.now()
+
+            # Define o limite de tempo em segundos (30 segundos no seu caso)
+            limite_tempo_segundos = 10
+
+            while True:
+                janelas_abertas = teste2.window_handles
+
+                if len(janelas_abertas) != 1:
+                    teste2.switch_to.window(janelas_abertas[-1])
+                    teste2.close()
+                    janelas_abertas = teste2.window_handles
+                    teste2.switch_to.window(janelas_abertas[0])
+                    break
+                else:
+                    tempo_atual = datetime.now()
+                    tempo_decorrido = tempo_atual - tempo_inicial
+
+                    if tempo_decorrido.total_seconds() > limite_tempo_segundos:
+                        print("Tempo limite atingido. Saindo do loop.")
+                        break
+                    
+            teste2.quit()
+            time.sleep(1)
             
             # Se não houver exceção até aqui, o Chrome está funcionando
             self.selenium_working.set(True)
-            teste.quit()
             self.selenium_process_completed.set()
             
         except:
@@ -386,13 +434,6 @@ class AppMainTheme0():
                 )
                 print("\n")
             self.app_instance.move_text_wait('Iniciando')
-    
-            # Configurações das pastas
-            temp_folder = os.environ['TEMP']
-            profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
-            download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-            extension_name = "Tampermonkey.5.0.0.0.crx"
-            extension_path = os.path.join(temp_folder, extension_name)
             
             
             if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro']:
@@ -2414,8 +2455,8 @@ class AppMainTheme0():
         self.root.destroy()
         # reload_main.setup()
         sys.exit()
+    
         
-            
     def reset_config(self):
         print(hora_agora.setup(), "INFO:", "✔ Configurações resetadas. Reiniciando aplicativo.")
         auto_save = False
@@ -2461,7 +2502,7 @@ class AppMainTheme0():
         # reload_main.setup()
         sys.exit()
 
-        
+
     def save_shortcut(self, event=None):
         if self.ipo9 is False:
             self.app_instance.move_text_wait('Configurações salvas')
@@ -2479,13 +2520,3 @@ class AppMainTheme0():
         
         
         
-def setup(auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var):
-    root = None
-    
-    root = tb.Window(themename=theme)
-    root.iconbitmap('images/icon.ico')
-    
-    # root.option_add("*tearOff", False)
-    app = AppMainTheme0(root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var)
-    
-    root.mainloop()

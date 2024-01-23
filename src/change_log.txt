@@ -1,3 +1,11 @@
+Versão 2.6 (22/01/2024)
+- Melhoria ao verificar o navegador.
+- Correção no agregador 'NicoManga'.
+
+Versão 2.5 (20/01/2024):
+- Melhoria no agregador 'Tsuki'.
+- Correção ao converter imagens.
+
 Versão 2.4 (15/01/2024):
 - Adicionado atualização para ImageMagick.
 - Corrigido erro ao cortar imagens.
