@@ -87,7 +87,7 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     
     
     if cortar:
-        cortar_imagens(input_images, output_folder)
+        cortar_imagens(input_images, output_folder, extension)
         for image_file in input_images:
             os.remove(image_file)
             
