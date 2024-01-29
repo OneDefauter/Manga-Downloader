@@ -93,7 +93,7 @@ extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avi
 extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
 
-version_ = 'Versão 2.6'
+version_ = 'Versão 2.7'
 # icon = os.path.join()
 
 
