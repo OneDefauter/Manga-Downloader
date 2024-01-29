@@ -1,35 +1,28 @@
-import os
 import re
-import sys
 import time
-import shutil
-import asyncio
-import aiohttp
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.options import Options
-from colorama import Fore, Style
 
 import src.status_check as status_check
 
 def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
     # Abre a página
-    driver.get(url)
+    driver.execute_script(f"window.open('{url}', '_blank')")
     
-    # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
-    driver.implicitly_wait(5)
+    time.sleep(10)
+    
+    driver.switch_to.window(driver.window_handles[0])
+    driver.close()
+    time.sleep(1)
+    driver.switch_to.window(driver.window_handles[0])
     
     # Verifica o status do site
-    result = status_check.setup(driver, url)
-    if result != 200:
-        driver.quit()
-        return result
+    def func(param):
+        result = status_check.setup(driver, url)
+        if result != 200:
+            driver.quit()
+            return result
         
     time.sleep(1)
     

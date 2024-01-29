@@ -1,3 +1,9 @@
+### Versão 2.7 (29/01/2024)
+
+- Adicionado o adaptação cloudflare no agregador 'Tsuki'.
+
+- Pequenas mudanças.
+
 ### Versão 2.6 (22/01/2024)
 
 - Melhoria ao verificar o navegador.

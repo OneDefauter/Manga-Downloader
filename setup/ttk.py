@@ -15,6 +15,7 @@ from datetime import datetime
 from tkinter import ttk, messagebox, filedialog
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from colorama import Fore, Style
 
 
 # Importações da pasta 'src'
@@ -436,10 +437,12 @@ class AppMain():
             self.app_instance.move_text_wait('Iniciando')
             
             
-            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro']:
+            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Tsuki']:
                 driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
             
-            elif agregador_escolhido in ['Mangás Chan']:
+            elif agregador_escolhido in ['Mangás Chan', 'Tsuki']:
+                if self.headless_var.get():
+                    print(f"{Fore.GREEN}AVISO: Esse agregador não suporta download em segundo plano.{Style.RESET_ALL}")
                 driver = engine_cloudflare.setup()
             
             else:
