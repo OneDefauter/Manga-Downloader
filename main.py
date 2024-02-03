@@ -24,7 +24,8 @@ url_folder = [
     'tsuki',
     'yomumangás',
     'nicomanga',
-    'momo_no_hana'
+    'momo_no_hana',
+    'valkyrie_scan'
 ]
 
 context = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/urls/'
@@ -54,7 +55,8 @@ urls = {
     'download_methods': {'madara': f'{context}/download_methods/madara.py'},
     'nicomanga': {'main': f'{context}/nicomanga/main.py', 'run':f'{context}/nicomanga/run.py', 'search':f'{context}/nicomanga/search.py'},
     'momo_no_hana': {'main': f'{context}/momo_no_hana/main.py', 'run':f'{context}/momo_no_hana/run.py', 'search':f'{context}/momo_no_hana/search.py'},
-    'manhastro': {'main': f'{context}/manhastro/main.py', 'run':f'{context}/manhastro/run.py', 'search':f'{context}/manhastro/search.py'}
+    'manhastro': {'main': f'{context}/manhastro/main.py', 'run':f'{context}/manhastro/run.py', 'search':f'{context}/manhastro/search.py'},
+    'valkyrie_scan': {'main': f'{context}/valkyrie_scan/main.py', 'run':f'{context}/valkyrie_scan/run.py', 'search':f'{context}/valkyrie_scan/search.py'}
 }
 
 

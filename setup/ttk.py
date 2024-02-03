@@ -50,6 +50,7 @@ import urls.argos_scan.main as agr_15
 import urls.nicomanga.main as agr_16
 import urls.momo_no_hana.main as agr_17
 import urls.manhastro.main as agr_18
+import urls.valkyrie_scan.main as agr_19
 
 
 
@@ -86,7 +87,8 @@ dic_agregadores = {
     "Argos Scan": "https://argosscan.com/",
     "NicoManga": "https://nicomanga.com/",
     "Momo no Hana": "https://momonohanascan.com/",
-    "Manhastro": "https://manhastro.com/"
+    "Manhastro": "https://manhastro.com/",
+    "Valkyrie Scan": "https://valkyriescan.com/",
 }
 
 extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
@@ -411,7 +413,7 @@ class AppMain():
         
         if chekin:
             agregador_escolhido = self.agregador_var.get()
-            nome = self.nome_var.get()
+            nome = self.nome_var.get().replace("\n", "")
             url = self.url_var.get()
             # capítulo = float(self.capitulo_var.get())
             compactar = self.compact_var.get()
@@ -718,6 +720,21 @@ class AppMain():
                 elif "Manhastro" in agregador_escolhido:
                     if dic_url in url:
                         self.result = await agr_18.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                        try:
+                            driver.quit()
+                        except:
+                            ...
+                        break
+                    else:
+                        self.result = 1
+                        driver.quit()
+                        print("Erro: URL inválida")
+                        break
+        
+                # Num 18 (Valkyrie Scan)
+                elif "Valkyrie Scan" in agregador_escolhido:
+                    if dic_url in url:
+                        self.result = await agr_19.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
                         try:
                             driver.quit()
                         except:

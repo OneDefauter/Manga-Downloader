@@ -61,6 +61,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Manhastro](https://manhastro.com/)**
 
+● **[Valkyrie Scan](https://valkyriescan.com/)**
+
 
 
 # Instalação
