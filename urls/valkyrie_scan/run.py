@@ -1,7 +1,9 @@
 import os
-import time
 import shutil
 from colorama import Fore, Style
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import urls.download_methods.madara as madara
 
@@ -31,7 +33,19 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         baixando_label.config(text=f"Aguardando página do capítulo {numero_capitulo}")
     
     driver.get(url)
-    time.sleep(5)
+    
+    try:
+        # Espere até que o elemento com o id "pageloader" esteja presente no DOM
+        elemento_pageloader = WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.ID, "pageloader"))
+        )
+        # Verifique se o estilo "display: none;" está presente no atributo style
+        WebDriverWait(driver, 10).until(
+            lambda driver: "display: none;" in elemento_pageloader.get_attribute("style")
+        )
+    except:
+        pass
+    
     driver.implicitly_wait(10)
 
     madara.setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance)

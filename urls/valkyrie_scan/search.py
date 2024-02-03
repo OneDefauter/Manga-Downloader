@@ -1,20 +1,9 @@
 import os
 import re
-import sys
 import time
-import shutil
-import asyncio
-import aiohttp
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.options import Options
-from colorama import Fore, Style
 
 import src.status_check as status_check
 
@@ -25,8 +14,18 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
     driver.implicitly_wait(5)
     
-    time.sleep(5)
-    
+    try:
+        # Espere até que o elemento com o id "pageloader" esteja presente no DOM
+        elemento_pageloader = WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.ID, "pageloader"))
+        )
+        # Verifique se o estilo "display: none;" está presente no atributo style
+        WebDriverWait(driver, 10).until(
+            lambda driver: "display: none;" in elemento_pageloader.get_attribute("style")
+        )
+    except:
+        pass
+        
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:
