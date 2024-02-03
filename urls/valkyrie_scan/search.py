@@ -25,6 +25,8 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
     driver.implicitly_wait(5)
     
+    time.sleep(5)
+    
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:

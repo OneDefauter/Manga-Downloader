@@ -1,4 +1,5 @@
 import os
+import time
 import shutil
 from colorama import Fore, Style
 
@@ -30,6 +31,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         baixando_label.config(text=f"Aguardando página do capítulo {numero_capitulo}")
     
     driver.get(url)
+    time.sleep(5)
     driver.implicitly_wait(10)
 
     madara.setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance)
