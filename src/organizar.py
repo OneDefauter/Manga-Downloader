@@ -40,11 +40,11 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
     if not image_files:
-        print("Capítulo sem imagem.")
+        print("Capítulo sem imagem ou não carregaram.")
         # Excluir pasta se estiver vazia
         shutil.rmtree(folder_path)
         return
-            
+        
     file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
     count = 1

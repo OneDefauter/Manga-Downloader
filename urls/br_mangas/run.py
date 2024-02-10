@@ -35,7 +35,6 @@ async def setup(driver, url, numero_capitulo, session, folder_selected, nome_fol
 
     driver.get(url)
     driver.implicitly_wait(10)
-
     time.sleep(1)
     
     if debug_var.get():
@@ -46,6 +45,8 @@ async def setup(driver, url, numero_capitulo, session, folder_selected, nome_fol
     link = btn_next.get_attribute('href')
     
     driver.get(link)
+    driver.implicitly_wait(10)
+    time.sleep(1)
     
     try:
         WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, "videonaoliberado")))

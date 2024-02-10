@@ -113,7 +113,7 @@ extension_folder_path = os.path.join(temp_folder, "Tampermonkey.5.0.0.0")
 
 def abrir_link1(*args):
     webbrowser.open('https://github.com/OneDefauter/Manga-Downloader/blob/main/README.md')
-    
+
 def abrir_link2(*args):
     webbrowser.open('https://discordapp.com/users/367504043691606016')
 
