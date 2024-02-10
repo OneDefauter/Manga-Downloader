@@ -49,9 +49,9 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
 
     try:
-        botao_leitura = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.LINK_TEXT, "INICIAR LEITURA"))
-            )
+        botao_leitura = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "a.buttonler.nextimg2"))
+        )
         botao_leitura.click()
     except:
         pass
