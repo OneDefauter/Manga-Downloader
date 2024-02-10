@@ -40,8 +40,6 @@ def verify():
 
 
 def download():
-    messagebox.showinfo("Instalação do ImageMagick", "ImageMagick não está instalado.\nBaixando e instalando o ImageMagick...")
-    
     temp_folder = os.environ['TEMP']
     installer_path = os.path.join(temp_folder, 'ImageMagick-Installer.exe')
 
@@ -95,6 +93,7 @@ def compare_versions(installed_version, required_version):
 
 def setup():
     if not verify():
+        messagebox.showinfo("Instalação do ImageMagick", "ImageMagick não está instalado.\nBaixando e instalando o ImageMagick...")
         download()
     
     installed_version = get_installed_version()
