@@ -337,10 +337,11 @@ class AppMain():
             self.selenium_working.set(True)
             self.selenium_process_completed.set()
             
-        except:
+        except Exception as e:
             os.system("cls")
             if not self.selenium_working.get():
                 self.baixando_label.config(text="Erro:\n Selenium não está\n funcionando corretamente")
+                print(f"Erro: {e}")
                 messagebox.showerror("Erro", "Selenium não está funcionando corretamente")
             self.selenium_working.set(False)
             self.selenium_process_completed.set()
