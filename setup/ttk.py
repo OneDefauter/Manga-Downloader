@@ -51,6 +51,7 @@ import urls.nicomanga.main as agr_16
 import urls.momo_no_hana.main as agr_17
 import urls.manhastro.main as agr_18
 import urls.valkyrie_scan.main as agr_19
+import urls.limbo_scan.main as agr_20
 
 
 
@@ -89,13 +90,14 @@ dic_agregadores = {
     "Momo no Hana": "https://momonohanascan.com/",
     "Manhastro": "https://manhastro.com/",
     "Valkyrie Scan": "https://valkyriescan.com/",
+    "Limbo Scan": "https://limboscan.com.br/",
 }
 
 extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
 extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
 
-version_ = 'Versão 2.7'
+version_ = 'Versão 2.9'
 # icon = os.path.join()
 
 
@@ -460,6 +462,18 @@ class AppMain():
             
             clean.setup(download_folder)
             
+            async def load(dic_url, agregador):
+                if dic_url in url:
+                    self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
+                    try:
+                        driver.quit()
+                    except:
+                        ...
+                else:
+                    self.result = 1
+                    driver.quit()
+                    print("Erro: URL inválida")
+            
             for dic_name, dic_url in dic_agregadores.items():
                 
                 # Check
@@ -468,284 +482,107 @@ class AppMain():
                 
                 # Num 01 (BR Mangás)
                 elif "BR Mangás" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_01.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_01)
+                    break
         
                 # Num 02 (Crystal Scan)
                 elif "Crystal Scan" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_02.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_02)
+                    break
                     
                 # Num 03 (Argos Comics)
                 elif "Argos Comics" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_03.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_03)
+                    break
         
                 # Num 04 (Argos Hentai)
                 elif "Argos Hentai" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_04.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_04)
+                    break
         
                 # Num 05 (Mangás Chan)
                 elif "Mangás Chan" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_05.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_05)
+                    break
         
                 # Num 06 (Ler Mangá)
                 elif "Ler Mangá" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_06.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_06)
+                    break
         
                 # Num 07 (Tsuki)
                 elif "Tsuki" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_07.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_07)
+                    break
         
                 # Num 08 (YomuMangás)
                 elif "YomuMangás" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_08.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_08)
+                    break
         
                 # Num 09 (SlimeRead)
                 elif "SlimeRead" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_09.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_09)
+                    break
         
                 # Num 10 (Flower Manga)
                 elif "Flower Manga" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_10.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_10)
+                    break
         
                 # Num 11 (Ler Manga Online)
                 elif "Ler Manga Online" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_11.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_11)
+                    break
         
                 # Num 12 (Manga BR)
                 elif "Manga BR" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_12.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_12)
+                    break
         
                 # Num 13 (Projeto Scanlator)
                 elif "Projeto Scanlator" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_13.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_13)
+                    break
         
                 # Num 14 (Hentai Teca)
                 elif "Hentai Teca" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_14.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_14)
+                    break
         
                 # Num 15 (Argos Scan)
                 elif "Argos Scan" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_15.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_15)
+                    break
         
                 # Num 16 (NicoManga)
                 elif "NicoManga" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_16.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_16)
+                    break
         
                 # Num 17 (Momo no Hana)
                 elif "Momo no Hana" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_17.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_17)
+                    break
         
                 # Num 18 (Manhastro)
                 elif "Manhastro" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_18.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_18)
+                    break
         
-                # Num 18 (Valkyrie Scan)
+                # Num 19 (Valkyrie Scan)
                 elif "Valkyrie Scan" in agregador_escolhido:
-                    if dic_url in url:
-                        self.result = await agr_19.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                        try:
-                            driver.quit()
-                        except:
-                            ...
-                        break
-                    else:
-                        self.result = 1
-                        driver.quit()
-                        print("Erro: URL inválida")
-                        break
+                    await load(dic_url, agr_19)
+                    break
+        
+                # Num 20 (Limbo Scan)
+                elif "Limbo Scan" in agregador_escolhido:
+                    await load(dic_url, agr_20)
+                    break
+                    
+                
+                    
+                    
             
             folder_path = os.path.join(self.folder_selected, nome_foler)
             del_folder.delete_empty_folders(folder_path.replace('/', '\\'))

@@ -14,6 +14,9 @@ def setup():
         'ttkbootstrap',
         'undetected_chromedriver',
         'bs4',
+        'Pillow'
+        'imageio',
+        'imageio[pyav]'
     ]
 
     for module in required_modules:

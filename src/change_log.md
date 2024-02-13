@@ -1,3 +1,15 @@
+### Versão 2.9 (13/02/2024)
+
+- Foi adicionado o agregador "Limbo Scan".
+
+- O ImageMagick foi removido.
+
+- Foi adicionado dois novos módulos: Pillow e Imageio.
+
+- Agora somente paginas que passarem dos 10000 pixel serão cortados e não todas.
+
+- Pequenas mudanças.
+
 ### Versão 2.8 (03/02/2024)
 
 - Adicionado o agregador 'Valkyrie Scan'.

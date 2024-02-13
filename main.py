@@ -25,7 +25,8 @@ url_folder = [
     'yomumangás',
     'nicomanga',
     'momo_no_hana',
-    'valkyrie_scan'
+    'valkyrie_scan',
+    'limboscan'
 ]
 
 context = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/urls/'
@@ -56,7 +57,8 @@ urls = {
     'nicomanga': {'main': f'{context}/nicomanga/main.py', 'run':f'{context}/nicomanga/run.py', 'search':f'{context}/nicomanga/search.py'},
     'momo_no_hana': {'main': f'{context}/momo_no_hana/main.py', 'run':f'{context}/momo_no_hana/run.py', 'search':f'{context}/momo_no_hana/search.py'},
     'manhastro': {'main': f'{context}/manhastro/main.py', 'run':f'{context}/manhastro/run.py', 'search':f'{context}/manhastro/search.py'},
-    'valkyrie_scan': {'main': f'{context}/valkyrie_scan/main.py', 'run':f'{context}/valkyrie_scan/run.py', 'search':f'{context}/valkyrie_scan/search.py'}
+    'valkyrie_scan': {'main': f'{context}/valkyrie_scan/main.py', 'run':f'{context}/valkyrie_scan/run.py', 'search':f'{context}/valkyrie_scan/search.py'},
+    'limbo_scan': {'main': f'{context}/limbo_scan/main.py', 'run':f'{context}/limbo_scan/run.py', 'search':f'{context}/limbo_scan/search.py'}
 }
 
 
@@ -68,7 +70,6 @@ urls2 = {
     'download':f'{context2}/download.py',
     'execute_driver':f'{context2}/execute_driver.py',
     'folder_main':f'{context2}/folder_main.py',
-    'imagemagick_check':f'{context2}/imagemagick_check.py',
     'load':f'{context2}/load.py',
     'organizar':f'{context2}/organizar.py',
     'print':f'{context2}/print.py',
@@ -170,14 +171,8 @@ os.system('cls')
 import src.check as mdi
 mdi.setup()
 
-# Importações da pasta 'src'
-import src.imagemagick_check as imc
-
 # Importação da pasta 'Setup'
 import setup.main as setup_main
-
-# Verifica se o ImageMagick está instalado
-imc.setup()
 
 # Inicia a GUI
 setup_main.setup()

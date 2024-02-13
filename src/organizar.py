@@ -1,38 +1,101 @@
 import os
 import re
 import shutil
+import imageio
+import zipfile
 import win32api
 import win32con
 import subprocess
-import zipfile
+from PIL import Image
 from colorama import Fore, Style
 
-def cortar_imagens(input_images, output_folder, extension):
-    output_filename = os.path.join(output_folder, f"0{extension}")
-    command = ["magick", "convert", "-quality", "100", "-crop", "32000x5000"]
-    
-    command += input_images + [output_filename]
-    
-    subprocess.run(command, check=True)
+tamanho_máximo = 10000
+número_de_partes = 5
 
+def cortar_imagem(image, output_folder, folder_path, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
+    os.makedirs(output_folder, exist_ok=True)
+    
+    # Open the image
+    image_size = Image.open(image)
+    
+    # Get the dimensions of the image
+    width, height = image_size.size
+    
+    # Height of each part
+    height_part = height // número_de_partes
+    
+    # Loop to crop the image into parts
+    for i in range(número_de_partes):
+        # Set the cropping coordinates for the current part
+        left = 0
+        top = i * height_part
+        right = width
+        bottom = (i + 1) * height_part
 
-def converter_imagens(input_images, extension, output_folder, folder_path):
+        # Crop the current part
+        current_part = image_size.crop((left, top, right, bottom))
+
+        # Save the current part with the desired name
+        filename = os.path.basename(image)
+        name, extension = os.path.splitext(filename)
+        part_path = os.path.join(output_folder, f"{name}-{i}.jpg")
+        current_part.save(part_path)
+
+        # Close the image of the current part
+        current_part.close()
+    
+    os.remove(image)
+    
+    output_files = [f for f in os.listdir(output_folder) if f.lower().endswith(tuple(allow_ext))]
+    for image in output_files:
+        output_pathfile = os.path.join(output_folder, image)
+        shutil.move(output_pathfile, folder_path)
+
+def verificar_imagem(folder_path, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
+    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(allow_ext))]
+    input_images = [os.path.join(folder_path, image) for image in image_files]
+    output_folder = os.path.join(folder_path, "temp")
+    
+    images_over_limit = []
+    try:
+        for image in input_images:
+            try:
+                image_size = Image.open(image)
+            except:
+                try:
+                    imagem = imageio.imread(image)
+                    imageio.imwrite(image, imagem)
+                    image_size = Image.open(image)
+                except:
+                    continue
+            tamanho = image_size.height
+            image_size.close()
+            if tamanho > tamanho_máximo:
+                images_over_limit.append(image)
+    except:
+        pass
+
+    if images_over_limit:
+        for image in images_over_limit:
+            cortar_imagem(image, output_folder, folder_path)
+        
+    if os.path.exists(output_folder):
+        os.rmdir(output_folder)
+
+def converter_imagem(folder_path, extension, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
+    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(allow_ext))]
+    input_images = [os.path.join(folder_path, image) for image in image_files]
+    
     for image in input_images:
-        try:
-            base_name, _ = os.path.splitext(os.path.basename(image))
-            out = os.path.join(output_folder, f"{base_name}{extension}", )
-            subprocess.run(f'magick convert "{image}" "{out}"', check=True)
-        except Exception as e:
-            print(f"{Fore.RED}Erro ao converter a imagem {image}:{Style.RESET_ALL} {e}")
-        else:
-            os.remove(image)
-    
-    arquivos = os.listdir(output_folder)
-    
-    for arquivo in arquivos:
-        caminho_origem = os.path.join(output_folder, arquivo)
-        caminho_destino = os.path.join(folder_path, arquivo)
-        shutil.move(caminho_origem, caminho_destino)
+        base, ext = os.path.splitext(image)
+        if ext.lower() != extension.lower():
+            try:
+                imagem = imageio.imread(image)
+                novo_caminho = base + extension.lower()
+                imageio.imwrite(novo_caminho, imagem)
+                os.remove(image)
+            except:
+                continue
 
 
 def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
@@ -76,45 +139,8 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     win32api.SetFileAttributes(output_folder, atributos_atuais | win32con.FILE_ATTRIBUTE_HIDDEN)
 
 
-    # Verificar a altura das imagens
-    altura_maxima = 10000
-    try:
-        print(f"{Fore.RED}")
-        cortar = any(int(subprocess.check_output(["magick", "identify", "-format", "%h", image]).decode("utf-8").strip()) > altura_maxima for image in input_images)
-    except:
-        cortar = False
-    print(f"{Style.RESET_ALL}")
-    
-    
-    if cortar:
-        cortar_imagens(input_images, output_folder, extension)
-        for image_file in input_images:
-            os.remove(image_file)
-            
-        # Contador para numerar os arquivos
-        count = 1
-
-        output_files = sorted([f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
-
-        for filename in output_files:
-            base, ext = os.path.splitext(filename)
-            new_filename = f"{count:02d}{ext}"
-            os.rename(os.path.join(output_folder, filename), os.path.join(output_folder, new_filename))
-            count += 1
-
-        output_files = [f for f in os.listdir(output_folder) if f.lower().endswith(tuple(extensoes_permitidas))]
-        for image in output_files:
-            output_pathfile = os.path.join(output_folder, image)
-            shutil.move(output_pathfile, folder_path)
-
-        
-    else:
-        converter_imagens(input_images, extension, output_folder, folder_path)
-        
-        
-    # shutil.move(output_filename, folder_path)
-    output_folder2 = os.path.join(folder_path, "temp")
-    os.removedirs(output_folder2)
+    verificar_imagem(folder_path)
+    converter_imagem(folder_path, extension)
 
 
     if compactar:

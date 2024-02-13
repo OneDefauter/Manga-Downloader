@@ -203,6 +203,5 @@ def setup(driver, ext=6):
         install_ext_1(driver)
         install_ext_2(driver)
         install_ext_3(driver)
-        install_ext_4(driver)
         
     
