@@ -39,8 +39,6 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Argos Comics](https://argoscomics.com/)**
 
-● **[Argos Hentai](https://argoshentai.com/)**
-
 ● **[Mangás Chan](https://mangaschan.net/)**
 
 ● **[Ler Mangá](https://lermanga.org/)**

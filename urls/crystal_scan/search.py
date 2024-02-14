@@ -30,7 +30,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
         )
 
         # Clique no botão
-        element.click()
+        driver.execute_script("document.querySelector('.c-chapter-readmore .chapter-readmore').click();")
 
     except:
         pass
