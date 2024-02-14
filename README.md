@@ -24,7 +24,15 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **undetected-chromedriver**
 
+● **Pillow**
+
+● **Imageio**
+
+● **Imageio-pyav**
+
 ***Nota: os módulos são instalados caso não tenha.***
+
+
 
 # Sites suportados
 ● **[BR Mangás](https://www.brmangas.net/)**
@@ -62,6 +70,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 ● **[Manhastro](https://manhastro.com/)**
 
 ● **[Valkyrie Scan](https://valkyriescan.com/)**
+
+● **[Limbo Scan](https://limboscan.com.br/)**
 
 
 
