@@ -2,6 +2,8 @@
 
 - Limpeza em todo código.
 
+- O agregador "Argos Hentais" foi removido.
+
 - Foi adicionado os agregadores "Nobre Scan" e "Iris Scanlator".
 
 ### Versão 2.9 (13/02/2024)
