@@ -1,4 +1,3 @@
-import os
 import pickle
 import src.time_zone as hora_agora
 

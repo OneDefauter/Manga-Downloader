@@ -23,6 +23,8 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     os.makedirs(folder_path, exist_ok=True)
 
+    url = f"{url}/?style=list"
+
     driver.get(url)
     driver.implicitly_wait(10)
 

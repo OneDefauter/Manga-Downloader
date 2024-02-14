@@ -8,7 +8,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from colorama import Fore, Style
 
-import src.download as download
 import src.organizar as organizar
 import src.move as move
 

@@ -1,9 +1,6 @@
 import time
 import requests
 from bs4 import BeautifulSoup
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 # Retornos
 ### 400 == Bad Request
@@ -51,6 +48,9 @@ def setup(driver, url, wait=3):
     elif status_code == 503:
         print("Erro: Serviço indisponível. Status code: 503")
         return 'e503'
+    elif status_code == 522:
+        print("Erro: A conexão expirou. Status code: 522")
+        return 'e522'
     
     # Verifica se a página está bloqueada pelo Cloudflare
     page_source = str(driver.page_source).lower()

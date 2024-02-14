@@ -8,7 +8,6 @@ app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 folder = ['setup', 'src', 'urls', 'engine', 'images']
 url_folder = [
     'argos_comics',
-    'argos_hentai',
     'argos_scan',
     'br_mangas',
     'crystal_scan',
@@ -26,7 +25,9 @@ url_folder = [
     'nicomanga',
     'momo_no_hana',
     'valkyrie_scan',
-    'limboscan'
+    'limbo_scan',
+    'iris_scanlator',
+    'nobre_scan'
 ]
 
 context = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/urls/'
@@ -39,7 +40,6 @@ context6 = 'https://raw.githubusercontent.com/OneDefauter/Manga-Downloader/main/
 # Agregadores
 urls = {
     'argos_comics': {'main': f'{context}/argos_comics/main.py', 'run':f'{context}/argos_comics/run.py', 'search':f'{context}/argos_comics/search.py'},
-    'argos_hentai': {'main': f'{context}/argos_hentai/main.py', 'run':f'{context}/argos_hentai/run.py', 'search':f'{context}/argos_hentai/search.py'},
     'br_mangas': {'main': f'{context}/br_mangas/main.py', 'run':f'{context}/br_mangas/run.py', 'search':f'{context}/br_mangas/search.py', 'change':f'{context}/br_mangas/change.py', 'ads':f'{context}/br_mangas/ads.py'},
     'crystal_scan': {'main': f'{context}/crystal_scan/main.py', 'run':f'{context}/crystal_scan/run.py', 'search':f'{context}/crystal_scan/search.py'},
     'flower_manga': {'main': f'{context}/flower_manga/main.py', 'run':f'{context}/flower_manga/run.py', 'search':f'{context}/flower_manga/search.py'},
@@ -58,7 +58,9 @@ urls = {
     'momo_no_hana': {'main': f'{context}/momo_no_hana/main.py', 'run':f'{context}/momo_no_hana/run.py', 'search':f'{context}/momo_no_hana/search.py'},
     'manhastro': {'main': f'{context}/manhastro/main.py', 'run':f'{context}/manhastro/run.py', 'search':f'{context}/manhastro/search.py'},
     'valkyrie_scan': {'main': f'{context}/valkyrie_scan/main.py', 'run':f'{context}/valkyrie_scan/run.py', 'search':f'{context}/valkyrie_scan/search.py'},
-    'limbo_scan': {'main': f'{context}/limbo_scan/main.py', 'run':f'{context}/limbo_scan/run.py', 'search':f'{context}/limbo_scan/search.py'}
+    'limbo_scan': {'main': f'{context}/limbo_scan/main.py', 'run':f'{context}/limbo_scan/run.py', 'search':f'{context}/limbo_scan/search.py'},
+    'nobre_scan': {'main': f'{context}/nobre_scan/main.py', 'run':f'{context}/nobre_scan/run.py', 'search':f'{context}/nobre_scan/search.py'},
+    'iris_scanlator': {'main': f'{context}/iris_scanlator/main.py', 'run':f'{context}/iris_scanlator/run.py', 'search':f'{context}/iris_scanlator/search.py'}
 }
 
 
@@ -74,7 +76,6 @@ urls2 = {
     'organizar':f'{context2}/organizar.py',
     'print':f'{context2}/print.py',
     'save':f'{context2}/save.py',
-    'theme':f'{context2}/theme.py',
     'time_zone':f'{context2}/time_zone.py',
     'clean':f'{context2}/clean.py',
     'move':f'{context2}/move.py',

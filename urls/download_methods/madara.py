@@ -1,25 +1,13 @@
 import os
 import re
-import sys
 import time
-import shutil
-import asyncio
-import aiohttp
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
-import src.download as download
 import src.organizar as organizar
 import src.move as move
-
 
 
 def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance):

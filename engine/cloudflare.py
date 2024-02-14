@@ -1,9 +1,6 @@
 import os
 import time
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-
-import src.execute_driver as ins
 
 temp_folder = os.environ['TEMP']
 profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")

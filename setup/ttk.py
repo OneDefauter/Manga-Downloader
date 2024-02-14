@@ -35,7 +35,7 @@ import src.folder_delete as del_folder
 import urls.br_mangas.main as agr_01
 import urls.crystal_scan.main as agr_02
 import urls.argos_comics.main as agr_03
-import urls.argos_hentai.main as agr_04
+# import urls.argos_hentai.main as agr_04
 import urls.mangás_chan.main as agr_05
 import urls.ler_mangá.main as agr_06
 import urls.tsuki.main as agr_07
@@ -52,6 +52,8 @@ import urls.momo_no_hana.main as agr_17
 import urls.manhastro.main as agr_18
 import urls.valkyrie_scan.main as agr_19
 import urls.limbo_scan.main as agr_20
+import urls.nobre_scan.main as agr_21
+import urls.iris_scanlator.main as agr_22
 
 
 
@@ -74,7 +76,6 @@ dic_agregadores = {
     "BR Mangás": "https://www.brmangas.net/",
     "Crystal Scan": "https://crystalscan.net/",
     "Argos Comics": "https://argoscomics.com/",
-    "Argos Hentai": "https://argoshentai.com/",
     "Mangás Chan": "https://mangaschan.net/",
     "Ler Mangá": "https://lermanga.org/",
     "Tsuki": "https://tsuki-mangas.com/",
@@ -91,13 +92,15 @@ dic_agregadores = {
     "Manhastro": "https://manhastro.com/",
     "Valkyrie Scan": "https://valkyriescan.com/",
     "Limbo Scan": "https://limboscan.com.br/",
+    "Nobre Scan": "https://nobrescan.com.br/",
+    "Iris Scanlator": "https://irisscanlator.com.br/",
 }
 
 extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
 extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
 
-version_ = 'Versão 2.9'
+version_ = 'Versão 3.0'
 # icon = os.path.join()
 
 
@@ -167,16 +170,7 @@ class AppMain():
     
         self.root.bind("<Control-s>", self.save_shortcut)
         self.root.bind("<Control-i>", self.start_shortcut)
-    
-        button = tb.Button(self.root)
-        button.place(relx=0.966, rely=0.0, height=40, width=40)
-        button.configure(text='''X''')
-        button.configure(command=self.close)
-        button.configure(style="b1.TButton")
-        
-    
-        # self.windows()
-        
+
         self.settings_global()
         
         self.options_agreg()
@@ -189,10 +183,6 @@ class AppMain():
         
         if self.change_log_var.get():
             open_change.setup(self.root, self.y)
-        
-    def close(self):
-        self.root.quit()
-        sys.exit()
     
     def wait_check_selenium(self):
         if not self.selenium_process_completed.is_set():
@@ -496,9 +486,9 @@ class AppMain():
                     break
         
                 # Num 04 (Argos Hentai)
-                elif "Argos Hentai" in agregador_escolhido:
-                    await load(dic_url, agr_04)
-                    break
+                # elif "Argos Hentai" in agregador_escolhido:
+                #     await load(dic_url, agr_04)
+                #     break
         
                 # Num 05 (Mangás Chan)
                 elif "Mangás Chan" in agregador_escolhido:
@@ -579,6 +569,16 @@ class AppMain():
                 elif "Limbo Scan" in agregador_escolhido:
                     await load(dic_url, agr_20)
                     break
+        
+                # Num 21 (Nobre Scan)
+                elif "Nobre Scan" in agregador_escolhido:
+                    await load(dic_url, agr_21)
+                    break
+        
+                # Num 22 (Iris Scanlator)
+                elif "Iris Scanlator" in agregador_escolhido:
+                    await load(dic_url, agr_22)
+                    break
                     
                 
                     
@@ -657,9 +657,12 @@ class AppMain():
                 elif self.result == 'e502':
                     self.baixando_label.config(text="Erro: Serviço indisponível. Status code: 502")
                     self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 502")
-                elif self.result == 'e403':
+                elif self.result == 'e503':
                     self.baixando_label.config(text="Erro: Serviço indisponível. Status code: 503")
                     self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 503")
+                elif self.result == 'e522':
+                    self.baixando_label.config(text="Erro: A conexão expirou. Status code: 522")
+                    self.app_instance.move_text_wait("Erro: A conexão expirou. Status code: 522")
                 elif self.result == 'e523':
                     self.baixando_label.config(text="Erro: Acesso bloqueado. Status code: 523")
                     self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
@@ -699,10 +702,10 @@ class AppMain():
                     self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 502")
                 elif self.result == 'e403':
                     self.app_instance.move_text_wait("Erro: Serviço indisponível. Status code: 503")
+                elif self.result == 'e522':
+                    self.app_instance.move_text_wait("Erro: A conexão expirou. Status code: 522")
                 elif self.result == 'e523':
                     self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
-                
-                self.driver
                 
             self.enable_gui()
 
@@ -2163,24 +2166,6 @@ class AppMain():
         self.change_log_var.set(change_log_var)
         
         
-    def windows(self):
-        # Bloquear redimensionamento da janela
-        self.root.resizable(False, False)
-        
-        # Bloquear movimento da janela
-        # Remove a barra de título e torna a janela não interativa
-        self.root.overrideredirect(False)
-        
-        # Configuração para centralizar a janela
-        window_width = 1124
-        window_height = 466
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        self.x = (screen_width - window_width) // 2
-        self.y = (screen_height - window_height) // 2
-        self.root.geometry(f"{window_width}x{window_height}+{self.x}+{self.y}")
-
-
     def theme_default(self):
         self.theme = 'litera'
         self.save_settings()

@@ -5,9 +5,7 @@ import imageio
 import zipfile
 import win32api
 import win32con
-import subprocess
 from PIL import Image
-from colorama import Fore, Style
 
 tamanho_máximo = 10000
 número_de_partes = 5

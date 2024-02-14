@@ -5,8 +5,6 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 # Requisitos
 ● [**Python**](https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe)
 
-● [**ImageMagick**](https://github.com/OneDefauter/Menu_/releases/download/Req/ImageMagick-7.1.1-21-Q16-HDRI-x64-dll.exe)
-
 ● [**Google Chrome**](https://www.google.com/chrome/)
 
 # Módulos necessários
@@ -72,6 +70,10 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 ● **[Valkyrie Scan](https://valkyriescan.com/)**
 
 ● **[Limbo Scan](https://limboscan.com.br/)**
+
+● **[Nobre Scan](https://nobrescan.com.br/)**
+
+● **[Iris Scanlator](https://irisscanlator.com.br/)**
 
 
 

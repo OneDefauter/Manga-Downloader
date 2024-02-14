@@ -1,15 +1,15 @@
 import os
 import aiohttp
 
-import urls.argos_hentai.search as obter_capitulos
-import urls.argos_hentai.run as run
+import urls.mangás_chan.search as obter_capitulos
+import urls.mangás_chan.run as run
 
 async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance):
-    base_url = 'https://argoshentai.com/manga/'
+    base_url = 'https://mangaschan.net/manga/'
 
     # Função para obter capítulos dentro de um intervalo
     capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label, app_instance)
-
+    
     if capitulos_solicitados in ['e400', 'e401', 'e403', 'e404', 'e500', 'e502', 'e503', 'e523']:
         return capitulos_solicitados
 

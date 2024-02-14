@@ -1,20 +1,10 @@
 import os
-import re
-import sys
-import time
 import shutil
 import asyncio
-import aiohttp
-from urllib.parse import urlparse, urlunparse
-from selenium import webdriver
+from urllib.parse import urlparse
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
 
 import src.download as download

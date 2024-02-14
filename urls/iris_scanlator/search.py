@@ -6,21 +6,15 @@ import src.status_check as status_check
 
 def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
     # Abre a página
-    driver.execute_script(f"window.open('{url}', '_blank')")
+    driver.get(url)
     
-    time.sleep(10)
+    # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
+    driver.implicitly_wait(5)
     
-    driver.switch_to.window(driver.window_handles[0])
-    driver.close()
-    time.sleep(1)
-    driver.switch_to.window(driver.window_handles[0])
-    
-    # Verifica o status do site
-    def func(param):
-        result = status_check.setup(driver, url)
-        if result != 200:
-            driver.quit()
-            return result
+    result = status_check.setup(driver, url)
+    if result != 200:
+        driver.quit()
+        return result
     
     os.system("cls")
     print("Verificando capítulos...")

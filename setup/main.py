@@ -1,5 +1,3 @@
-import sys
-
 import ttkbootstrap as tb
 
 # Importações da pasta 'src'
