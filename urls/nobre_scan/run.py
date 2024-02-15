@@ -28,7 +28,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     driver.get(url)
     driver.implicitly_wait(10)
 
-    madara.setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance)
+    madara.setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance, True)
 
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
 

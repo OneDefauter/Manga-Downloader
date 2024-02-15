@@ -10,7 +10,7 @@ import src.organizar as organizar
 import src.move as move
 
 
-def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance):
+def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance, extended = False):
     def load_image():
         count_repet = 0
         count_limit = 10
@@ -81,11 +81,19 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
         for imagem in links_das_imagens:
             if debug_var.get():
                 baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
-                
-            try:
-                driver.get(imagem)
-            except:
-                continue
+            
+            if extended:
+                try:
+                    driver.execute_script(f"window.open('{imagem}', '_blank')")
+                    janelas_abertas = driver.window_handles
+                    driver.switch_to.window(janelas_abertas[-1])
+                except:
+                    continue
+            else:
+                try:
+                    driver.get(imagem)
+                except:
+                    continue
             
             try:
                 input_element = WebDriverWait(driver, 10).until(
@@ -115,6 +123,11 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
             print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
             
             time.sleep(0.5)
+            
+            if extended:
+                driver.close()
+                janelas_abertas = driver.window_handles
+                driver.switch_to.window(janelas_abertas[-1])
             
             count += 1
         
