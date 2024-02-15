@@ -60,7 +60,8 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
 
         # Obtém o texto do número do capítulo
         # Usa expressão regular para extrair números, pontos e vírgulas
-        numero_capitulo = float(re.sub(r'[^0-9.,]', '', a_element.text.strip()))
+        numero_capitulo = re.sub(r'[^0-9.,]', '', a_element.text.strip())
+        numero_capitulo = float(re.sub(r'^\.', '', numero_capitulo))
 
         if inicio <= numero_capitulo <= fim:
             link = a_element.get_attribute("href")

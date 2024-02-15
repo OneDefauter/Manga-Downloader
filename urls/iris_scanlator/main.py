@@ -1,8 +1,8 @@
 import os
 import aiohttp
 
-import urls.mangás_chan.search as obter_capitulos
-import urls.mangás_chan.run as run
+import urls.iris_scanlator.search as obter_capitulos
+import urls.iris_scanlator.run as run
 
 async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance):
     base_url = 'https://mangaschan.net/manga/'

@@ -82,7 +82,10 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
             if debug_var.get():
                 baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
                 
-            driver.get(imagem)
+            try:
+                driver.get(imagem)
+            except:
+                continue
             
             try:
                 input_element = WebDriverWait(driver, 10).until(
@@ -124,17 +127,29 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
         
     time.sleep(2)
     
-    while True:
+    max_attempts = 3
+    attempt = 0
+
+    while attempt < max_attempts:
+        attempt += 1
+        
         lista = os.listdir(download_folder)
         if count == len(lista) + 1:
             break
         
         else:
-            for image in lista:
-                image = os.path.join(download_folder, image)
-                os.remove(image)
-            
-            count = download_images(1)
+            if attempt != 3:
+                for image in lista:
+                    image = os.path.join(download_folder, image)
+                    os.remove(image)
+                
+                print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} Tentando baixar novamente, pois faltou página {count}/{len(lista) + 1}, tentativa {attempt}/{max_attempts}")
+                count = download_images(1)
+                
+                # Adicione um pequeno atraso antes de tentar novamente, se necessário
+                time.sleep(1)  # Aguarde 1 segundo entre as tentativas, ajuste conforme necessário
+    else:
+        print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} Páginas baixadas {count}/{len(lista) + 1}, pulando...")
     
     move.setup(download_folder, folder_path)
             

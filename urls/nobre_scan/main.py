@@ -1,8 +1,8 @@
 import os
 import aiohttp
 
-import urls.crystal_scan.search as obter_capitulos
-import urls.crystal_scan.run as run
+import urls.nobre_scan.search as obter_capitulos
+import urls.nobre_scan.run as run
 
 async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance):
     base_url = 'https://nobrescan.com.br/'
