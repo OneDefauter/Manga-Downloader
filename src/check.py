@@ -17,6 +17,7 @@ def setup():
         'Pillow',
         'imageio',
         'imageio[pyav]'
+        'Wand',
     ]
 
     for module in required_modules:
@@ -26,6 +27,9 @@ def setup():
             
             elif module == 'Pillow':
                 __import__('PIL')
+                
+            elif module == 'Wand':
+                __import__("wand.image")
             
             else:
                 __import__(module)

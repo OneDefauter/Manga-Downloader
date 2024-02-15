@@ -6,6 +6,7 @@ import zipfile
 import win32api
 import win32con
 from PIL import Image
+from wand.image import Image as MagickImage
 
 tamanho_máximo = 10000
 número_de_partes = 5
@@ -65,7 +66,12 @@ def verificar_imagem(folder_path, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']
                     imageio.imwrite(image, imagem)
                     image_size = Image.open(image)
                 except:
-                    continue
+                    try:
+                        with MagickImage(filename=image) as img:
+                            img.save(filename=image)
+                        image_size = Image.open(image)
+                    except:
+                        continue
             tamanho = image_size.height
             image_size.close()
             if tamanho > tamanho_máximo:
@@ -93,7 +99,13 @@ def converter_imagem(folder_path, extension, allow_ext = ['.png', '.jpg', '.jpeg
                 imageio.imwrite(novo_caminho, imagem)
                 os.remove(image)
             except:
-                continue
+                try:
+                    with MagickImage(filename=image) as img:
+                        novo_caminho = base + extension.lower()
+                        img.save(filename=novo_caminho)
+                    os.remove(image)
+                except Exception as e:
+                    print(f"Erro ao converter {image}: {e}")
 
 
 def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
