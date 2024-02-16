@@ -16,7 +16,7 @@ def setup():
         'bs4',
         'Pillow',
         'imageio',
-        'imageio[pyav]'
+        'imageio[pyav]',
         'Wand',
     ]
 
