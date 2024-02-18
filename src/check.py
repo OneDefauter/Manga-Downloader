@@ -32,7 +32,7 @@ def setup():
                 __import__("imageio")
                 
             elif module == 'Wand':
-                __import__("wand.image")
+                from wand.image import Image
             
             else:
                 __import__(module)
