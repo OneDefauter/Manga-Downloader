@@ -618,7 +618,10 @@ class AppMain():
                 # Bem-sucedido
                 if self.result == 0:
                     self.baixando_label.config(text="Finalizado")
-                    winsound.Beep(1000, 500)
+                    try:
+                        winsound.Beep(1000, 500)
+                    except:
+                        pass
                     self.app_instance.move_text_wait('Processo finalizado')
                     
                 # URL inválida
@@ -670,7 +673,10 @@ class AppMain():
             else:
                 # Bem-sucedido
                 if self.result == 0:
-                    winsound.Beep(1000, 500)
+                    try:
+                        winsound.Beep(1000, 500)
+                    except:
+                        pass
                     self.app_instance.move_text_wait('Processo finalizado')
                 
                 # URL inválida
