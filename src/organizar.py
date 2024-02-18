@@ -45,7 +45,7 @@ def cortar_imagem(image, output_folder, folder_path, extension, allow_ext = ['.p
                 current_part = current_part.convert("RGB")
             elif extension.lower() == ".png":
                 current_part = current_part.convert("RGBA")
-        part_path = os.path.join(output_folder, f"{name}-{i}.{extension}")
+        part_path = os.path.join(output_folder, f"{name}-{i}{extension}")
         current_part.save(part_path)
 
         # Close the image of the current part
