@@ -170,8 +170,6 @@ for name, value in urls6.items():
 
 os.system('cls')
 
-import src.check as mdi
-mdi.setup()
 
 # Importações da pasta 'src'
 import src.imagemagick_check as imc
@@ -181,6 +179,9 @@ import setup.main as setup_main
 
 # Verifica se o ImageMagick está instalado
 imc.setup()
+
+import src.check as mdi
+mdi.setup()
 
 # Inicia a GUI
 setup_main.setup()
