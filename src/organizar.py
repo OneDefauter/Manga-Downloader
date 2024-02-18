@@ -11,7 +11,7 @@ from wand.image import Image as MagickImage
 tamanho_máximo = 10000
 número_de_partes = 5
 
-def cortar_imagem(image, output_folder, folder_path, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
+def cortar_imagem(image, output_folder, folder_path, extension, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
     os.makedirs(output_folder, exist_ok=True)
     
     # Open the image
@@ -33,11 +33,19 @@ def cortar_imagem(image, output_folder, folder_path, allow_ext = ['.png', '.jpg'
 
         # Crop the current part
         current_part = image_size.crop((left, top, right, bottom))
+        
+        if extension == ".jpg":
+            current_part
 
         # Save the current part with the desired name
         filename = os.path.basename(image)
-        name, extension = os.path.splitext(filename)
-        part_path = os.path.join(output_folder, f"{name}-{i}.jpg")
+        name, ext = os.path.splitext(filename)
+        if ext.lower() != extension.lower():
+            if extension.lower() == ".jpg":
+                current_part = current_part.convert("RGB")
+            elif extension.lower() == ".png":
+                current_part = current_part.convert("RGBA")
+        part_path = os.path.join(output_folder, f"{name}-{i}.{extension}")
         current_part.save(part_path)
 
         # Close the image of the current part
@@ -50,7 +58,7 @@ def cortar_imagem(image, output_folder, folder_path, allow_ext = ['.png', '.jpg'
         output_pathfile = os.path.join(output_folder, image)
         shutil.move(output_pathfile, folder_path)
 
-def verificar_imagem(folder_path, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
+def verificar_imagem(folder_path, extension, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']):
     image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(allow_ext))]
     input_images = [os.path.join(folder_path, image) for image in image_files]
     output_folder = os.path.join(folder_path, "temp")
@@ -81,7 +89,7 @@ def verificar_imagem(folder_path, allow_ext = ['.png', '.jpg', '.jpeg', '.webp']
 
     if images_over_limit:
         for image in images_over_limit:
-            cortar_imagem(image, output_folder, folder_path)
+            cortar_imagem(image, output_folder, folder_path, extension)
         
     if os.path.exists(output_folder):
         os.rmdir(output_folder)
@@ -149,7 +157,7 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     win32api.SetFileAttributes(output_folder, atributos_atuais | win32con.FILE_ATTRIBUTE_HIDDEN)
 
 
-    verificar_imagem(folder_path)
+    verificar_imagem(folder_path, extension)
     converter_imagem(folder_path, extension)
 
 
