@@ -10,6 +10,8 @@ def setup(headless_var, agregador_escolhido, profile_folder, download_folder, ex
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     # options.add_argument('--disable-extensions')
     chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-web-security')
+    chrome_options.add_argument('--allow-running-insecure-content')
     chrome_options.add_argument('--disable-infobars')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-browser-side-navigation')
@@ -22,6 +24,8 @@ def setup(headless_var, agregador_escolhido, profile_folder, download_folder, ex
     
     if headless_var and agregador_escolhido != 'Mangás Chan':
         chrome_options.add_argument("--headless=new")
+    else:
+        chrome_options.add_argument('--start-maximized')
     
     if net_option_var:
         chrome_options.add_argument("--proxy-server='direct://'")

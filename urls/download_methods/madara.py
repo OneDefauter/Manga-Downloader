@@ -1,5 +1,6 @@
 import os
 import re
+import glob
 import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -77,7 +78,7 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
             break
         
         
-    def download_images(count):
+    def download_images(count, files):
         for imagem in links_das_imagens:
             if debug_var.get():
                 baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
@@ -122,7 +123,28 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
             
             print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
             
-            time.sleep(0.5)
+            time.sleep(0.2)
+            
+            attention = 0
+            warning_img = 0
+            while True:
+                lista = os.listdir(download_folder)
+                if len(lista) > files:
+                    files += 1
+                    break
+                else:
+                    if warning_img > 3:
+                        print(f"{Fore.RED}Falha ao baixar {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
+                        break
+                    elif attention < 1000:
+                        attention += 1
+                        time.sleep(0.1)
+                        continue
+                    else:
+                        download_button.click()
+                        attention = 0
+                        warning_img += 1
+                        continue
             
             if extended:
                 driver.close()
@@ -133,36 +155,10 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
         
         return count
     
-    count = download_images(1)
+    download_images(1, 0)
     
     if debug_var.get():
         baixando_label.config(text=f"Arrumando páginas...")
-        
-    time.sleep(2)
-    
-    max_attempts = 3
-    attempt = 0
-
-    while attempt < max_attempts:
-        attempt += 1
-        
-        lista = os.listdir(download_folder)
-        if count == len(lista) + 1:
-            break
-        
-        else:
-            if attempt != 3:
-                for image in lista:
-                    image = os.path.join(download_folder, image)
-                    os.remove(image)
-                
-                print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} Tentando baixar novamente, pois faltou página {count}/{len(lista) + 1}, tentativa {attempt}/{max_attempts}")
-                count = download_images(1)
-                
-                # Adicione um pequeno atraso antes de tentar novamente, se necessário
-                time.sleep(1)  # Aguarde 1 segundo entre as tentativas, ajuste conforme necessário
-    else:
-        print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} Páginas baixadas {count}/{len(lista) + 1}, pulando...")
     
     move.setup(download_folder, folder_path)
             

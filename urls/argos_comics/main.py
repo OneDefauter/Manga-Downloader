@@ -10,7 +10,7 @@ async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_s
     # Função para obter capítulos dentro de um intervalo
     capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label, app_instance)
 
-    if capitulos_solicitados in ['e400', 'e401', 'e403', 'e404', 'e500', 'e502', 'e503', 'e523']:
+    if capitulos_solicitados in ['e400', 'e401', 'e403', 'e404', 'e500', 'e502', 'e503', 'e522', 'e523']:
         return capitulos_solicitados
 
     if len(capitulos_solicitados) == 0:

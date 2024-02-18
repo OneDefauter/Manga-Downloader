@@ -11,9 +11,14 @@ def setup(headless_var, agregador_escolhido, profile_folder, download_folder, ex
     
     if headless_var:
         chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--disable-web-security")
+    else:
+        chrome_options.add_argument('--start-maximized')
         
     # chrome_options.add_argument('--blink-settings=imagesEnabled=false') # Desativa a renderização de iamgens
+    
+    chrome_options.add_argument('--disable-web-security')
+    
+    chrome_options.add_argument('--allow-running-insecure-content')
     
     chrome_options.add_argument('--log-level=3')  # Nível 3 indica "sem logs"
     

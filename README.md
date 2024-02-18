@@ -28,6 +28,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **Imageio-pyav**
 
+● **Wand**
+
 ***Nota: os módulos são instalados caso não tenha.***
 
 

@@ -184,7 +184,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             else:
                 break
             
-    def download_images(count):
+    def download_images(count, files):
         for imagem in links_das_imagens:
             if debug_var.get():
                 baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
@@ -223,13 +223,29 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             
             print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
             
-            time.sleep(0.5)
+            attention = 0
+            while True:
+                lista = os.listdir(download_folder)
+                files_with_tmp_or_cdownload_extension = [file for file in os.listdir(download_folder) if file.endswith('.tmp') or file.endswith('.cdownload')]
+                
+                if files_with_tmp_or_cdownload_extension:
+                    if attention < 99999:
+                        attention += 1
+                        continue
+                    else:
+                        download_button.click()
+                        attention = 0
+                        continue
+                
+                if len(os.listdir(download_folder)) != files:
+                    files += 1
+                    break
             
             count += 1
         
         return count
     
-    count = download_images(1)
+    count = download_images(1, 0)
     
     if debug_var.get():
         baixando_label.config(text=f"Arrumando páginas...")
@@ -246,7 +262,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                 image = os.path.join(download_folder, image)
                 os.remove(image)
             
-            count = download_images(1)
+            count = download_images(1, 0)
 
     move.setup(download_folder, folder_path)
             

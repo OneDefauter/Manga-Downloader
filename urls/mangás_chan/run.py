@@ -118,9 +118,8 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         else:
             break
     
-    count = 1
-            
-    def download_images(count):
+    
+    def download_images(count, files):
         for imagem in links_das_imagens:
             if debug_var.get():
                 baixando_label.config(text=f"Verificando capítulo {numero_capitulo}\nBaixando página: {count} / {links_count}")
@@ -154,31 +153,38 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             
             print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
             
-            time.sleep(0.5)
+            time.sleep(0.2)
+            
+            attention = 0
+            warning_img = 0
+            while True:
+                lista = os.listdir(download_folder)
+                if len(lista) > files:
+                    files += 1
+                    break
+                else:
+                    if warning_img > 3:
+                        print(f"{Fore.RED}Falha ao baixar {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
+                        break
+                    elif attention < 1000:
+                        attention += 1
+                        time.sleep(0.1)
+                        continue
+                    else:
+                        download_button.click()
+                        attention = 0
+                        warning_img += 1
+                        continue
             
             count += 1
             
         return count
     
     
-    count = download_images(count)
+    download_images(1, 0)
     
     if debug_var.get():
         baixando_label.config(text=f"Arrumando páginas...")
-    
-    while True:
-        time.sleep(2)
-        
-        lista = os.listdir(download_folder)
-        if count == len(lista) + 1:
-            break
-        
-        else:
-            for image in lista:
-                image = os.path.join(download_folder, image)
-                os.remove(image)
-            
-            count = download_images(1)
     
     move.setup(download_folder, folder_path)
             

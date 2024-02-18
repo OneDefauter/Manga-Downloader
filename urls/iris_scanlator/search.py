@@ -28,7 +28,7 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     capitulos = []
 
     try:
-        capitulos = driver.find_elements(By.XPATH, '//div[@class="eplister"]//ul[@class="clstyle"]//li')
+        capitulos = driver.find_elements(By.XPATH, '//div[@class="eplister"]//ul//li')
     except:
         pass
     
