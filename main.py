@@ -72,6 +72,7 @@ urls2 = {
     'download':f'{context2}/download.py',
     'execute_driver':f'{context2}/execute_driver.py',
     'folder_main':f'{context2}/folder_main.py',
+    'imagemagick_check':f'{context2}/imagemagick_check.py',
     'load':f'{context2}/load.py',
     'organizar':f'{context2}/organizar.py',
     'print':f'{context2}/print.py',
@@ -172,8 +173,14 @@ os.system('cls')
 import src.check as mdi
 mdi.setup()
 
+# Importações da pasta 'src'
+import src.imagemagick_check as imc
+
 # Importação da pasta 'Setup'
 import setup.main as setup_main
+
+# Verifica se o ImageMagick está instalado
+imc.setup()
 
 # Inicia a GUI
 setup_main.setup()

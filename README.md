@@ -7,6 +7,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● [**Google Chrome**](https://www.google.com/chrome/)
 
+● [**ImageMagick**](https://github.com/OneDefauter/Menu_/releases/download/Req/ImageMagick-7.1.1-26-Q16-HDRI-x64-dll.exe)
+
 # Módulos necessários
 ● **requests**
 
