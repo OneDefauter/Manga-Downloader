@@ -41,11 +41,14 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     time.sleep(2)
     
-    verify1 = driver.find_element(By.XPATH, '/html/body/div/div')
-    text = verify1.find_element(By.XPATH, '/html/body/div/div/div[2]').text
-    if "Capítulo aguardando aprovação." in text:
-        print("Capítulo aguardando aprovação.")
-        return 4
+    try:
+        verify1 = driver.find_element(By.XPATH, '/html/body/div/div')
+        text = verify1.find_element(By.XPATH, '/html/body/div/div/div[2]').text
+        if "Capítulo aguardando aprovação." in text:
+            print("Capítulo aguardando aprovação.")
+            return 4
+    except:
+        pass
     
     # Espera o leitor carregar
     while True:
