@@ -171,7 +171,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             )
             download_button.click()
             
-            extension_match = re.search(r'\.(jpg|jpeg|png|gif|bmp|webp)$', imagem, re.IGNORECASE)
+            extension_match = re.search(r'\.(jpg|jpeg|png|gif|bmp|webp)(\?|$)', imagem, re.IGNORECASE)
             
             if extension_match:
                 file_extension = extension_match.group(1)
