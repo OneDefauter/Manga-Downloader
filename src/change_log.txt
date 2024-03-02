@@ -1,3 +1,9 @@
+Versão 3.1 (02/03/2024)
+- Correções foram feitas.
+- Otimizações em todos os agregadores.
+- Agregadores desativados, 'Crystal Scan', 'YomuMangás', 'Projeto Scanlator' e 'NicoManga'.
+- Agregador removido 'Argos Hentai'.
+
 Versão 3.0 (14/02/2024)
 - Limpeza em todo código.
 - O agregador "Argos Hentais" foi removido.

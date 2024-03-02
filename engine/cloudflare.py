@@ -2,14 +2,13 @@ import os
 import time
 from selenium import webdriver
 
+import src.execute_driver as ins_ext
+
 temp_folder = os.environ['TEMP']
+app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
 download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.crx'
-extension_zip_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.zip'
-extension_name = "Tampermonkey.5.0.0.0.crx"
-extension_path = os.path.join(temp_folder, extension_name)
-extension_folder_path = os.path.join(temp_folder, 'Tampermonkey.5.0.0.0')
+extension_path = os.path.join(app_folder, "src", "Violentmonkey 2.18.0.0.crx")
 
 def setup():
     options = webdriver.ChromeOptions()
@@ -28,8 +27,12 @@ def setup():
     options.add_argument('--log-level=3')
     options.add_argument(f"user-data-dir={profile_folder}")
     options.add_extension(extension_path)
+    options.add_experimental_option("prefs", {"download.default_directory": download_folder})
     driver = webdriver.Chrome(options=options)
     
+    driver.get("https://google.com")
+    ins_ext.setup(driver, 2)
+    ins_ext.setup(driver, 3)
     
     time.sleep(3)
     

@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 
 import src.status_check as status_check
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance, max_attent):
     # Abre a página
     driver.get(url)
     
@@ -13,7 +13,6 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:
-        driver.quit()
         return result
     
     capitulos = []

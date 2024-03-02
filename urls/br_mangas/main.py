@@ -5,21 +5,19 @@ import urls.br_mangas.search as obter_capitulos
 import urls.br_mangas.run as run
 
 
-async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance):
+async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
     base_url = 'https://www.brmangas.net/ler/'
 
     # Função para obter capítulos dentro de um intervalo
-    capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label, app_instance)
+    capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label, app_instance, max_attent)
 
     if capitulos_solicitados in ['e400', 'e401', 'e403', 'e404', 'e500', 'e502', 'e503', 'e522', 'e523']:
         return capitulos_solicitados
 
     if len(capitulos_solicitados) == 0:
         print("Nenhum capítulo encontrado")
-        driver.quit()
         return 3
 
-    
     async with aiohttp.ClientSession() as session:
         os.system("cls")
         for capitulo in capitulos_solicitados:

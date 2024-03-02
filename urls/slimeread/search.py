@@ -7,62 +7,56 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import src.status_check as status_check
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance, max_attent):
     # Abre a página
     driver.get(url)
-    
-    # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
-    driver.implicitly_wait(5)
     
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:
-        driver.quit()
         return result
     
-    time.sleep(3)
-    
-    os.system("cls")
-    
     print("Verificando capítulos...")
+    app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
-
-    capitulos_encontrados = []
-    turn = False
-
-    # Espera a lista de capítulos carregar
-    try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//section[@class='mt-8']"))
-        )
-    except:
-        pass
     
-    # Localiza os elementos que contêm as informações dos capítulos
-    xpath = f'//html//body//div//div//main//section[@class="mt-8"]//div[@class="mt-2"]//div//div'
-    chapter_elements = driver.find_elements(By.XPATH, xpath)
+    x = 1
+    while True:
+        capitulos_encontrados = []
         
-    if chapter_elements:
-        # Mantém apenas o primeiro elemento e descarta os outros
-        chapter_elements = [chapter_elements[0]]
+        driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
         
-    if "Cap" in chapter_elements[0].text:
-        turn = True
-    
-    if turn is False:
-        driver.quit()
-        return capitulos_encontrados
-    
-    # Extrai os dados dos capítulos
-    for element in chapter_elements:
-        for sub in element.find_elements(By.CSS_SELECTOR, 'a'):
-            chapter_number = sub.find_element(By.CSS_SELECTOR, 'p').text
+        attempts = 0
+        while attempts < max_attent:
+            try:
+                WebDriverWait(driver, 2).until(
+                    EC.presence_of_element_located((By.XPATH, '//div[contains(@class, "bg-card")]//a//div//h2'))
+                )
+                break
+            except:
+                attempts += 1
+                driver.refresh()
+                
+        capitulos = driver.find_elements(By.XPATH, '//div[@class="bg-card dark:bg-dark transition duration-300  p-4 rounded-lg"]')
+        
+        for capitulo in capitulos:
+            chapter_link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
+            chapter_number = capitulo.find_element(By.XPATH, './/h2').text
+            if chapter_number == '':
+                continue
+            
             numero_capitulo = float(re.sub(r'[^0-9.,]', '', chapter_number.replace(',', '')))
-            chapter_link = sub.get_attribute('href')
             
             if inicio <= numero_capitulo <= fim:
                 capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': chapter_link})
-
+        
+        if len(capitulos_encontrados) > 0:
+            break
+        else:
+            if x < max_attent:
+                x += 1
+            else:
+                break
+    
     return capitulos_encontrados
-

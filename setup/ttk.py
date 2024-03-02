@@ -3,19 +3,17 @@ import sys
 import time
 import shutil
 import logging
-import zipfile
 import asyncio
 import winsound
-import requests
 import threading
 import webbrowser
 from tkinter import *
 import ttkbootstrap as tb
-from datetime import datetime
 from tkinter import ttk, messagebox, filedialog
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from colorama import Fore, Style
+from __init__ import __version__
 
 
 # Importações da pasta 'src'
@@ -74,20 +72,20 @@ settings_dir = first.setup()
 # Lista de agregadores como um dicionário
 dic_agregadores = {
     "BR Mangás": "https://www.brmangas.net/",
-    "Crystal Scan": "https://crystalscan.net/",
+    # "Crystal Scan": "https://crystalscan.net/",
     "Argos Comics": "https://argoscomics.com/",
     "Mangás Chan": "https://mangaschan.net/",
     "Ler Mangá": "https://lermanga.org/",
     "Tsuki": "https://tsuki-mangas.com/",
-    "YomuMangás": "https://yomumangas.com/",
+    # "YomuMangás": "https://yomumangas.com/",
     "SlimeRead": "https://slimeread.com/",
     "Flower Manga": "https://flowermanga.com/",
     "Ler Manga Online": "https://lermangaonline.com.br/",
     "Manga BR": "https://mangabr.net/",
-    "Projeto Scanlator": "https://projetoscanlator.com/",
+    # "Projeto Scanlator": "https://projetoscanlator.com/",
     "Hentai Teca": "https://hentaiteca.net/",
     "Argos Scan": "https://argosscan.com/",
-    "NicoManga": "https://nicomanga.com/",
+    # "NicoManga": "https://nicomanga.com/",
     "Momo no Hana": "https://momonohanascan.com/",
     "Manhastro": "https://manhastro.com/",
     "Valkyrie Scan": "https://valkyriescan.com/",
@@ -95,26 +93,23 @@ dic_agregadores = {
     "Nobre Scan": "https://nobrescan.com.br/",
     "Iris Scanlator": "https://irisscanlator.com.br/",
 }
+dic_agregadores = dict(sorted(dic_agregadores.items()))
 
 extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']
 extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'bmp', 'tiff']
 
 
-version_ = 'Versão 3.0'
-# icon = os.path.join()
+version_ = f'Versão {__version__}'
 
+# Paths
+temp_folder = os.environ['TEMP']
+app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Extensão
-temp_folder = os.environ['TEMP']
 profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
 download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
-extension_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.crx'
-extension_zip_url = 'https://github.com/OneDefauter/Manga-Downloader/releases/download/Main/Tampermonkey.5.0.0.0.zip'
-extension_name = "Tampermonkey.5.0.0.0.crx"
-extension_path = os.path.join(temp_folder, extension_name)
-extension_folder_path = os.path.join(temp_folder, "Tampermonkey.5.0.0.0")
-
-
+extension_path = os.path.join(app_folder, "src", "Violentmonkey 2.18.0.0.crx")
+extension_folder = os.path.join(app_folder, "src", "Violentmonkey 2.18.0.0")
 
 def abrir_link1(*args):
     webbrowser.open('https://github.com/OneDefauter/Manga-Downloader/blob/main/README.md')
@@ -123,7 +118,7 @@ def abrir_link2(*args):
     webbrowser.open('https://discordapp.com/users/367504043691606016')
 
 class AppMain():
-    def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, window_width, window_height, screen_width, screen_height, x, y):
+    def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var, window_width, window_height, screen_width, screen_height, x, y):
         self.root = root
         self.auto_save = auto_save
         self.agregador_var = agregador_var
@@ -143,6 +138,8 @@ class AppMain():
         self.net_limit_down_var = net_limit_down_var
         self.net_limit_up_var = net_limit_up_var
         self.net_lat_var = net_lat_var
+        self.max_attent_var = max_attent_var
+        self.max_verify_var = max_verify_var
         
         # Tamanho da GUI
         self.change_log_var = change_log_var
@@ -158,6 +155,9 @@ class AppMain():
         self.result = 0
         self.app_instance = anm.AnimationNotification(root, version_, self.ian)
         
+        self.notif_01 = False
+        self.notif_02 = False
+        
         # self.root.title("Mangá Downloader")
         self.style = ttk.Style(root)
     
@@ -167,6 +167,8 @@ class AppMain():
         button_1.configure('b2.TButton', font=("Segoe UI", 10, "bold"))
         
         button_1.configure('c1.TCheckbutton', font=("Segoe UI", 14, "bold"))
+        
+        button_1.configure('d1.TSpinbox', font=("Segoe UI", 14, "bold"))
     
         self.root.bind("<Control-s>", self.save_shortcut)
         self.root.bind("<Control-i>", self.start_shortcut)
@@ -244,8 +246,6 @@ class AppMain():
         selenium_process_completed = threading.Thread(target=self.check_selenium)
         selenium_process_completed.start()
         
-        self.root.after(2000, self.selenium_load_message)
-        
     
     def check_selenium(self):
         try:
@@ -254,76 +254,28 @@ class AppMain():
             ...
         
         os.makedirs(profile_folder, exist_ok=True)
-        
-        if not os.path.exists(extension_path):
-            response = requests.get(extension_url)
-            
-            with open(extension_path, 'wb') as file:
-                file.write(response.content)
-        
-        if not os.path.exists(extension_folder_path):
-            response = requests.get(extension_zip_url)
-            
-            with open(f'{extension_folder_path}.zip', 'wb') as file:
-                file.write(response.content)
-                
-            os.makedirs(extension_folder_path, exist_ok=True)
-            
-            # Abre o arquivo ZIP
-            with zipfile.ZipFile(f'{extension_folder_path}.zip', 'r') as zip_ref:
-                # Extrai todos os arquivos na pasta de destino
-                zip_ref.extractall(extension_folder_path)
-        
-        
         os.makedirs(download_folder, exist_ok=True)
         
         chrome_options = Options()
         chrome_options.add_argument("--headless=new")  # Execute sem uma janela visível, se desejar
         chrome_options.add_argument("--disable-gpu")  # Desativar a aceleração de hardware, se necessário
         chrome_options.add_argument('--log-level=3')
+        chrome_options.add_argument("--no-sandbox")
         chrome_options.add_extension(extension_path)
         chrome_options.add_argument(f"user-data-dir={profile_folder}")
         chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
 
         try:
+            print(hora_agora.setup(), "INFO:", "Verficando navegador")
             # Tente iniciar o driver do Chrome
             teste = webdriver.Chrome(options=chrome_options)
             # Abra uma página de teste para garantir que o Chrome está funcionando
             # teste.get("https://www.google.com")
             
-            ins_ext.setup(teste)
+            ins_ext.setup(teste, 2)
             
             teste.quit()
-            time.sleep(1)
-            
-            teste2 = webdriver.Chrome(options=chrome_options)
-            teste2.get('https://www.google.com.br/')
-    
-            # Pega o tempo inicial
-            tempo_inicial = datetime.now()
-
-            # Define o limite de tempo em segundos (30 segundos no seu caso)
-            limite_tempo_segundos = 10
-
-            while True:
-                janelas_abertas = teste2.window_handles
-
-                if len(janelas_abertas) != 1:
-                    teste2.switch_to.window(janelas_abertas[-1])
-                    teste2.close()
-                    janelas_abertas = teste2.window_handles
-                    teste2.switch_to.window(janelas_abertas[0])
-                    break
-                else:
-                    tempo_atual = datetime.now()
-                    tempo_decorrido = tempo_atual - tempo_inicial
-
-                    if tempo_decorrido.total_seconds() > limite_tempo_segundos:
-                        print("Tempo limite atingido. Saindo do loop.")
-                        break
-                    
-            teste2.quit()
-            time.sleep(1)
+            print(hora_agora.setup(), "INFO:", "✔ Navegador pronto")
             
             # Se não houver exceção até aqui, o Chrome está funcionando
             self.selenium_working.set(True)
@@ -332,16 +284,16 @@ class AppMain():
         except Exception as e:
             os.system("cls")
             if not self.selenium_working.get():
+                print(hora_agora.setup(), "INFO:", "✘ Navegador não está funcionando corretamente")
                 self.baixando_label.config(text="Erro:\n Selenium não está\n funcionando corretamente")
                 print(f"Erro: {e}")
                 messagebox.showerror("Erro", "Selenium não está funcionando corretamente")
             self.selenium_working.set(False)
             self.selenium_process_completed.set()
     
-    
     def save_settings(self):
         self.app_instance.move_text_wait(f'Configurações foram salvas')
-        save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var)
+        save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var)
     
         
     async def TkApp(self):
@@ -350,17 +302,21 @@ class AppMain():
         self.result = None
         
         print("Agregador escolhido:", self.agregador_var.get())
-        print("Obra escolhida:", self.nome_var.get())
+        print("Obra escolhida:", str(self.nome_var.get()).replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "").rstrip())
         print("URL da obra:", self.url_var.get())
         print("Capítulo escolhido:", self.capitulo_var.get())
         print("Até qual capítulo baixar:", self.ate_var.get())
-        print("Compactar:", self.compact_var.get())
+        print("Compactar:", "sim" if self.compact_var.get() else "não")
         print("Extensão da compactação:", self.compact_extension_var.get())
         print("Extensão de saída:", self.extension_var.get())
         print("Auto salvar:", self.auto_save.get())
         print("Debug:", self.debug_var.get())
         print("Navegador em segundo plano:", self.headless_var.get())
+        print("Máximo de tentativas:", self.max_attent_var.get())
+        print("Máximo de verificação:", self.max_verify_var.get())
         print("\n")
+        
+        chekin = False
         
         if self.nome_var.get() == "":
             print("Erro: Nome inválido.")
@@ -423,7 +379,7 @@ class AppMain():
                         f'Obra escolhida: {nome}',
                         f'Capítulo escolhido: {str(capítulo).replace(".0", "")}',
                         f'Até qual capítulo baixar: {str(ate).replace(".0", "")}',
-                        f'Compactar: {compactar}',
+                        f'Compactar: {"sim" if compactar else "não"}',
                         f'Tipo de compactação: {compact_extension}',
                         f'Extensão de saída: {extension}'
                     ]
@@ -431,20 +387,25 @@ class AppMain():
                 print("\n")
             self.app_instance.move_text_wait('Iniciando')
             
-            
-            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Tsuki']:
+            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Limbo Scan']:
                 driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-            
-            elif agregador_escolhido in ['Mangás Chan', 'Tsuki']:
+            elif agregador_escolhido in ['Mangás Chan']:
                 if self.headless_var.get():
+                    if self.notif_01 is False:
+                        self.notif_01 = True
+                        messagebox.showwarning("Aviso", "Agregador não suporta download em segundo plano.")
                     print(f"{Fore.GREEN}AVISO: Esse agregador não suporta download em segundo plano.{Style.RESET_ALL}")
                 driver = engine_cloudflare.setup()
-            
             else:
-                driver = engine_undetected.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-            
-            # Instala a extensão e os scripts
-            # ins_ext.setup(driver)
+                if self.headless_var.get():
+                    if self.notif_01 is False:
+                        self.notif_01 = True
+                        messagebox.showwarning("Aviso", "Agregador não suporta download em segundo plano.")
+                    if self.notif_02 is False:
+                        self.notif_02 = True
+                        messagebox.showwarning("Aviso", "Não mexa no navegador enquanto ele estiver aberto parar evitar erro.")
+                    print(f"{Fore.GREEN}AVISO: Esse agregador não suporta download em segundo plano.{Style.RESET_ALL}")
+                driver = engine_undetected.setup(extension_folder, download_folder)
             
             if self.debug_var.get():
                 self.baixando_label.config(text="Aguarde...")
@@ -454,11 +415,8 @@ class AppMain():
             
             async def load(dic_url, agregador):
                 if dic_url in url:
-                    self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance)
-                    try:
-                        driver.quit()
-                    except:
-                        ...
+                    self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()))
+                    driver.quit()
                 else:
                     self.result = 1
                     driver.quit()
@@ -467,7 +425,15 @@ class AppMain():
             for dic_name, dic_url in dic_agregadores.items():
                 
                 # Check
-                if not dic_name in agregador_escolhido:
+                if not agregador_escolhido in dic_agregadores:
+                    self.app_instance.move_text_wait('Agregador inválido')
+                    if self.debug_var.get():
+                        self.baixando_label.config(text="Agregador inválido")
+                    print("Agregador inválido")
+                    driver.quit()
+                    break
+                
+                elif not dic_name in agregador_escolhido:
                     continue
                 
                 # Num 01 (BR Mangás)
@@ -579,6 +545,7 @@ class AppMain():
                 elif "Iris Scanlator" in agregador_escolhido:
                     await load(dic_url, agr_22)
                     break
+            
                     
                 
                     
@@ -588,8 +555,8 @@ class AppMain():
             del_folder.delete_empty_folders(folder_path.replace('/', '\\'))
             
             self.process_completed.set()
-        
-    
+
+
     def start_download(self):
         self.disable_gui()
         
@@ -599,15 +566,15 @@ class AppMain():
         processing_thread.start()
         
         self.wait_run_async_loop()
-    
-    
+
+
     def run_async_loop(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(self.TkApp())
         loop.close()
-    
-    
+
+
     def wait_run_async_loop(self):
         if not self.process_completed.is_set():
             self.root.after(100, self.wait_run_async_loop)
@@ -740,6 +707,8 @@ class AppMain():
         self.net_limit_up.config(state=tb.DISABLED)
         self.net_lat.config(state=tb.DISABLED)
         self.reset_config_button.config(state=tb.DISABLED)
+        self.max_attent.config(state=tb.DISABLED)
+        self.max_verify.config(state=tb.DISABLED)
         self.theme_0.config(state=tb.DISABLED)
         self.theme_1.config(state=tb.DISABLED)
         self.theme_2.config(state=tb.DISABLED)
@@ -785,6 +754,8 @@ class AppMain():
         self.net_limit_up.config(state=tb.NORMAL)
         self.net_lat.config(state=tb.NORMAL)
         self.reset_config_button.config(state=tb.NORMAL)
+        self.max_attent.config(state=tb.NORMAL)
+        self.max_verify.config(state=tb.NORMAL)
         self.theme_0.config(state=tb.NORMAL)
         self.theme_1.config(state=tb.NORMAL)
         self.theme_2.config(state=tb.NORMAL)
@@ -805,15 +776,18 @@ class AppMain():
         self.theme_17.config(state=tb.NORMAL)
         self.theme_18.config(state=tb.NORMAL)
 
-            
+
+    def validate0(self, P):
+        self.auto_save_settings()
+
     def validate1(self, P):
         if str.isdigit(P) or P == "" or "." in P:
             self.auto_save_settings()
             return True
         else:
             return False
-            
-            
+
+
     def validate2(self, P):
         agregadores = list(dic_agregadores.keys())
         if P in agregadores:
@@ -821,8 +795,8 @@ class AppMain():
             return True
         else:
             return False
-            
-            
+
+
     def validate3(self, P):
         compact_extensions = {
             ".zip": "1", 
@@ -835,8 +809,8 @@ class AppMain():
             return True
         else:
             return False
-            
-            
+
+
     def validate4(self, P):
         extensions = {
             ".png": "1", 
@@ -848,20 +822,40 @@ class AppMain():
             return True
         else:
             return False
-            
-            
+
+
+    def validar_valor1(self, P):
+        valor = int(self.max_attent.get())
+        if valor < 1:
+            self.max_attent.delete(0, "end")
+            self.max_attent.insert(0, "1")
+        elif valor > 10:
+            self.max_attent.delete(0, "end")
+            self.max_attent.insert(0, "10")
+
+
+    def validar_valor2(self, P):
+        valor = int(self.max_verify.get())
+        if valor < 10:
+            self.max_verify.delete(0, "end")
+            self.max_verify.insert(0, "10")
+        elif valor > 100:
+            self.max_verify.delete(0, "end")
+            self.max_verify.insert(0, "100")
+
+
     def update_checkboxes_save(self):
         self.save_settings()
-            
-            
+
+
     def update_checkboxes_compact(self):
         self.auto_save_settings()
-            
-            
+
+
     def auto_save_settings(self):
         # Salva as configurações apenas se o "Auto salvar" estiver ativado
         if self.auto_save.get():
-            save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var)
+            save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var)
     
     
     def select_folder_go(self):
@@ -908,6 +902,7 @@ class AppMain():
     
     
     def options_agreg(self):
+        self.vcmd0 = (self.root.register(self.validate0))
         self.vcmd1 = (self.root.register(self.validate1))
         self.vcmd2 = (self.root.register(self.validate2))
         
@@ -967,6 +962,8 @@ class AppMain():
         # self.name.configure(selectbackground="#c4c4c4")
         # self.name.configure(selectforeground="black")
         self.name.configure(textvariable=self.nome_var)
+        self.name.configure(validate='all')
+        self.name.configure(validatecommand=(self.vcmd0, '%P'))
         
         
         
@@ -997,6 +994,8 @@ class AppMain():
         # self.url.configure(selectbackground="#c4c4c4")
         # self.url.configure(selectforeground="black")
         self.url.configure(textvariable=self.url_var)
+        self.url.configure(validate='all')
+        self.url.configure(validatecommand=(self.vcmd0, '%P'))
         
         
         
@@ -1171,7 +1170,7 @@ class AppMain():
         
         self.TNotebook1_t3 = tb.Frame(self.TNotebook1)
         self.TNotebook1.add(self.TNotebook1_t3, padding=3)
-        self.TNotebook1.tab(2, text='''Configurações de rede''', compound="left"
+        self.TNotebook1.tab(2, text='''Rede''', compound="left"
                 ,underline='''-1''', )
         # self.TNotebook1_t3.configure(background="#f0f0f0")
         # self.TNotebook1_t3.configure(highlightbackground="#d9d9d9")
@@ -1358,7 +1357,7 @@ class AppMain():
     def options_config(self):
         # Auto save
         self.check_auto_save_text = tb.Label(self.TNotebook1_t2)
-        self.check_auto_save_text.place(relx=0.035, rely=0.036, height=64, width=196)
+        self.check_auto_save_text.place(relx=0.035, rely=0.036, height=34, width=116)
         # self.check_auto_save_text.configure(activebackground="#f0f0f0")
         self.check_auto_save_text.configure(anchor='w')
         # self.check_auto_save_text.configure(background="#f0f0f0")
@@ -1371,8 +1370,7 @@ class AppMain():
         self.check_auto_save_text.configure(text='''Auto salvar''')
         
         self.check_auto_save = tb.Checkbutton(self.TNotebook1_t2)
-        self.check_auto_save.place(relx=0.07, rely=0.2, relheight=0.089
-                , relwidth=0.264)
+        self.check_auto_save.place(relx=0.07, rely=0.150, relheight=0.089, relwidth=0.264)
         # self.check_auto_save.configure(activebackground="#f0f0f0")
         # self.check_auto_save.configure(activeforeground="black")
         # self.check_auto_save.configure(anchor='w')
@@ -1394,7 +1392,7 @@ class AppMain():
         
         # Info
         self.debug_check_text = tb.Label(self.TNotebook1_t2)
-        self.debug_check_text.place(relx=0.035, rely=0.286, height=64, width=196)
+        self.debug_check_text.place(relx=0.035, rely=0.250, height=30, width=56)
         # self.debug_check_text.configure(activebackground="#f0f0f0")
         self.debug_check_text.configure(anchor='w')
         # self.debug_check_text.configure(background="#f0f0f0")
@@ -1407,8 +1405,7 @@ class AppMain():
         self.debug_check_text.configure(text='''Info''')
         
         self.debug_check = tb.Checkbutton(self.TNotebook1_t2)
-        self.debug_check.place(relx=0.053, rely=0.464, relheight=0.089
-                , relwidth=0.264)
+        self.debug_check.place(relx=0.053, rely=0.360, relheight=0.089, relwidth=0.264)
         # self.debug_check.configure(activebackground="#f0f0f0")
         # self.debug_check.configure(activeforeground="black")
         # self.debug_check.configure(anchor='w')
@@ -1430,7 +1427,7 @@ class AppMain():
         
         # Debug
         self.debug2_check_text = tb.Label(self.TNotebook1_t2)
-        self.debug2_check_text.place(relx=0.035, rely=0.571, height=64, width=196)
+        self.debug2_check_text.place(relx=0.035, rely=0.480, height=34, width=76)
         # self.debug2_check_text.configure(activebackground="#f0f0f0")
         self.debug2_check_text.configure(anchor='w')
         # self.debug2_check_text.configure(background="#f0f0f0")
@@ -1443,8 +1440,7 @@ class AppMain():
         self.debug2_check_text.configure(text='''Debug''')
         
         self.debug2_check = tb.Checkbutton(self.TNotebook1_t2)
-        self.debug2_check.place(relx=0.053, rely=0.75, relheight=0.089
-                , relwidth=0.264)
+        self.debug2_check.place(relx=0.053, rely=0.600, relheight=0.089, relwidth=0.264)
         # self.debug2_check.configure(activebackground="#f0f0f0")
         # self.debug2_check.configure(activeforeground="black")
         # self.debug2_check.configure(anchor='w')
@@ -1464,45 +1460,9 @@ class AppMain():
         
         
         
-        # Navegador
-        self.nav_check_text = tb.Label(self.TNotebook1_t2)
-        self.nav_check_text.place(relx=0.438, rely=0.036, height=64, width=306)
-        # self.nav_check_text.configure(activebackground="#f0f0f0")
-        self.nav_check_text.configure(anchor='w')
-        # self.nav_check_text.configure(background="#f0f0f0")
-        self.nav_check_text.configure(compound='left')
-        # self.nav_check_text.configure(disabledforeground="#a3a3a3")
-        self.nav_check_text.configure(font="-family {Segoe UI} -size 16 -weight bold")
-        # self.nav_check_text.configure(foreground="#000000")
-        # self.nav_check_text.configure(highlightbackground="#d9d9d9")
-        # self.nav_check_text.configure(highlightcolor="black")
-        self.nav_check_text.configure(text='''Navegador em segundo plano''')
-        
-        self.nav_check = tb.Checkbutton(self.TNotebook1_t2)
-        self.nav_check.place(relx=0.455, rely=0.214, relheight=0.089
-                , relwidth=0.545)
-        # self.nav_check.configure(activebackground="#f0f0f0")
-        # self.nav_check.configure(activeforeground="black")
-        # self.nav_check.configure(anchor='w')
-        # self.nav_check.configure(background="#f0f0f0")
-        self.nav_check.configure(compound='left')
-        # self.nav_check.configure(disabledforeground="#a3a3a3")
-        # self.nav_check.configure(font="-family {Segoe UI} -size 14 -weight bold")
-        # self.nav_check.configure(foreground="#000000")
-        # self.nav_check.configure(highlightbackground="#d9d9d9")
-        # self.nav_check.configure(highlightcolor="black")
-        # self.nav_check.configure(justify='left')
-        # self.nav_check.configure(selectcolor="#f0f0f0")
-        self.nav_check.configure(text='''Navegador em segundo plano''')
-        self.nav_check.configure(variable=self.headless_var)
-        self.nav_check.configure(command=self.update_checkboxes_nav)
-        self.nav_check.configure(style="c1.TCheckbutton")
-        
-        
-        
         # Change log
         self.change_log_text = tb.Label(self.TNotebook1_t2)
-        self.change_log_text.place(relx=0.438, rely=0.286, height=64, width=196)
+        self.change_log_text.place(relx=0.053, rely=0.710, height=34, width=126)
         # self.change_log_text.configure(activebackground="#f0f0f0")
         self.change_log_text.configure(anchor='w')
         # self.change_log_text.configure(background="#f0f0f0")
@@ -1515,8 +1475,7 @@ class AppMain():
         self.change_log_text.configure(text='''Change Log''')
         
         self.change_log = tb.Checkbutton(self.TNotebook1_t2)
-        self.change_log.place(relx=0.455, rely=0.464, relheight=0.089
-                , relwidth=0.264)
+        self.change_log.place(relx=0.053, rely=0.830, relheight=0.089, relwidth=0.264)
         # self.change_log.configure(activebackground="#f0f0f0")
         # self.change_log.configure(activeforeground="black")
         # self.change_log.configure(anchor='w')
@@ -1536,9 +1495,98 @@ class AppMain():
         
         
         
+        # Navegador
+        self.nav_check_text = tb.Label(self.TNotebook1_t2)
+        self.nav_check_text.place(relx=0.438, rely=0.036, height=34, width=306)
+        # self.nav_check_text.configure(activebackground="#f0f0f0")
+        self.nav_check_text.configure(anchor='w')
+        # self.nav_check_text.configure(background="#f0f0f0")
+        self.nav_check_text.configure(compound='left')
+        # self.nav_check_text.configure(disabledforeground="#a3a3a3")
+        self.nav_check_text.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        # self.nav_check_text.configure(foreground="#000000")
+        # self.nav_check_text.configure(highlightbackground="#d9d9d9")
+        # self.nav_check_text.configure(highlightcolor="black")
+        self.nav_check_text.configure(text='''Navegador em segundo plano''')
+        
+        self.nav_check = tb.Checkbutton(self.TNotebook1_t2)
+        self.nav_check.place(relx=0.455, rely=0.150, relheight=0.089, relwidth=0.545)
+        # self.nav_check.configure(activebackground="#f0f0f0")
+        # self.nav_check.configure(activeforeground="black")
+        # self.nav_check.configure(anchor='w')
+        # self.nav_check.configure(background="#f0f0f0")
+        self.nav_check.configure(compound='left')
+        # self.nav_check.configure(disabledforeground="#a3a3a3")
+        # self.nav_check.configure(font="-family {Segoe UI} -size 14 -weight bold")
+        # self.nav_check.configure(foreground="#000000")
+        # self.nav_check.configure(highlightbackground="#d9d9d9")
+        # self.nav_check.configure(highlightcolor="black")
+        # self.nav_check.configure(justify='left')
+        # self.nav_check.configure(selectcolor="#f0f0f0")
+        self.nav_check.configure(text='''Navegador em segundo plano''')
+        self.nav_check.configure(variable=self.headless_var)
+        self.nav_check.configure(command=self.update_checkboxes_nav)
+        self.nav_check.configure(style="c1.TCheckbutton")
+        
+        
+        
+        # Máximo de tentativas
+        self.max_attent_text = tb.Label(self.TNotebook1_t2)
+        self.max_attent_text.place(relx=0.438, rely=0.250, height=30, width=306)
+        # self.max_attent_text.configure(activebackground="#f0f0f0")
+        self.max_attent_text.configure(anchor='w')
+        # self.max_attent_text.configure(background="#f0f0f0")
+        self.max_attent_text.configure(compound='left')
+        # self.max_attent_text.configure(disabledforeground="#a3a3a3")
+        self.max_attent_text.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        # self.max_attent_text.configure(foreground="#000000")
+        # self.max_attent_text.configure(highlightbackground="#d9d9d9")
+        # self.max_attent_text.configure(highlightcolor="black")
+        self.max_attent_text.configure(text='''Máximo de tentativas''')
+        
+        self.max_attent = tb.Spinbox(self.TNotebook1_t2, from_=1, to=10)
+        self.max_attent.place(relx=0.455, rely=0.380, relheight=0.110, relwidth=0.200)
+        self.max_attent.configure(font="-family {Segoe UI} -size 12 -weight bold")
+        self.max_attent.configure(textvariable=self.max_attent_var)
+        self.max_attent.configure(justify='center')
+        self.max_attent.configure(increment="1")
+        self.max_attent.configure(validate='all')
+        self.max_attent.configure(validatecommand=(self.vcmd1, '%P'))
+        
+        self.max_attent.bind('<FocusOut>', self.validar_valor1)
+        
+        
+        
+        # Máximo de verificações
+        self.max_verify_text = tb.Label(self.TNotebook1_t2)
+        self.max_verify_text.place(relx=0.438, rely=0.490, height=30, width=306)
+        # self.max_verify_text.configure(activebackground="#f0f0f0")
+        self.max_verify_text.configure(anchor='w')
+        # self.max_verify_text.configure(background="#f0f0f0")
+        self.max_verify_text.configure(compound='left')
+        # self.max_verify_text.configure(disabledforeground="#a3a3a3")
+        self.max_verify_text.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        # self.max_verify_text.configure(foreground="#000000")
+        # self.max_verify_text.configure(highlightbackground="#d9d9d9")
+        # self.max_verify_text.configure(highlightcolor="black")
+        self.max_verify_text.configure(text='''Máximo de verificações''')
+        
+        self.max_verify = tb.Spinbox(self.TNotebook1_t2, from_=10, to=100)
+        self.max_verify.place(relx=0.455, rely=0.620, relheight=0.110, relwidth=0.200)
+        self.max_verify.configure(font="-family {Segoe UI} -size 12 -weight bold")
+        self.max_verify.configure(textvariable=self.max_verify_var)
+        self.max_verify.configure(justify='center')
+        self.max_verify.configure(increment="10")
+        self.max_verify.configure(validate='all')
+        self.max_verify.configure(validatecommand=(self.vcmd1, '%P'))
+        
+        self.max_verify.bind('<FocusOut>', self.validar_valor2)
+        
+        
+        
         # Resetar Configurações
         self.reset_config_button = tb.Button(self.TNotebook1_t2)
-        self.reset_config_button.place(relx=0.49, rely=0.679, height=44, width=247)
+        self.reset_config_button.place(relx=0.490, rely=0.800, height=44, width=247)
         # self.reset_config_button.configure(activebackground="#f0f0f0")
         # self.reset_config_button.configure(activeforeground="black")
         # self.reset_config_button.configure(background="#f0f0f0")
@@ -2133,6 +2181,8 @@ class AppMain():
         net_limit_up_var = self.net_limit_up_var
         net_lat_var = self.net_lat_var
         change_log_var = self.change_log_var
+        max_attent_var = self.max_attent_var
+        max_verify_var = self.max_verify_var
         
         self.auto_save = tb.BooleanVar(value=False)
         self.agregador_var = tb.StringVar(value="BR Mangás")
@@ -2152,6 +2202,8 @@ class AppMain():
         self.net_limit_up_var = tb.StringVar(value="1024")
         self.net_lat_var = tb.StringVar(value="50")
         self.change_log_var = tb.BooleanVar(value=True)
+        self.max_attent_var = tb.StringVar(value="3")
+        self.max_verify_var = tb.StringVar(value="50")
         
         self.auto_save.set(auto_save)
         self.agregador_var.set(agregador_var)
@@ -2170,6 +2222,8 @@ class AppMain():
         self.net_limit_up_var.set(net_limit_up_var)
         self.net_lat_var.set(net_lat_var)
         self.change_log_var.set(change_log_var)
+        self.max_attent_var.set(max_attent_var)
+        self.max_verify_var.set(max_verify_var)
         
         
     def theme_default(self):
@@ -2359,13 +2413,4 @@ class AppMain():
     def start_shortcut(self, event=None):
         if self.ipo9 is False:
             self.start_download()
-        
-    def selenium_load_message(self, event=None):
-        if self.ian is False:
-            self.app_instance.move_text_wait('Verificando navegador')
-        else:
-            self.root.after(1000, self.selenium_load_message)
-    
-        
-        
-        
+

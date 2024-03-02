@@ -1,79 +1,75 @@
-import os
 import re
-import time
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import src.status_check as status_check
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance, max_attent):
     # Abre a página
     driver.get(url)
-    
-    # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
-    driver.implicitly_wait(5)
     
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:
-        driver.quit()
         return result
     
-    # time.sleep(5)
-    
-    for _ in range(3):
-        script = 'document.querySelector(\'button[title="Alterar a quantidade de capítulos a vista"]\').click();'
-        driver.execute_script(script)
-        time.sleep(1)  # Aguarde um pouco entre os cliques se necessário
-    
-    os.system("cls")
     print("Verificando capítulos...")
     app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
-
-    capitulos_encontrados = []
-    count = 2
-
-    # Loop para percorrer todas as páginas
+    
+    x = 1
     while True:
-        # Localiza os elementos que contêm as informações dos capítulos
-        chapter_elements = []
+        lista_capitulos = []
+        capitulos_encontrados = []
+        
+        attempts = 0
+        while attempts < max_attent:
+            try:
+                WebDriverWait(driver, 2).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, '[class^="styles_Chapters__"]'))
+                )
+                break
+            except:
+                attempts += 1
+                driver.refresh()
+        
+        try:
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Mostrar tudo')]")))
+            driver.execute_script("document.querySelector('button:contains(\"Mostrar tudo\")').click();")
+        except:
+            pass
         
         try:
             chapter_elements = driver.find_elements(By.CSS_SELECTOR, '[class^="styles_Chapters__"]')
         except:
             pass
-
-        # Extrai os dados dos capítulos
+        
         for element in chapter_elements:
             for sub in element.find_elements(By.CSS_SELECTOR, 'a'):
-                chapter_number = sub.find_element(By.CSS_SELECTOR, 'h4').text
-                numero_capitulo = float(re.sub(r'[^0-9.,]', '', chapter_number.replace(',', '')))
+                chapter_number = sub.text
+                if chapter_number == '':
+                    continue
+                match = re.search(r'Capítulo (\d+)', chapter_number)
+                if match:
+                    numero_capitulo = float(match.group(1))
+                else:
+                    numero_capitulo = float(re.sub(r'[^0-9.,]', '', chapter_number.replace(',', '.')))
                 chapter_link = sub.get_attribute('href')
-
+                
                 if inicio <= numero_capitulo <= fim:
                     capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': chapter_link})
 
-        # Tenta clicar no botão de próxima página
-        try:
-            # Tenta clicar no botão de próxima página e verifica se há mais páginas
-            next_page_button_script = 'var button = document.querySelector(\'button[title="Próxima Página"]\'); if (button && !button.hasAttribute("disabled")) { button.click(); return true; } else { return false; }'
-            result = driver.execute_script(next_page_button_script)
-
-            # Se não houver mais próxima página, sai do loop
-            if not result:
-                break
-            
-            print(f"Carregando página... {count}")
-            
-        except:
-            # Se não houver mais próxima página, sai do loop
-            print("Não há mais próxima página.")
+        if len(capitulos_encontrados) > 0:
             break
-        
-        count += 1
-        # Aguarde um pouco para garantir que a próxima página seja totalmente carregada
-        time.sleep(5)
+        else:
+            if x < max_attent:
+                x += 1
+            else:
+                break
 
+    if debug_var.get():
+        baixando_label.config(text="Aguarde...")
+    
     return capitulos_encontrados
-

@@ -11,7 +11,7 @@ from colorama import Fore, Style
 import src.organizar as organizar
 import src.move as move
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -19,9 +19,6 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     print(f"\n═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════")
 
-    if debug_var.get():
-        baixando_label.config(text=f"Verificando pasta do capítulo {numero_capitulo}")
-        
     if contents:
         print(f"{Fore.GREEN}INFO:{Style.RESET_ALL} a pasta {folder_path} já existe e contém arquivos. Excluindo conteúdo...")
         for item in contents:
@@ -37,9 +34,6 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         baixando_label.config(text=f"Aguardando página do capítulo {numero_capitulo}")
 
     driver.get(url)
-    driver.implicitly_wait(10)
-
-    time.sleep(2)
     
     try:
         verify1 = driver.find_element(By.XPATH, '/html/body/div/div')
@@ -51,20 +45,30 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         pass
     
     # Espera o leitor carregar
+    attents = 1
     while True:
         try:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'img.pagereader')))
-        finally:
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'img.pagereader')))
             break
+        except:
+            if attents < max_attent:
+                driver.refresh()
+                attents += 1
+            else:
+                print(f"{Fore.RED}Nenhuma imagem encontrada{Style.RESET_ALL}")
+                print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
+                if debug_var.get():
+                    baixando_label.config(text=f"Nenhuma imagem foi encontrada no capítulo {numero_capitulo}")
+                return
     
     try:
-        pop_up = driver.find_element(By.CLASS_NAME, 'el-dialog__close')
+        pop_up = driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Close this dialog"]')
         pop_up.click()
     except:
         pass
 
     try:
-        botao = WebDriverWait(driver, 10).until(
+        botao = WebDriverWait(driver, 3).until(
             EC.presence_of_element_located((By.XPATH, "//button[text()='Páginas abertas']")) 
         )
         botao.click()
@@ -77,12 +81,10 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     def load_images():
         count_repet = 0
-        count_limit = 10
-
-        while count_repet < count_limit:
+        while count_repet < max_verify:
             try:
                 if debug_var.get():
-                    baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {count_limit}")
+                    baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}")
 
                 # Espera até que o elemento do leitor esteja presente na página
                 leitor = WebDriverWait(driver, 10).until(
@@ -181,7 +183,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             
             print(f"{Fore.GREEN}Baixando {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
             
-            time.sleep(2)
+            time.sleep(0.8)
             
             attention = 0
             warning_img = 0
@@ -191,7 +193,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                     files += 1
                     break
                 else:
-                    if warning_img > 3:
+                    if warning_img > max_attent:
                         print(f"{Fore.RED}Falha ao baixar {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
                         break
                     elif attention < 1000:

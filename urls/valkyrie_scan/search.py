@@ -7,80 +7,100 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import src.status_check as status_check
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance, max_attent):
     # Abre a página
     driver.get(url)
     
-    # Aguarde um pouco para garantir que a página seja totalmente carregada (você pode ajustar esse tempo conforme necessário)
-    driver.implicitly_wait(5)
-    
-    try:
-        # Espere até que o elemento com o id "pageloader" esteja presente no DOM
-        elemento_pageloader = WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located((By.ID, "pageloader"))
-        )
-        # Verifique se o estilo "display: none;" está presente no atributo style
-        WebDriverWait(driver, 10).until(
-            lambda driver: "display: none;" in elemento_pageloader.get_attribute("style")
-        )
-    except:
-        pass
-        
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:
-        driver.quit()
         return result
     
-    time.sleep(5)
-    
-    os.system("cls")
     print("Verificando capítulos...")
     app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
-
-    capitulos_encontrados = []
     
-    # Executar o script JavaScript
-    script = """
-    var botao = document.querySelector('.c-chapter-readmore .btn');
-    if (botao) {
-        botao.click();
-    } else {
-        console.error("O botão não foi encontrado.");
-    }
-    """
-
-    # Executar o script usando execute_script
-    try:
-        driver.execute_script(script)
-    except:
-        pass
-
-    time.sleep(2)
-
-    chapter_elements = []
-
-    try:
-        # Localiza os elementos que contêm as informações dos capítulos
-        chapter_elements = driver.find_elements(By.CLASS_NAME, "wp-manga-chapter")
-    except:
-        pass
-    
-    capitulos_encontrados = []
-
-    for capitulo in chapter_elements:
-        # Encontra o elemento 'a' dentro do 'li'
-        a_element = capitulo.find_element(By.TAG_NAME, "a")
-
-        # Obtém o texto do número do capítulo
-        # Usa expressão regular para extrair números, pontos e vírgulas
-        numero_capitulo = float(re.sub(r'[^0-9.,]', '', a_element.text.replace(',', '')))
-        link = a_element.get_attribute("href")
-
-        if inicio <= numero_capitulo <= fim:
-            capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+    x = 1
+    while True:
+        capitulos = []
+        capitulos_encontrados = []
         
+        try:
+            # Espere até que o elemento com o id "pageloader" esteja presente no DOM
+            elemento_pageloader = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.ID, "pageloader"))
+            )
+            # Verifique se o estilo "display: none;" está presente no atributo style
+            WebDriverWait(driver, 10).until(
+                lambda driver: "display: none;" in elemento_pageloader.get_attribute("style")
+            )
+        except:
+            pass
+        
+        attempts = 0
+        while attempts < max_attent:
+            try:
+                WebDriverWait(driver, 2).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'wp-manga-chapter'))
+                )
+                break
+            except:
+                attempts += 1
+                driver.refresh()
+                try:
+                    # Espere até que o elemento com o id "pageloader" esteja presente no DOM
+                    elemento_pageloader = WebDriverWait(driver, 3).until(
+                        EC.presence_of_element_located((By.ID, "pageloader"))
+                    )
+                    # Verifique se o estilo "display: none;" está presente no atributo style
+                    WebDriverWait(driver, 10).until(
+                        lambda driver: "display: none;" in elemento_pageloader.get_attribute("style")
+                    )
+                except:
+                    pass
+        
+        try:
+            driver.execute_script("document.querySelector('.btn-adult-confirm').click();")
+        except:
+            pass
+        
+        try:
+            WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CLASS_NAME, "chapter-readmore")))
+            driver.execute_script("document.querySelector('.chapter-readmore').click();")
+        except:
+            pass
+        
+        try:
+            # Localiza os elementos que contêm as informações dos capítulos
+            capitulos = driver.find_elements(By.CLASS_NAME, "wp-manga-chapter")
+        except:
+            pass
+
+        for capitulo in capitulos:
+            # Encontra o elemento 'a' dentro do 'li'
+            link_text = capitulo.find_element(By.TAG_NAME, 'a').text
+            if link_text == '':
+                continue
+            numero_capitulo = float(re.sub(r'[^\d.]+', '', link_text.replace(',', '')).replace('..', '.'))
+
+            # Obter o link do capítulo
+            link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
+
+            # Verificar se o capítulo está no intervalo desejado
+            if inicio <= numero_capitulo <= fim:
+                capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+        
+        if len(capitulos_encontrados) > 0:
+            break
+        else:
+            if x < max_attent:
+                x += 1
+            else:
+                break
+
+    if debug_var.get():
+        baixando_label.config(text="Aguarde...")
+    
     return capitulos_encontrados
 

@@ -1,0 +1,737 @@
+{
+  "buttonApply": {
+    "message": "Применить"
+  },
+  "buttonCancel": {
+    "message": "Отмена"
+  },
+  "buttonCheckForUpdates": {
+    "message": "Проверить обновления"
+  },
+  "buttonClose": {
+    "message": "Закрыть"
+  },
+  "buttonDisable": {
+    "message": "Отключить"
+  },
+  "buttonEdit": {
+    "message": "Править"
+  },
+  "buttonEditClickHint": {
+    "message": "Вы также можете щёлкнуть ПКМ, Ctrl+ЛКМ или СКМ по имени скрипта."
+  },
+  "buttonEmptyRecycleBin": {
+    "message": "Очистить корзину!"
+  },
+  "buttonEnable": {
+    "message": "Включить"
+  },
+  "buttonExportData": {
+    "message": "Экспорт в zip-файл"
+  },
+  "buttonHome": {
+    "message": "Домашняя страница"
+  },
+  "buttonImportData": {
+    "message": "Импорт из zip-файла"
+  },
+  "buttonInstallFromURL": {
+    "message": "Установить по ссылке"
+  },
+  "buttonNew": {
+    "message": "Создать"
+  },
+  "buttonOK": {
+    "message": "ОК"
+  },
+  "buttonRecycleBin": {
+    "message": "Корзина"
+  },
+  "buttonRemove": {
+    "message": "Удалить"
+  },
+  "buttonReplace": {
+    "message": "Заменить"
+  },
+  "buttonReplaceAll": {
+    "message": "Заменить все"
+  },
+  "buttonReset": {
+    "message": "Сброс"
+  },
+  "buttonResetSettings": {
+    "message": "Сбросить настройки"
+  },
+  "buttonRestore": {
+    "message": "Восстановить"
+  },
+  "buttonSave": {
+    "message": "Сохранить"
+  },
+  "buttonSaveClose": {
+    "message": "Сохранить и закрыть"
+  },
+  "buttonSaved": {
+    "message": "Сохранено"
+  },
+  "buttonShowEditorState": {
+    "message": "Показать настройки редактора"
+  },
+  "buttonSupport": {
+    "message": "Страница поддержки"
+  },
+  "buttonUndo": {
+    "message": "Откатить"
+  },
+  "buttonUpdate": {
+    "message": "Обновить"
+  },
+  "buttonUpdateAll": {
+    "message": "Проверить обновления скриптов"
+  },
+  "buttonVacuum": {
+    "message": "Сбросить кэш"
+  },
+  "buttonVacuumed": {
+    "message": "Кэш очищен"
+  },
+  "buttonVacuuming": {
+    "message": "Очистка и сжатие кэша..."
+  },
+  "confirmManualUpdate": {
+    "message": "Автообновление отключено для этого скрипта!\nЩёлкните ОК, чтобы обновить его в любом случае."
+  },
+  "confirmNotSaved": {
+    "message": "Изменения не сохранены!\nНажмите ОК, чтобы выйти, или Отмена, чтобы вернуться."
+  },
+  "confirmUndoImport": {
+    "message": "Отменить все изменения, внесённые в базу данных (импорт, обновление, редактирование, настройка)"
+  },
+  "descBlacklist": {
+    "message": "URL-адреса из этого списка не будут обрабатываться скриптами."
+  },
+  "descCustomCSS": {
+    "message": "Пользовательский CSS для страниц настроек и установки скриптов. Если вы не знаете зачем это нужно, пожалуйста, не редактируйте."
+  },
+  "descEditorOptions": {
+    "message": "Опции для редактора CodeMirror и его дополнений в формате JSON, например, <code>{\"indentUnit\":2, \"smartIndent\":true}</code>. Имейте в виду, что некоторые опции могут не работать в Violentmonkey. См. <a href=\"https://codemirror.net/doc/manual.html#config\" target=\"_blank\" rel=\"noopener noreferrer\">полный список</a>."
+  },
+  "descScriptTemplate": {
+    "message": "Поддерживаемые переменные: <{{name}}>, <{{url}}>, <{{date}}>, <{{date:format}}> с совместимым с MomentJS форматом, например, <{{date:YYYY-MM-DD}}>."
+  },
+  "editHelpDocumention": {
+    "message": "Документация по блоку метаданных скриптов и <code>GM</code> API:"
+  },
+  "editHelpKeyboard": {
+    "message": "Сочетания клавиш:"
+  },
+  "editHowToHint": {
+    "message": "Как сменить редактор?"
+  },
+  "editLabelMeta": {
+    "message": "Пользовательские метаданные"
+  },
+  "editLabelSettings": {
+    "message": "Настройки скрипта"
+  },
+  "editLongLine": {
+    "message": "Слишком длинная строка"
+  },
+  "editLongLineTooltip": {
+    "message": "Слишком длинная строка, её текст свёрнут, чтобы избежать задержек при правке.\nВы можете настроить ограничение в доп. настройках, например:\n\"maxDisplayLength\": 20000"
+  },
+  "editNavCode": {
+    "message": "Код"
+  },
+  "editNavSettings": {
+    "message": "Настройки"
+  },
+  "editNavValues": {
+    "message": "Данные"
+  },
+  "editValueAllHint": {
+    "message": "Показать/править всё хранилище значений скрипта"
+  },
+  "extDescription": {
+    "message": "Менеджер пользовательских скриптов с открытым исходным кодом для различных браузеров"
+  },
+  "extName": {
+    "message": "Violentmonkey"
+  },
+  "failureReasonBlacklisted": {
+    "message": "Чёрный список Violentmonkey"
+  },
+  "failureReasonNoninjectable": {
+    "message": "Violentmonkey не может запускать скрипты на этой странице\n(частые случаи: интерфейс браузера, расширение, заблокировано политикой, сайт поисковой системы в Opera)"
+  },
+  "fileInstallBlocked": {
+    "message": "Существует несколько способов установки или отслеживания правок в локальном файле: <1>Перетащите файл на открытую страницу Violentmonkey или во всплывающее окно, включая это. <2>Установите локальный HTTP-сервер для этого файла и откройте его через http://localhost. <3>Включите «Разрешить открывать локальные файлы по ссылкам» в сведениях Violentmonkey на странице chrome://extensions. Это опасно, так как любой пользовательский скрипт может прочитать любой локальный файл."
+  },
+  "filterAlphabeticalOrder": {
+    "message": "алфавитному порядку"
+  },
+  "filterExecutionOrder": {
+    "message": "порядку выполнения"
+  },
+  "filterLastUpdateOrder": {
+    "message": "времени обновления"
+  },
+  "filterScopeAll": {
+    "message": "Все"
+  },
+  "filterScopeCode": {
+    "message": "Код"
+  },
+  "filterScopeName": {
+    "message": "Имя"
+  },
+  "filterSize": {
+    "message": "размер"
+  },
+  "genericError": {
+    "message": "Ошибка"
+  },
+  "genericOff": {
+    "message": "отключено"
+  },
+  "genericOn": {
+    "message": "включено"
+  },
+  "genericUseGlobal": {
+    "message": "использовать глобальные настройки"
+  },
+  "headerRecycleBin": {
+    "message": "Корзина"
+  },
+  "helpForLocalFile": {
+    "message": "Показать инструкцию по перетаскиванию локальных скриптов"
+  },
+  "hintInputURL": {
+    "message": "Введите URL-адрес:"
+  },
+  "hintRecycleBin": {
+    "message": "Удалённые скрипты отображаются здесь и хранятся в течение 7 дней."
+  },
+  "hintUseDownloadURL": {
+    "message": "Использовать @downloadURL"
+  },
+  "hintVacuum": {
+    "message": "Сбросить избыточный кэш и попробовать подгрузить недостающие ресурсы."
+  },
+  "install": {
+    "message": "Установить"
+  },
+  "installFrom": {
+    "message": "Установить с $1"
+  },
+  "installOptionTrackTooltip": {
+    "message": "Вкладка исходного файла должна оставаться открытой в Firefox 68 и новее."
+  },
+  "labelAdvanced": {
+    "message": "Дополнительные настройки"
+  },
+  "labelAllowUpdate": {
+    "message": "Разрешить обновление"
+  },
+  "labelAuthor": {
+    "message": "Автор: "
+  },
+  "labelAutoReloadCurrentTab": {
+    "message": "Обновить текущую вкладку при включении или отключении скрипта из меню"
+  },
+  "labelAutoUpdate": {
+    "message": "Проверять наличие обновлений скриптов каждые $1 дней, 0 для отключения"
+  },
+  "labelBackupMaintenance": {
+    "message": "Резервное копирование и обслуживание"
+  },
+  "labelBadge": {
+    "message": "Счётчик на значке: "
+  },
+  "labelBadgeColors": {
+    "message": "Цвета значка: "
+  },
+  "labelBadgeNone": {
+    "message": "нет"
+  },
+  "labelBadgeTotal": {
+    "message": "запущенные скрипты"
+  },
+  "labelBadgeUnique": {
+    "message": "уникальные запущенные скрипты"
+  },
+  "labelBlacklist": {
+    "message": "Чёрный список"
+  },
+  "labelContributors": {
+    "message": "Участники"
+  },
+  "labelCurrentLang": {
+    "message": "Текущий язык: "
+  },
+  "labelCustomCSS": {
+    "message": "Пользовательский стиль"
+  },
+  "labelDownloadURL": {
+    "message": "URL-адрес загрузки:"
+  },
+  "labelEditValue": {
+    "message": "Правка значения скрипта"
+  },
+  "labelEditValueAll": {
+    "message": "Правка хранилища скрипта"
+  },
+  "labelEditor": {
+    "message": "Редактор"
+  },
+  "labelEnabledScriptsOnly": {
+    "message": "только включённые скрипты"
+  },
+  "labelExclude": {
+    "message": "@exclude правила исключения"
+  },
+  "labelExcludeMatch": {
+    "message": "@exclude-match правила исключения соответствий"
+  },
+  "labelExportScriptData": {
+    "message": "Экспорт данных скриптов"
+  },
+  "labelExposeStatus": {
+    "message": "Показывать версию установленного скрипта на сайтах каталогов скриптов: $1"
+  },
+  "labelFastFirefoxInject": {
+    "message": "Альтернативный режим $1 в Firefox"
+  },
+  "labelFastFirefoxInjectHint": {
+    "message": "Альтернативный способ внедрения для скриптов <document-start> с Firefox 59, более быстрый, чем режим по умолчанию. Как и «Режим синхронизации page», он также увеличивает потребление памяти, поэтому вы можете отключить его, если ваши скрипты работают верно без этого параметра."
+  },
+  "labelFeedback": {
+    "message": "Обратная связь"
+  },
+  "labelFilterSort": {
+    "message": "Сортировать по $1"
+  },
+  "labelGeneral": {
+    "message": "Общие настройки"
+  },
+  "labelHelpTranslate": {
+    "message": "Улучшить перевод"
+  },
+  "labelHomepage": {
+    "message": "Домашняя страница"
+  },
+  "labelHomepageURL": {
+    "message": "URL-адрес домашней страницы:"
+  },
+  "labelImportScriptData": {
+    "message": "Импорт данных скрипта"
+  },
+  "labelImportSettings": {
+    "message": "Импорт настроек"
+  },
+  "labelInclude": {
+    "message": "@include правила включения"
+  },
+  "labelInjectionMode": {
+    "message": "Режим внедрения: "
+  },
+  "labelInstall": {
+    "message": "Установка скрипта..."
+  },
+  "labelKeepOriginal": {
+    "message": "Сохранить исходное соответствие"
+  },
+  "labelLastUpdatedAt": {
+    "message": "Дата последнего обновления $1"
+  },
+  "labelLineNumber": {
+    "message": "N строки:"
+  },
+  "labelMatch": {
+    "message": "@match правила соответствия"
+  },
+  "labelName": {
+    "message": "Имя:"
+  },
+  "labelNoFrames": {
+    "message": "Запускать во фреймах:"
+  },
+  "labelNoName": {
+    "message": "Безымянный"
+  },
+  "labelNoSearchScripts": {
+    "message": "Скрипты не найдены."
+  },
+  "labelNotifyThisUpdated": {
+    "message": ". Уведомления об обновлениях:"
+  },
+  "labelNotifyUpdates": {
+    "message": "Уведомлять об обновлениях скриптов"
+  },
+  "labelNotifyUpdatesGlobal": {
+    "message": "Игнорировать уведомления скриптов (вкладка настроек в редакторе)"
+  },
+  "labelPopupSort": {
+    "message": "Сортировка во всплывающем окне по $1"
+  },
+  "labelPrivacyPolicy": {
+    "message": "Политика конфиденциальности"
+  },
+  "labelReinstall": {
+    "message": "Повторная установка скрипта"
+  },
+  "labelRelated": {
+    "message": "Справочные ссылки: "
+  },
+  "labelRemovedAt": {
+    "message": "Удалён в $1"
+  },
+  "labelReplace": {
+    "message": "Заменить на: "
+  },
+  "labelRunAt": {
+    "message": "Выполнить: "
+  },
+  "labelRunAtDefault": {
+    "message": "(по умолчанию)"
+  },
+  "labelScriptTemplate": {
+    "message": "Шаблон нового скрипта"
+  },
+  "labelSearch": {
+    "message": "Найти: "
+  },
+  "labelSearchScript": {
+    "message": "Поиск скриптов..."
+  },
+  "labelSettings": {
+    "message": "Настройки"
+  },
+  "labelShowOrder": {
+    "message": "Показывать номера порядка выполнения"
+  },
+  "labelSync": {
+    "message": "Синхронизация"
+  },
+  "labelSyncAnonymous": {
+    "message": "Анонимный аккаунт"
+  },
+  "labelSyncAuthorize": {
+    "message": "Авторизироваться"
+  },
+  "labelSyncAuthorizing": {
+    "message": "Авторизация..."
+  },
+  "labelSyncDisabled": {
+    "message": "Нет"
+  },
+  "labelSyncPassword": {
+    "message": "Пароль: "
+  },
+  "labelSyncRevoke": {
+    "message": "Выйти"
+  },
+  "labelSyncScriptStatus": {
+    "message": "Синхронизировать состояние скриптов."
+  },
+  "labelSyncServerUrl": {
+    "message": "URL-адрес сервера:"
+  },
+  "labelSyncService": {
+    "message": "Синхронизация через"
+  },
+  "labelSyncUsername": {
+    "message": "Логин:"
+  },
+  "labelTheme": {
+    "message": "Тема:"
+  },
+  "labelUpdateURL": {
+    "message": "URL-адрес обновления:"
+  },
+  "labelViewSingleColumn": {
+    "message": "Один столбец"
+  },
+  "labelViewTable": {
+    "message": "Табличный вид"
+  },
+  "labelXhrInject": {
+    "message": "Режим синхронизации $1"
+  },
+  "labelXhrInjectHint": {
+    "message": "Включите только в случае, если у вас есть скрипт, который должен быть запущен до начала загрузки страницы, и в настоящее время он выполняется слишком поздно. Как и режим мгновенного внедрения в Tampermonkey, этот вариант использует устаревший синхронный XHR, поэтому в Chrome/Chromium будут предупреждения в консоли devtools, но вы можете игнорировать их, поскольку негативные последствия незначительны. Скрыть предупреждения можно, щёлкнув ПКМ на одном из них."
+  },
+  "labelXhrInjectNote": {
+    "message": "(кроме инкогнито и сайтов с отключёнными куки)"
+  },
+  "lastSync": {
+    "message": "Последняя синхронизация в $1"
+  },
+  "learnBlacklist": {
+    "message": "Подробнее о шаблонах чёрного списка."
+  },
+  "learnInjectionMode": {
+    "message": "Подробнее о режимах внедрения."
+  },
+  "menuDashboard": {
+    "message": "Панель управления"
+  },
+  "menuExclude": {
+    "message": "Исключить..."
+  },
+  "menuExcludeHint": {
+    "message": "Текущая вкладка будет автоматически перезагружена,\nесли вы включили эту опцию в общих настройках.\nЧтобы применить изменения к остальным вкладкам,\nперезагрузите их вручную.\nРегулируется в «Настройках» редактора."
+  },
+  "menuFeedback": {
+    "message": "Обратная связь"
+  },
+  "menuFindScripts": {
+    "message": "Найти скрипты для этого сайта"
+  },
+  "menuInjectionFailed": {
+    "message": "Не удалось внедрить некоторые скрипты."
+  },
+  "menuInjectionFailedFix": {
+    "message": "Повторите попытку в \"авто\" режиме"
+  },
+  "menuMatchedDisabledScripts": {
+    "message": "Подходящие отключённые скрипты"
+  },
+  "menuMatchedFrameScripts": {
+    "message": "Скрипты только субфреймов"
+  },
+  "menuMatchedScripts": {
+    "message": "Подходящие скрипты"
+  },
+  "menuNewScript": {
+    "message": "Создать новый скрипт"
+  },
+  "menuScriptDisabled": {
+    "message": "Скрипты отключены"
+  },
+  "menuScriptEnabled": {
+    "message": "Скрипты включены"
+  },
+  "msgCheckingForUpdate": {
+    "message": "Проверка обновлений…"
+  },
+  "msgDateFormatInfo": {
+    "message": "Щёлкните, чтобы открыть документацию MomentJS. Разрешённые маркеры: $1. Используйте [квадратные скобки] для защиты буквального текста."
+  },
+  "msgErrorFetchingResource": {
+    "message": "Ошибка при получении ресурса!"
+  },
+  "msgErrorFetchingScript": {
+    "message": "Ошибка при получении скрипта!"
+  },
+  "msgErrorFetchingUpdateInfo": {
+    "message": "Не удалось получить сведения об обновлениях."
+  },
+  "msgErrorLoadingData": {
+    "message": "Ошибка загрузки кода скрипта."
+  },
+  "msgErrorLoadingDependency": {
+    "message": "Ошибка загрузки зависимостей."
+  },
+  "msgImported": {
+    "message": "$1 скриптов импортировано."
+  },
+  "msgIncognitoChanges": {
+    "message": "Изменения, в режиме инкогнито, применяются и к основному профилю."
+  },
+  "msgInstalled": {
+    "message": "Скрипт установлен."
+  },
+  "msgInvalidScript": {
+    "message": "Неверный скрипт!"
+  },
+  "msgLoadingData": {
+    "message": "Загрузка кода скрипта..."
+  },
+  "msgLoadingDependency": {
+    "message": "Загрузка зависимостей... ($1/$2)"
+  },
+  "msgMissingResources": {
+    "message": "Не хватает необходимых ресурсов."
+  },
+  "msgNamespaceConflict": {
+    "message": "Конфликт пространства имён скрипта. \nПожалуйста, смените @name и @namespace здесь или исправьте этот скрипт."
+  },
+  "msgNamespaceConflictRestore": {
+    "message": "Скрипт с такими же @name и @namespace уже установлен."
+  },
+  "msgNewVersion": {
+    "message": "Доступна новая версия."
+  },
+  "msgNoUpdate": {
+    "message": "Обновления не найдены."
+  },
+  "msgOpenUpdateErrors": {
+    "message": "Ошибка при обновлении скриптов. Щёлкните, чтобы открыть их."
+  },
+  "msgReinstallScripts": {
+    "message": "Пожалуйста, пересохраните или переустановите эти скрипты:"
+  },
+  "msgSameCode": {
+    "message": " (код такой же)"
+  },
+  "msgScriptUpdated": {
+    "message": "Скрипт [$1] обновлён!"
+  },
+  "msgShowHide": {
+    "message": "Показать/скрыть"
+  },
+  "msgSyncError": {
+    "message": "Ошибка синхронизации!"
+  },
+  "msgSyncInit": {
+    "message": "Инициализация..."
+  },
+  "msgSyncInitError": {
+    "message": "Ошибка запуска синхронизации!"
+  },
+  "msgSyncNoAuthYet": {
+    "message": "Ещё не авторизован."
+  },
+  "msgSyncReady": {
+    "message": "Ожидание синхронизации..."
+  },
+  "msgSyncing": {
+    "message": "Выполняется синхронизация..."
+  },
+  "msgSyntaxError": {
+    "message": "Ошибка синтаксиса?"
+  },
+  "msgUpdated": {
+    "message": "Скрипт обновлён."
+  },
+  "msgUpdating": {
+    "message": "Обновление..."
+  },
+  "noValues": {
+    "message": "Значения не сохраняются"
+  },
+  "optionEditorWindow": {
+    "message": "Из всплывающего окна открывать редактор в новом окне"
+  },
+  "optionEditorWindowHint": {
+    "message": "Положение окна редактора будет запоминаться только при изменении размера или сохранении"
+  },
+  "optionEditorWindowSimple": {
+    "message": "Скрыть омнибокс"
+  },
+  "optionPopup": {
+    "message": "Всплывающее меню и значок"
+  },
+  "optionPopupEnabledFirst": {
+    "message": "Сначала включённые"
+  },
+  "optionPopupGroupDisabled": {
+    "message": "Группировать отключённые скрипты"
+  },
+  "optionPopupGroupRunAt": {
+    "message": "Группировать по стадии @run-at"
+  },
+  "optionPopupHideDisabled": {
+    "message": "Скрыть отключённые скрипты"
+  },
+  "optionPopupShowDisabled": {
+    "message": "Показать отключённые скрипты"
+  },
+  "optionShowEnabledFirst": {
+    "message": "Сначала показать включённые скрипты"
+  },
+  "optionUiTheme": {
+    "message": "Тема интерфейса:"
+  },
+  "optionUiThemeAuto": {
+    "message": "автоматически"
+  },
+  "optionUiThemeDark": {
+    "message": "тёмная"
+  },
+  "optionUiThemeLight": {
+    "message": "светлая"
+  },
+  "optionUpdate": {
+    "message": "Обновление"
+  },
+  "readonly": {
+    "message": "Только для чтения"
+  },
+  "readonlyNote": {
+    "message": "Автообновляемый скрипт доступен только для чтения, пока вы не отключите обновления или не разрешите правку."
+  },
+  "readonlyOpt": {
+    "message": "Разрешить правки"
+  },
+  "readonlyOptWarn": {
+    "message": "(следующее обновление перезапишет их)"
+  },
+  "reinstall": {
+    "message": "Переустановить"
+  },
+  "reloadTab": {
+    "message": "Обновить вкладку"
+  },
+  "reloadTabTrackHint": {
+    "message": "Если включено, активная вкладка будет перезагружаться при обнаружении изменений и совпадении URL-адреса вкладки с этим скриптом."
+  },
+  "removeAllScripts": {
+    "message": "Удалить все скрипты"
+  },
+  "removeAllScriptsConfirm": {
+    "message": "Убрать все скрипты в «Корзину»?\nОна будет автоматически очищена через некоторое время. Вы также можете открыть её и очистить самостоятельно."
+  },
+  "searchCaseSensitive": {
+    "message": "С учётом регистра"
+  },
+  "searchUseRegex": {
+    "message": "Регулярное выражение"
+  },
+  "sideMenuAbout": {
+    "message": "О расширении"
+  },
+  "sideMenuInstalled": {
+    "message": "Установлено"
+  },
+  "sideMenuSettings": {
+    "message": "Настройки"
+  },
+  "skipScripts": {
+    "message": "Обновить страницу без скриптов"
+  },
+  "skipScriptsMsg": {
+    "message": "Вы отключили пользовательские скрипты для этой страницы. Чтобы запустить их, перезагрузите или перейдите на вкладку."
+  },
+  "stopTracking": {
+    "message": "Прекратить отслеживание"
+  },
+  "titleBadgeColor": {
+    "message": "Цвет обычного значка"
+  },
+  "titleBadgeColorBlocked": {
+    "message": "Цвет значка, если скрипты не внедрились\n(страница в чёрном списке или не поддерживается)"
+  },
+  "titleSearchHint": {
+    "message": "* Клавиша <Enter> добавляет текст в историю автозаполнения.\n* Поддерживается RegExp: /re/ и /re/flags"
+  },
+  "trackEdits": {
+    "message": "Отслеживать внешние правки"
+  },
+  "trackEditsNote": {
+    "message": "Держите эту страницу открытой, чтобы отслеживать свои правки в локальном файле"
+  },
+  "updateListedCmd": {
+    "message": "Обновить скрипты ($1)"
+  },
+  "valueLabelKey": {
+    "message": "Ключ (строка)"
+  },
+  "valueLabelValue": {
+    "message": "Значение (в формате JSON)"
+  },
+  "valueLabelValueAll": {
+    "message": "Все значения (в формате JSON)"
+  }
+}

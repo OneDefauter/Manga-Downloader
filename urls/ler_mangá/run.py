@@ -11,7 +11,7 @@ from colorama import Fore, Style
 import src.download as download
 import src.organizar as organizar
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -63,12 +63,10 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     
     def load_images():
         count_repet = 0
-        count_limit = 10
-        
-        while count_repet < count_limit:
+        while count_repet < max_verify:
             
             if debug_var.get():
-                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {count_limit}")
+                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}")
 
             leitor = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "reader-area"))
@@ -93,8 +91,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
             count_repet += 1
             
         return imagens
-            
-
+        
     imagens = load_images()
 
     # Extrai os links das imagens
@@ -116,4 +113,3 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     organizar.organizar(folder_path, compactar, compact_extension, extension)
 
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
-

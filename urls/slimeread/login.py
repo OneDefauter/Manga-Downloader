@@ -2,8 +2,8 @@ import time
 from selenium.webdriver.common.keys import Keys
 
 def login(driver):
-    username = "yenic25188@frandin.com"
-    password = "M8e.Dcd4.Wd$vdj"
+    username = "fadihof968@mcuma.com"
+    password = "0vL8.=qOm<6q"
     
     try:
         driver.get('https://slimeread.com/login')

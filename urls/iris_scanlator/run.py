@@ -10,7 +10,7 @@ from colorama import Fore, Style
 import src.organizar as organizar
 import src.move as move
 
-async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
+async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
     folder_path = os.path.join(folder_selected, nome_foler, numero_capitulo)
 
     # Verificar se a pasta já existe e tem conteúdo
@@ -38,12 +38,10 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
 
     def load_images():
         count_repet = 0
-        count_limit = 10
-
-        while count_repet < count_limit:
+        while count_repet < max_verify:
             try:
                 if debug_var.get():
-                    baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {count_limit}")
+                    baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}")
 
                 # Espera até que o elemento do leitor esteja presente na página
                 leitor = WebDriverWait(driver, 10).until(
@@ -152,7 +150,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                     files += 1
                     break
                 else:
-                    if warning_img > 3:
+                    if warning_img > max_attent:
                         print(f"{Fore.RED}Falha ao baixar {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
                         break
                     elif attention < 1000:
@@ -184,4 +182,3 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     app_instance.move_text_wait(f'Capítulo {numero_capitulo} baixado com sucesso')
 
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
-

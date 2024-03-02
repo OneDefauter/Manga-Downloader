@@ -1,11 +1,11 @@
-import os
 import re
-import time
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import src.status_check as status_check
 
-def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance):
+def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance, max_attent):
     # Abre a página
     driver.get(url)
     
@@ -15,38 +15,50 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     # Verifica o status do site
     result = status_check.setup(driver, url)
     if result != 200:
-        driver.quit()
         return result
-
-    time.sleep(2)
     
-    os.system("cls")
     print("Verificando capítulos...")
     app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():
         baixando_label.config(text="Verificando capítulos...")
-
-    lista_capitulos = []
-
-    try:
-        lista_capitulos = driver.find_elements(By.CLASS_NAME, "single-chapter")
-    except:
-        pass
-
-    capitulos_encontrados = []
-
-    for capitulo in lista_capitulos:
-        # Obter o número do capítulo
-        # Obter o número do capítulo do texto do link
-        link_text = capitulo.find_element(By.TAG_NAME, 'a').text
-        numero_capitulo = float(re.sub(r'[^0-9.,]', '', link_text.replace(',', '')))
-
-        # Obter o link do capítulo
-        link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
-
-        # Verificar se o capítulo está no intervalo desejado
-        if inicio <= numero_capitulo <= fim:
-            capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+    
+    x = 1
+    while True:
+        capitulos_encontrados = []
+        capitulos = []
+        
+        attempts = 0
+        while attempts < max_attent:
+            try:
+                WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "single-chapter"))
+                )
+                break
+            except:
+                attempts += 1
+                driver.refresh()
+        
+        try:
+            capitulos = driver.find_elements(By.CLASS_NAME, "single-chapter")
+        except:
+            pass
+        
+        for capitulo in capitulos:
+            link_text = capitulo.find_element(By.TAG_NAME, 'a').text
+            if link_text == "":
+                continue
+            numero_capitulo = float(re.sub(r'[^0-9.,]', '', link_text.replace(',', '')))
+            link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
+            
+            if inicio <= numero_capitulo <= fim:
+                capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
+            
+        if len(capitulos_encontrados) > 0:
+            break
+        else:
+            if x < max_attent:
+                x += 1
+            else:
+                break
 
     return capitulos_encontrados
-

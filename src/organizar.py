@@ -7,6 +7,7 @@ import win32api
 import win32con
 from PIL import Image
 from wand.image import Image as MagickImage
+from colorama import Fore, Style
 
 tamanho_máximo = 10000
 número_de_partes = 5
@@ -121,7 +122,7 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
     if not image_files:
-        print("Capítulo sem imagem ou não carregaram.")
+        print(f"{Fore.RED}Capítulo sem imagem ou não carregaram.{Style.RESET_ALL}")
         # Excluir pasta se estiver vazia
         shutil.rmtree(folder_path)
         return
