@@ -21,44 +21,48 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     
     x = 1
     while True:
+        capitulos_encontrados = []
+        capitulos = []
+        
+        driver.execute_script("window.dispatchEvent(new Event('mousemove'));")
+        
         attempts = 0
         while attempts < max_attent:
             try:
-                WebDriverWait(driver, 5).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "obra-capitulos"))
+                WebDriverWait(driver, 2).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'wp-manga-chapter'))
                 )
                 break
             except:
                 attempts += 1
                 driver.refresh()
         
-        capitulos = []
-        
         try:
-            # Esperar até que o elemento desejado esteja presente na página
-            capitulos_element = driver.find_element(By.CSS_SELECTOR, "div.obra-capitulos")
-        
-            # Obter os links dos capítulos
-            capitulos = capitulos_element.find_elements(By.CSS_SELECTOR, "a.capitulo")
+            WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CLASS_NAME, "chapter-readmore")))
+            driver.execute_script("document.querySelector('.chapter-readmore').click();")
         except:
             pass
-        
-        capitulos_encontrados = []
-        
-        # Armazenar nome e link de cada capítulo na lista
-        for capitulo in capitulos:
-            link = capitulo.get_attribute("href")
-            nome = capitulo.find_element(By.TAG_NAME, "p").text
-            if nome == '':
+    
+        try:
+            # Esperar a lista de capítulos carregar
+            chapter_elements = driver.find_elements(By.CLASS_NAME, "wp-manga-chapter")
+        except:
+            pass
+    
+        for capitulo in chapter_elements:
+            # Encontra o elemento 'a' dentro do 'li'
+            link_text = capitulo.find_element(By.TAG_NAME, 'a').text
+            if link_text == '':
                 continue
-            
-            match = re.search(r'[\d,.]+', nome)
-            if match:
-                numero_capitulo = float(match.group())
-            
+            numero_capitulo = float(re.sub(r'[^0-9.,]', '', link_text.replace(',', '')))
+
+            # Obter o link do capítulo
+            link = capitulo.find_element(By.TAG_NAME, 'a').get_attribute('href')
+
+            # Verificar se o capítulo está no intervalo desejado
             if inicio <= numero_capitulo <= fim:
                 capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
-                
+            
         if len(capitulos_encontrados) > 0:
             break
         else:
@@ -66,8 +70,5 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
                 x += 1
             else:
                 break
-            
-    if debug_var.get():
-        baixando_label.config(text="Aguarde...")
-
+    
     return capitulos_encontrados

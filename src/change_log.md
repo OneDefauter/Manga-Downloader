@@ -1,3 +1,7 @@
+### Versão 3.2 (21/03/2024)
+
+- Pequenas correções
+
 ### Versão 3.1 (02/03/2024)
 
 - Correções foram feitas.

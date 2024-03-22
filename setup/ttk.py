@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import shutil
 import logging
 import asyncio
@@ -52,6 +51,9 @@ import urls.valkyrie_scan.main as agr_19
 import urls.limbo_scan.main as agr_20
 import urls.nobre_scan.main as agr_21
 import urls.iris_scanlator.main as agr_22
+import urls.novelmic.main as agr_23
+import urls.norte_rose.main as agr_24
+import urls.lscans.main as agr_25
 
 
 
@@ -92,6 +94,9 @@ dic_agregadores = {
     "Limbo Scan": "https://limboscan.com.br/",
     "Nobre Scan": "https://nobrescan.com.br/",
     "Iris Scanlator": "https://irisscanlator.com.br/",
+    "NovelMic": "https://novelmic.com/",
+    "Norte Rose": "https://norterose.com.br/",
+    "L Scan": "https://lscans.com/",
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -544,6 +549,21 @@ class AppMain():
                 # Num 22 (Iris Scanlator)
                 elif "Iris Scanlator" in agregador_escolhido:
                     await load(dic_url, agr_22)
+                    break
+        
+                # Num 23 (NovelMic)
+                elif "NovelMic" in agregador_escolhido:
+                    await load(dic_url, agr_23)
+                    break
+        
+                # Num 24 (Norte Rose)
+                elif "Norte Rose" in agregador_escolhido:
+                    await load(dic_url, agr_24)
+                    break
+        
+                # Num 25 (L Scan)
+                elif "L Scan" in agregador_escolhido:
+                    await load(dic_url, agr_25)
                     break
             
                     
