@@ -13,6 +13,14 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     if result != 200:
         driver.quit()
         return result
+
+    try:
+        dialog = WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "fc-ab-root"))
+        )
+        driver.execute_script("arguments[0].remove();", dialog)
+    except:
+        pass
     
     try:
         # Aguarda até que o botão esteja presente na página
@@ -71,8 +79,8 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
 
         # Tenta clicar no botão de próxima página
         try:
-            next_page_button = driver.find_element(By.XPATH, '//li[@class="page-item"]/a[@class="page-link" and contains(text(), ">")]')
-            next_page_button.click()
+            driver.find_element(By.XPATH, '//li[@class="page-item"]/a[@class="page-link" and contains(text(), ">")]')
+            driver.execute_script('document.querySelector(\'li.page-item > a.page-link:contains(">")\').click();')
         except:
             if trying < max_attent:
                 if len(capitulos_encontrados) == 0:
