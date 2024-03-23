@@ -15,6 +15,7 @@ from colorama import Fore, Style
 from __init__ import __version__
 
 
+
 # Importações da pasta 'src'
 import src.folder_main as first
 import src.save as save_settings
@@ -26,6 +27,7 @@ import src.changelog as open_change
 import src.clean as clean
 import src.animation as anm
 import src.folder_delete as del_folder
+
 
 
 # Importações das URLs

@@ -79,8 +79,9 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
 
         # Tenta clicar no botão de próxima página
         try:
-            driver.find_element(By.XPATH, '//li[@class="page-item"]/a[@class="page-link" and contains(text(), ">")]')
-            driver.execute_script('document.querySelector(\'li.page-item > a.page-link:contains(">")\').click();')
+            next_page_button = driver.find_element(By.XPATH, '//li[@class="page-item"]/a[@class="page-link" and contains(text(), ">")]')
+            driver.execute_script("arguments[0].scrollIntoView();", next_page_button)
+            next_page_button.click()
         except:
             if trying < max_attent:
                 if len(capitulos_encontrados) == 0:

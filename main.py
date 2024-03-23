@@ -25,6 +25,7 @@ def install_modules():
         'imageio',
         'imageio[pyav]',
         'Wand',
+        'packaging',
     ]
 
     for module in required_modules:

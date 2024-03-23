@@ -164,17 +164,26 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                 
             driver.get(imagem)
             
-            try:
-                input_element = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
-                )
-            except:
-                driver.get(imagem)
-                time.sleep(1)
-                
-                input_element = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
-                )
+            attents = 1
+            while attents < max_attent:
+                try:
+                    input_element = WebDriverWait(driver, 10).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
+                    )
+                    break
+                except:
+                    try:
+                        driver.get(imagem)
+                        time.sleep(0.2)
+                        
+                        input_element = WebDriverWait(driver, 10).until(
+                            EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
+                        )
+                    except:
+                        attents += 1
+            if attents == max_attent:
+                print(f"{Fore.RED}Falha ao baixar o capítulo {numero_capitulo}")
+                return 526
             
             input_element.clear()  # Limpa qualquer valor existente no campo
             input_element.send_keys(count)
