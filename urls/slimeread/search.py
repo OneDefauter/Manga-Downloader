@@ -12,10 +12,11 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
     driver.get(url)
     
     # Verifica o status do site
-    result = status_check.setup(driver, url)
-    if result != 200:
-        return result
-    
+    def func(param):
+        result = status_check.setup(driver, url)
+        if result != 200:
+            return result
+
     print("Verificando capítulos...")
     app_instance.move_text_wait(f'Verificando capítulos')
     if debug_var.get():

@@ -56,6 +56,7 @@ import urls.iris_scanlator.main as agr_22
 import urls.novelmic.main as agr_23
 import urls.norte_rose.main as agr_24
 import urls.lscans.main as agr_25
+import urls.minitwoscan.main as agr_26
 
 
 
@@ -99,6 +100,7 @@ dic_agregadores = {
     "NovelMic": "https://novelmic.com/",
     "Norte Rose": "https://norterose.com.br/",
     "L Scan": "https://lscans.com/",
+    "MiniTwo Scan": "https://minitwoscan.com/"
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -394,9 +396,9 @@ class AppMain():
                 print("\n")
             self.app_instance.move_text_wait('Iniciando')
             
-            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Limbo Scan']:
+            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Limbo Scan', 'Minitwo Scan']:
                 driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-            elif agregador_escolhido in ['Mangás Chan']:
+            elif agregador_escolhido in ['Mangás Chan', 'Minitwo Scan']:
                 if self.headless_var.get():
                     if self.notif_01 is False:
                         self.notif_01 = True
@@ -566,6 +568,11 @@ class AppMain():
                 # Num 25 (L Scan)
                 elif "L Scan" in agregador_escolhido:
                     await load(dic_url, agr_25)
+                    break
+        
+                # Num 26 (MiniTwo Scan)
+                elif "MiniTwo Scan" in agregador_escolhido:
+                    await load(dic_url, agr_26)
                     break
             
                     
