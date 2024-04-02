@@ -4,9 +4,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
 def login(driver, username, password):
-    # username = "fadihof968@mcuma.com"
-    # password = "0vL8.=qOm<6q"
-    
     try:
         driver.get('https://slimeread.com/login')
         
