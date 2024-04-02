@@ -127,7 +127,7 @@ def abrir_link2(*args):
     webbrowser.open('https://discordapp.com/users/367504043691606016')
 
 class AppMain():
-    def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var, window_width, window_height, screen_width, screen_height, x, y):
+    def __init__(self, root, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var, user_var, pass_var, window_width, window_height, screen_width, screen_height, x, y):
         self.root = root
         self.auto_save = auto_save
         self.agregador_var = agregador_var
@@ -149,6 +149,8 @@ class AppMain():
         self.net_lat_var = net_lat_var
         self.max_attent_var = max_attent_var
         self.max_verify_var = max_verify_var
+        self.user_var = user_var
+        self.pass_var = pass_var
         
         # Tamanho da GUI
         self.change_log_var = change_log_var
@@ -302,7 +304,7 @@ class AppMain():
     
     def save_settings(self):
         self.app_instance.move_text_wait(f'Configurações foram salvas')
-        save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var)
+        save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var, self.user_var, self.pass_var)
     
         
     async def TkApp(self):
@@ -324,6 +326,16 @@ class AppMain():
         print("Máximo de tentativas:", self.max_attent_var.get())
         print("Máximo de verificação:", self.max_verify_var.get())
         print("\n")
+        
+        if self.agregador_var.get() == "SlimeRead":
+            if self.user_var.get() == "" or self.pass_var.get() == "":
+                print("Erro: Usuário ou senha em branco.")
+                self.app_instance.move_text_wait('Erro: Usuário ou senha em branco')
+                messagebox.showerror("Erro", "Usuário ou senha em branco")
+                self.result = 777
+            else:
+                username = self.user_var.get()
+                password = self.pass_var.get()
         
         chekin = False
         
@@ -424,7 +436,10 @@ class AppMain():
             
             async def load(dic_url, agregador):
                 if dic_url in url:
-                    self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()))
+                    if self.agregador_var.get() == "SlimeRead":
+                        self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()), username, password)
+                    else:
+                        self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()))
                     driver.quit()
                 else:
                     self.result = 1
@@ -665,6 +680,10 @@ class AppMain():
                 elif self.result == 'e523':
                     self.baixando_label.config(text="Erro: Acesso bloqueado. Status code: 523")
                     self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
+                    
+                elif self.result == 'e005':
+                    self.baixando_label.config(text="Erro: Falha no login")
+                    self.app_instance.move_text_wait("Erro: Falha no login")
                 
             else:
                 # Bem-sucedido
@@ -708,6 +727,9 @@ class AppMain():
                     self.app_instance.move_text_wait("Erro: A conexão expirou. Status code: 522")
                 elif self.result == 'e523':
                     self.app_instance.move_text_wait("Erro: Acesso bloqueado. Status code: 523")
+                    
+                elif self.result == 'e005':
+                    self.app_instance.move_text_wait("Erro: Falha no login")
                 
             self.enable_gui()
 
@@ -738,6 +760,8 @@ class AppMain():
         self.reset_config_button.config(state=tb.DISABLED)
         self.max_attent.config(state=tb.DISABLED)
         self.max_verify.config(state=tb.DISABLED)
+        self.user.config(state=tb.DISABLED)
+        self.pass_.config(state=tb.DISABLED)
         self.theme_0.config(state=tb.DISABLED)
         self.theme_1.config(state=tb.DISABLED)
         self.theme_2.config(state=tb.DISABLED)
@@ -785,6 +809,8 @@ class AppMain():
         self.reset_config_button.config(state=tb.NORMAL)
         self.max_attent.config(state=tb.NORMAL)
         self.max_verify.config(state=tb.NORMAL)
+        self.user.config(state=tb.NORMAL)
+        self.pass_.config(state=tb.NORMAL)
         self.theme_0.config(state=tb.NORMAL)
         self.theme_1.config(state=tb.NORMAL)
         self.theme_2.config(state=tb.NORMAL)
@@ -884,7 +910,7 @@ class AppMain():
     def auto_save_settings(self):
         # Salva as configurações apenas se o "Auto salvar" estiver ativado
         if self.auto_save.get():
-            save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var)
+            save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var, self.user_var, self.pass_var)
     
     
     def select_folder_go(self):
@@ -1153,6 +1179,7 @@ class AppMain():
         # Carrega as opções
         self.options_agreg_config()
         self.options_config()
+        self.login_config()
         self.options_config_rede()
         self.options_theme()
         self.options_info()
@@ -1197,9 +1224,19 @@ class AppMain():
         
         
         
+        self.TNotebook1_t2_2 = tb.Frame(self.TNotebook1)
+        self.TNotebook1.add(self.TNotebook1_t2_2, padding=3)
+        self.TNotebook1.tab(2, text='''Login''', compound="left"
+                ,underline='''-1''', )
+        # self.TNotebook1_t2.configure(background="#f0f0f0")
+        # self.TNotebook1_t2.configure(highlightbackground="#d9d9d9")
+        # self.TNotebook1_t2.configure(highlightcolor="black")
+        
+        
+        
         self.TNotebook1_t3 = tb.Frame(self.TNotebook1)
         self.TNotebook1.add(self.TNotebook1_t3, padding=3)
-        self.TNotebook1.tab(2, text='''Rede''', compound="left"
+        self.TNotebook1.tab(3, text='''Rede''', compound="left"
                 ,underline='''-1''', )
         # self.TNotebook1_t3.configure(background="#f0f0f0")
         # self.TNotebook1_t3.configure(highlightbackground="#d9d9d9")
@@ -1209,7 +1246,7 @@ class AppMain():
         
         self.TNotebook1_t4 = tb.Frame(self.TNotebook1)
         self.TNotebook1.add(self.TNotebook1_t4, padding=3)
-        self.TNotebook1.tab(3, text='''Temas''', compound="left"
+        self.TNotebook1.tab(4, text='''Temas''', compound="left"
                 ,underline='''-1''', )
         # self.TNotebook1_t4.configure(background="#f0f0f0")
         # self.TNotebook1_t4.configure(highlightbackground="#d9d9d9")
@@ -1219,7 +1256,7 @@ class AppMain():
         
         self.TNotebook1_t5 = tb.Frame(self.TNotebook1)
         self.TNotebook1.add(self.TNotebook1_t5, padding=3)
-        self.TNotebook1.tab(4, text='''Info''', compound="left"
+        self.TNotebook1.tab(5, text='''Info''', compound="left"
                 ,underline='''-1''', )
         # self.TNotebook1_t5.configure(background="#f0f0f0")
         # self.TNotebook1_t5.configure(highlightbackground="#d9d9d9")
@@ -1229,7 +1266,7 @@ class AppMain():
         
         self.TNotebook1_t6 = tb.Frame(self.TNotebook1)
         self.TNotebook1.add(self.TNotebook1_t6, padding=3)
-        self.TNotebook1.tab(5, text='''Sobre''', compound="left"
+        self.TNotebook1.tab(6, text='''Sobre''', compound="left"
                 ,underline='''-1''', )
         # self.TNotebook1_t5.configure(background="#f0f0f0")
         # self.TNotebook1_t5.configure(highlightbackground="#d9d9d9")
@@ -1629,6 +1666,40 @@ class AppMain():
         self.reset_config_button.configure(text='''Resetar Configurações''')
         self.reset_config_button.configure(command=self.reset_config)
         self.reset_config_button.configure(style="b1.TButton")
+
+
+    def login_config(self):
+        # Login
+        self.login_user = tb.Label(self.TNotebook1_t2_2)
+        self.login_user.place(relx=0.036, rely=0.100, height=30, width=195)
+        self.login_user.configure(anchor='w')
+        self.login_user.configure(compound='left')
+        self.login_user.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        self.login_user.configure(text='''Usuário''')
+        
+        self.user = tb.Entry(self.TNotebook1_t2_2)
+        self.user.place(relx=0.036, rely=0.250, height=36, width=524)
+        self.user.configure(font="-family {Arial} -size 14 -weight bold")
+        self.user.configure(textvariable=self.user_var)
+        self.user.configure(validate='all')
+        self.user.configure(validatecommand=(self.vcmd0, '%P'))
+        
+        
+        # Senha
+        self.login_pass = tb.Label(self.TNotebook1_t2_2)
+        self.login_pass.place(relx=0.036, rely=0.500, height=30, width=195)
+        self.login_pass.configure(anchor='w')
+        self.login_pass.configure(compound='left')
+        self.login_pass.configure(font="-family {Segoe UI} -size 16 -weight bold")
+        self.login_pass.configure(text='''Senha''')
+        
+        self.pass_ = tb.Entry(self.TNotebook1_t2_2)
+        self.pass_.place(relx=0.036, rely=0.650, height=36, width=524)
+        self.pass_.configure(font="-family {Arial} -size 14 -weight bold")
+        self.pass_.configure(textvariable=self.pass_var)
+        self.pass_.configure(validate='all')
+        self.pass_.configure(show="*")
+        self.pass_.configure(validatecommand=(self.vcmd0, '%P'))
 
 
     def options_config_rede(self):
@@ -2212,6 +2283,8 @@ class AppMain():
         change_log_var = self.change_log_var
         max_attent_var = self.max_attent_var
         max_verify_var = self.max_verify_var
+        user_var = self.user_var
+        pass_var = self.pass_var
         
         self.auto_save = tb.BooleanVar(value=False)
         self.agregador_var = tb.StringVar(value="BR Mangás")
@@ -2233,6 +2306,8 @@ class AppMain():
         self.change_log_var = tb.BooleanVar(value=True)
         self.max_attent_var = tb.StringVar(value="3")
         self.max_verify_var = tb.StringVar(value="50")
+        self.user_var = tb.StringVar()
+        self.pass_var = tb.StringVar()
         
         self.auto_save.set(auto_save)
         self.agregador_var.set(agregador_var)
@@ -2253,6 +2328,8 @@ class AppMain():
         self.change_log_var.set(change_log_var)
         self.max_attent_var.set(max_attent_var)
         self.max_verify_var.set(max_verify_var)
+        self.user_var.set(user_var)
+        self.pass_var.set(pass_var)
         
         
     def theme_default(self):

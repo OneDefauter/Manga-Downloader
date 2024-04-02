@@ -1,7 +1,7 @@
 import pickle
 import src.time_zone as hora_agora
 
-def setup(settings_dir, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_select, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var):
+def setup(settings_dir, auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_select, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var, user_var, pass_var):
     settings = {
         "auto_save": auto_save.get(),
         "agregador": agregador_var.get(),
@@ -24,6 +24,8 @@ def setup(settings_dir, auto_save, agregador_var, nome_var, url_var, capitulo_va
         "change_log_var": change_log_var.get(),
         "max_attententions": max_attent_var.get(),
         "max_verify_var": max_verify_var.get(),
+        "user_var": user_var.get(),
+        "pass_var": pass_var.get(),
         # Adicione outros dados que você deseja salvar automaticamente aqui
     }
 

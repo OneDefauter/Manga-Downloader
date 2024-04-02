@@ -5,10 +5,12 @@ import urls.slimeread.search as obter_capitulos
 import urls.slimeread.login as login
 import urls.slimeread.run as run
 
-async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
+async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify, username, password):
     base_url = 'https://slimeread.com/'
     
-    login.login(driver)
+    su_ = login.login(driver, username, password)
+    if not su_:
+        return 'e005'
 
     # Função para obter capítulos dentro de um intervalo
     capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label, app_instance, max_attent)

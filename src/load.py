@@ -29,6 +29,8 @@ def setup(settings_dir):
         change_log_var = settings["change_log_var"]
         max_attent_var = settings["max_attententions"]
         max_verify_var = settings["max_verify_var"]
+        user_var = settings["user_var"]
+        pass_var = settings["pass_var"]
         print(hora_agora.setup(), "INFO:", "✔ Configurações carregadas")
         
     except:
@@ -54,5 +56,7 @@ def setup(settings_dir):
         change_log_var = True
         max_attent_var = 3
         max_verify_var = 50
+        user_var = ""
+        pass_var = ""
         
-    return auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var
+    return auto_save, agregador_var, nome_var, url_var, capitulo_var, ate_var, extension_var, compact_extension_var, compact_var, debug_var, debug2_var, headless_var, folder_selected, theme, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var, change_log_var, max_attent_var, max_verify_var, user_var, pass_var
