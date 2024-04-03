@@ -13,10 +13,13 @@ import src.organizar as organizar
 def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, folder_path, app_instance, max_attent = 3, max_verify = 10, extended = False):
     def load_image():
         count_repet = 0
+        count_save = 0
+        paginas = [0]
+        paginas_save = 0
         while count_repet < max_verify:
     
             if debug_var.get():
-                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}")
+                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}\nEncontrados {len(paginas)} imagens")
     
             leitor = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "reading-content"))
@@ -38,7 +41,15 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
                 scroll_to_image0(imagem)
                 
             count_repet += 1
-        
+            
+            if len(paginas) != paginas_save:
+                paginas_save = len(paginas)
+                count_save += 1
+                
+            else:
+                if count_save + 10 == count_repet:
+                    break
+            
     load_image()
     
     while True:

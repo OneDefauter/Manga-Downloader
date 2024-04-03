@@ -57,6 +57,8 @@ import urls.novelmic.main as agr_23
 import urls.norte_rose.main as agr_24
 import urls.lscans.main as agr_25
 import urls.minitwoscan.main as agr_26
+import urls.demonsect.main as agr_27
+import urls.moonwitchinlovescan.main as agr_28
 
 
 
@@ -100,7 +102,9 @@ dic_agregadores = {
     "NovelMic": "https://novelmic.com/",
     "Norte Rose": "https://norterose.com.br/",
     "L Scan": "https://lscans.com/",
-    "MiniTwo Scan": "https://minitwoscan.com/"
+    "MiniTwo Scan": "https://minitwoscan.com/",
+    "Demon Sect": "https://demonsect.com.br/",
+    "Moon Witch In Love": "https://moonwitchinlovescan.com/"
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -588,6 +592,16 @@ class AppMain():
                 # Num 26 (MiniTwo Scan)
                 elif "MiniTwo Scan" in agregador_escolhido:
                     await load(dic_url, agr_26)
+                    break
+        
+                # Num 27 (Demon Sect)
+                elif "Demon Sect" in agregador_escolhido:
+                    await load(dic_url, agr_27)
+                    break
+        
+                # Num 28 (Moon Witch In Love)
+                elif "Moon Witch In Love" in agregador_escolhido:
+                    await load(dic_url, agr_28)
                     break
             
                     
@@ -2305,7 +2319,7 @@ class AppMain():
         self.net_lat_var = tb.StringVar(value="50")
         self.change_log_var = tb.BooleanVar(value=True)
         self.max_attent_var = tb.StringVar(value="3")
-        self.max_verify_var = tb.StringVar(value="50")
+        self.max_verify_var = tb.StringVar(value="100")
         self.user_var = tb.StringVar()
         self.pass_var = tb.StringVar()
         
