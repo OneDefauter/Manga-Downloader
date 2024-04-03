@@ -49,7 +49,11 @@ def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_ins
             pass
         
         for capitulo in capitulos:
-            numero_capitulo = float(capitulo.get_attribute('data-num'))
+            numero_capitulo = capitulo.get_attribute('data-num')
+            if numero_capitulo.isdigit():
+                numero_capitulo = float(numero_capitulo)
+            elif numero_capitulo == "prologo":
+                numero_capitulo = 0.0
             if inicio <= numero_capitulo <= fim:
                 link = capitulo.find_element(By.XPATH, './/a').get_attribute('href')
                 capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
