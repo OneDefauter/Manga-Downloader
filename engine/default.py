@@ -19,7 +19,16 @@ def setup(headless_var, agregador_escolhido, profile_folder, download_folder, ex
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     chrome_options.add_argument('--log-level=3')
     chrome_options.add_argument(f"user-data-dir={profile_folder}")
-    chrome_options.add_experimental_option("prefs", {"download.default_directory": download_folder})
+    
+    prefs = {
+        "safebrowsing.enabled": True,  # Ativa o Safe Browsing
+        "safebrowsing.disable_download_protection": True,  # Desativa a proteção de download
+        "download.prompt_for_download": False,  # Desativa a solicitação de download
+        "download.directory_upgrade": True,  # Permite atualizações de diretório
+        "download.default_directory": download_folder, # Define o diretório padrão para downloads
+    }
+    
+    chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_extension(extension_path)
     
     if headless_var and agregador_escolhido != 'Mangás Chan':

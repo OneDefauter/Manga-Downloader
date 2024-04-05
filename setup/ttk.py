@@ -59,6 +59,7 @@ import urls.lscans.main as agr_25
 import urls.minitwoscan.main as agr_26
 import urls.demonsect.main as agr_27
 import urls.moonwitchinlovescan.main as agr_28
+import urls.hikari_scan.main as agr_29
 
 
 
@@ -104,7 +105,8 @@ dic_agregadores = {
     "L Scan": "https://lscans.com/",
     "MiniTwo Scan": "https://minitwoscan.com/",
     "Demon Sect": "https://demonsect.com.br/",
-    "Moon Witch In Love": "https://moonwitchinlovescan.com/"
+    "Moon Witch In Love": "https://moonwitchinlovescan.com/",
+    "Hikari Scan": "https://hikariscan.org/"
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -602,6 +604,11 @@ class AppMain():
                 # Num 28 (Moon Witch In Love)
                 elif "Moon Witch In Love" in agregador_escolhido:
                     await load(dic_url, agr_28)
+                    break
+        
+                # Num 28 (Hikari Scan)
+                elif "Hikari Scan" in agregador_escolhido:
+                    await load(dic_url, agr_29)
                     break
             
                     
