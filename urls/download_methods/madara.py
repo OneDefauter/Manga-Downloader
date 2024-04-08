@@ -108,7 +108,7 @@ def setup(driver, url, numero_capitulo, session, folder_selected, nome_foler, no
                     EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="number"]'))
                 )
             except:
-                driver.refresh()
+                driver.get(imagem)
                 time.sleep(1)
                 
                 input_element = WebDriverWait(driver, 10).until(

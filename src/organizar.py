@@ -160,7 +160,23 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
 
     verificar_imagem(folder_path, extension)
     converter_imagem(folder_path, extension)
+    
+    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))]
 
+    count = 1
+
+    for filename in image_files:
+        base, ext = os.path.splitext(filename)
+        new_filename = f"{base}__{ext}"
+        os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
+
+    file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+
+    for filename in file_list:
+        base, ext = os.path.splitext(filename)
+        new_filename = f"{count:02d}{ext}"
+        os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
+        count += 1
 
     if compactar:
         if compact_extension == ".cbz":
