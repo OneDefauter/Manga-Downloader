@@ -91,8 +91,6 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Hikari Scan](https://hikariscan.org/)**
 
-● **[Niadd](https://br.niadd.com/)**
-
 
 
 # Instalação
