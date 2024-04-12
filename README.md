@@ -77,6 +77,22 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Iris Scanlator](https://irisscanlator.com.br/)**
 
+● **[NovelMic](https://novelmic.com/)**
+
+● **[Norte Rose](https://norterose.com.br/)**
+
+● **[L Scan](https://lscans.com/)**
+
+● **[MiniTwo Scan](https://minitwoscan.com/)**
+
+● **[Demon Sect](https://demonsect.com.br/)**
+
+● **[Moon Witch In Love](https://moonwitchinlovescan.com/)**
+
+● **[Hikari Scan](https://hikariscan.org/)**
+
+● **[Niadd](https://br.niadd.com/)**
+
 
 
 # Instalação

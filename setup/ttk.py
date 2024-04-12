@@ -106,7 +106,8 @@ dic_agregadores = {
     "MiniTwo Scan": "https://minitwoscan.com/",
     "Demon Sect": "https://demonsect.com.br/",
     "Moon Witch In Love": "https://moonwitchinlovescan.com/",
-    "Hikari Scan": "https://hikariscan.org/"
+    "Hikari Scan": "https://hikariscan.org/",
+    "Niadd": "https://niadd.com.br/",
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -606,7 +607,7 @@ class AppMain():
                     await load(dic_url, agr_28)
                     break
         
-                # Num 28 (Hikari Scan)
+                # Num 29 (Hikari Scan)
                 elif "Hikari Scan" in agregador_escolhido:
                     await load(dic_url, agr_29)
                     break

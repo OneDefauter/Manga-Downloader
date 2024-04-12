@@ -67,7 +67,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         while count_repet < max_verify:
             
             if debug_var.get():
-                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}")
+                baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}\nEncontrados {len(paginas)} imagens")
 
             leitor = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "reader-area"))
