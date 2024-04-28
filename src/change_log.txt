@@ -1,3 +1,8 @@
+Versão 3.4 (28/04/2024)
+- Correções
+- Tempo decorrido adicionado
+- Agregadores adicionados: NovelMic, Norte Rose, L Scan, MiniTwo Scan, Demon Sect, Moon Witch In Love, Hikari Scan, Luratoon Scan
+
 Versão 3.3 (23/03/2024)
 - Pequenas correções
 

@@ -27,6 +27,7 @@ import src.changelog as open_change
 import src.clean as clean
 import src.animation as anm
 import src.folder_delete as del_folder
+import src.decorrido as decorrido
 
 
 
@@ -60,6 +61,7 @@ import urls.minitwoscan.main as agr_26
 import urls.demonsect.main as agr_27
 import urls.moonwitchinlovescan.main as agr_28
 import urls.hikari_scan.main as agr_29
+import urls.luratoon.main as agr_30
 
 
 
@@ -108,6 +110,7 @@ dic_agregadores = {
     "Moon Witch In Love": "https://moonwitchinlovescan.com/",
     "Hikari Scan": "https://hikariscan.org/",
     "Niadd": "https://niadd.com.br/",
+    "Luratoon Scan": "https://luratoon.com/"
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -168,10 +171,13 @@ class AppMain():
         self.x = x
         self.y = y
         
+        self.tsuki_safe_donwload = False
+        
         self.ipo9 = True
         self.ian = False
         self.result = 0
         self.app_instance = anm.AnimationNotification(root, version_, self.ian)
+        self.tempo_decorrido_ = decorrido.TempoDecorrido(root)
         
         self.notif_01 = False
         self.notif_02 = False
@@ -290,7 +296,7 @@ class AppMain():
             # Abra uma página de teste para garantir que o Chrome está funcionando
             # teste.get("https://www.google.com")
             
-            ins_ext.setup(teste, 2)
+            ins_ext.setup(teste, e_02 = True, e_06 = True)
             
             teste.quit()
             print(hora_agora.setup(), "INFO:", "✔ Navegador pronto")
@@ -358,7 +364,7 @@ class AppMain():
             messagebox.showerror("Erro", "URL inválida")
             self.result = 777
         
-        elif self.capitulo_var.get() == "":
+        elif self.capitulo_var.get() == "" and self.ate_var.get() == "":
             print("Erro: Capítulo inválido.")
             self.app_instance.move_text_wait('Erro: Capítulo inválido')
             messagebox.showerror("Erro", "Capítulo inválido")
@@ -382,11 +388,7 @@ class AppMain():
             chekin = True
             
             if ate < capítulo:
-                self.app_instance.move_text_wait('Erro: Capítulo inválido')
-                self.result = 777
-                chekin = False
-                self.process_completed.set()
-        
+                ate = capítulo
         
         if chekin:
             agregador_escolhido = self.agregador_var.get()
@@ -415,9 +417,9 @@ class AppMain():
                 print("\n")
             self.app_instance.move_text_wait('Iniciando')
             
-            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Limbo Scan', 'Minitwo Scan']:
+            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Limbo Scan', 'Minitwo Scan', 'Tsuki', 'Luratoon Scan']:
                 driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-            elif agregador_escolhido in ['Mangás Chan', 'Minitwo Scan']:
+            elif agregador_escolhido in ['Mangás Chan', 'Minitwo Scan', 'Luratoon Scan']:
                 if self.headless_var.get():
                     if self.notif_01 is False:
                         self.notif_01 = True
@@ -444,10 +446,16 @@ class AppMain():
             async def load(dic_url, agregador):
                 if dic_url in url:
                     if self.agregador_var.get() == "SlimeRead":
+                        await self.tempo_decorrido_.iniciar_tempo()
                         self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()), username, password)
+
                     else:
+                        await self.tempo_decorrido_.iniciar_tempo()
                         self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()))
+                    
+                    await self.tempo_decorrido_.parar_tempo()
                     driver.quit()
+                    
                 else:
                     self.result = 1
                     driver.quit()
@@ -610,6 +618,11 @@ class AppMain():
                 # Num 29 (Hikari Scan)
                 elif "Hikari Scan" in agregador_escolhido:
                     await load(dic_url, agr_29)
+                    break
+        
+                # Num 30 (Luratoon Scan)
+                elif "Luratoon Scan" in agregador_escolhido:
+                    await load(dic_url, agr_30)
                     break
             
                     

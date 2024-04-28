@@ -20,7 +20,7 @@ def setup(extension_folder, download_folder):
     driver = uc.Chrome(options=chrome_options)
     
     driver.get("https://google.com")
-    ins_ext.setup(driver, 2)
-    ins_ext.setup(driver, 3)
+    ins_ext.setup(driver, e_03=True)
+    ins_ext.setup(driver, e_06=True)
     
     return driver

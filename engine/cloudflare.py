@@ -1,5 +1,4 @@
 import os
-import time
 from selenium import webdriver
 
 import src.execute_driver as ins_ext
@@ -31,9 +30,6 @@ def setup():
     driver = webdriver.Chrome(options=options)
     
     driver.get("https://google.com")
-    ins_ext.setup(driver, 2)
-    ins_ext.setup(driver, 3)
-    
-    time.sleep(3)
+    ins_ext.setup(driver)
     
     return driver

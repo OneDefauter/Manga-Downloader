@@ -1,6 +1,6 @@
 import os
 
-def setup(caminho_da_pasta):
+def setup(caminho_da_pasta, ping=True):
     try:
         # Obtém a lista de arquivos na pasta
         arquivos = os.listdir(caminho_da_pasta)
@@ -10,7 +10,8 @@ def setup(caminho_da_pasta):
             caminho_completo = os.path.join(caminho_da_pasta, arquivo)
             if os.path.isfile(caminho_completo):
                 os.remove(caminho_completo)
-                print(f"Arquivo removido: {caminho_completo}")
+                if ping:
+                    print(f"Arquivo removido: {caminho_completo}")
 
         # print("Todos os arquivos foram removidos da pasta.")
 

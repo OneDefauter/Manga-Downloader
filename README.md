@@ -91,6 +91,8 @@ Este código usa [selenium](https://www.selenium.dev/pt-br/documentation/) para 
 
 ● **[Hikari Scan](https://hikariscan.org/)**
 
+● **[Luratoon Scan](https://luratoon.com/)**
+
 
 
 # Instalação

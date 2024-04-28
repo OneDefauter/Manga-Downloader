@@ -128,14 +128,8 @@ def download_and_execute():
                         fopen.write(file_data)
     
     if os.path.exists(path_file):
-        # Importações da pasta 'src'
-        import src.imagemagick_check as imc
-
         # Importação da pasta 'Setup'
         import setup.main as setup_main
-
-        # Verifica se o ImageMagick está instalado
-        imc.setup()
 
         # Inicia a GUI
         setup_main.setup()
