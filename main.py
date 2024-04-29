@@ -48,6 +48,9 @@ def install_modules():
         except ImportError:
             print(f"Módulo {module} não encontrado. Instalando...")
             subprocess.run(['pip', 'install', module])
+        
+        except:
+            ...
             
     os.system('cls' if os.name == 'nt' else 'clear')
 
