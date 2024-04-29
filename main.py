@@ -131,6 +131,9 @@ def download_and_execute():
         # Importação da pasta 'Setup'
         import setup.main as setup_main
 
+        from src.ImageMagick.setup import setup as ImageMagickSetup
+        ImageMagickSetup()
+
         # Inicia a GUI
         setup_main.setup()
 
