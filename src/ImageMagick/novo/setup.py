@@ -7,14 +7,13 @@ from src.ImageMagick.novo.install_imagemagick_with_winget import install_imagema
 
 def setup():
     if not is_winget_installed():
-        messagebox.showinfo("Instalação do ImageMagick", "Winget não está instalado.")
-        sys.exit()
+        return False
 
     if not is_imagemagick_installed():
         messagebox.showinfo("Instalação do ImageMagick", "ImageMagick não está instalado.\nInstalando o ImageMagick...")
         if not install_imagemagick_with_winget():
             messagebox.showinfo("Instalação do ImageMagick", "Falha ao instalar o ImageMagick.")
-            sys.exit()
+            return False
         else:
             messagebox.showinfo("Instalação do ImageMagick", "ImageMagick instalado com sucesso.")
             sys.exit()
