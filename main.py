@@ -1,12 +1,17 @@
 import os
 import sys
+import platform
 import subprocess
 from io import BytesIO
 import importlib.metadata
 from zipfile import ZipFile
+from threading import Timer
 
 namespace = "OneDefauter"
-repo = f"https://api.github.com/repos/{namespace}/Manga-Downloader/releases/latest"
+repo = f"https://api.github.com/repos/{namespace}/Manga-Downloader/releases"
+
+def raise_error(ex):
+    raise ex
 
 def install_modules():
     # Verificar se os módulos estão instalados
@@ -26,12 +31,15 @@ def install_modules():
         'imageio[pyav]',
         'Wand',
         'packaging',
+        'nodriver',
     ]
 
     for module in required_modules:
         try:
             if module == 'pywin32':
-                __import__('win32api')
+                sistema_operacional = platform.system()
+                if sistema_operacional == 'Windows':
+                    __import__('win32api')
             
             elif module == 'Pillow':
                 __import__('PIL')
@@ -77,6 +85,13 @@ def check_update_modules():
     if latest_version != installed_version:
         subprocess.run(['pip', 'install', '--upgrade', "undetected_chromedriver"])
 
+def releases():
+    remote_release = requests.get(repo)
+    if remote_release.ok:
+        remote_release_json = remote_release.json()
+        
+        
+
 def download_and_execute():
     temp_folder = os.environ['TEMP']
     app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
@@ -102,12 +117,24 @@ def download_and_execute():
     
     if remote_release.ok:
         remote_release_json = remote_release.json()
-        remote_version = version.parse(remote_release_json["tag_name"])
-        zip_resp = requests.get(remote_release_json["zipball_url"])
-        if zip_resp.ok:
-            myzip = ZipFile(BytesIO(zip_resp.content))
-            zip_root = [z for z in myzip.infolist() if z.is_dir()][0].filename
-            zip_files = [z for z in myzip.infolist() if not z.is_dir()]
+        remote_beta_version = None
+        for release in remote_release_json:
+            if release['prerelease'] == True:
+                if remote_beta_version is None:
+                    remote_beta_version = version.parse(remote_release_json["tag_name"])
+                    zip_resp_beta = requests.get(remote_release_json["zipball_url"])
+                    if zip_resp_beta.ok:
+                        myzip_beta = ZipFile(BytesIO(zip_resp_beta.content))
+                        zip_root_beta = [z for z in myzip_beta.infolist() if z.is_dir()][0].filename
+                        zip_files_beta = [z for z in myzip_beta.infolist() if not z.is_dir()]
+            else:
+                remote_version = version.parse(remote_release_json["tag_name"])
+                zip_resp = requests.get(remote_release_json["zipball_url"])
+                if zip_resp.ok:
+                    myzip = ZipFile(BytesIO(zip_resp.content))
+                    zip_root = [z for z in myzip.infolist() if z.is_dir()][0].filename
+                    zip_files = [z for z in myzip.infolist() if not z.is_dir()]
+                break
         
         if not os.path.exists(path_file):
             for fileinfo in zip_files:
@@ -121,14 +148,53 @@ def download_and_execute():
         else:
             if remote_version > local_version:
                 print(f"Nova atualização.\nVersão atual: {local_version}\nNova versão: {remote_version}")
-                for fileinfo in zip_files:
-                    filename = os.path.join(app_folder, fileinfo.filename.replace(zip_root, ""))
-                    dirname = os.path.dirname(filename)
-                    os.makedirs(dirname, exist_ok=True)
-                    file_data = myzip.read(fileinfo)
+                timeout = 3
+                t = Timer(timeout, raise_error, [ValueError("Atualização cancelada")])
+                t.start()
+                answer = input("Você deseja atualizar agora? (s/n)")
+                t.cancel()
 
-                    with open(filename, "wb") as fopen:
-                        fopen.write(file_data)
+                if answer.lower() in ["true", "1", "t", "y", "yes", "sim", "s", "ok"]:
+                    update = True
+                else:
+                    update = False
+                    
+                if update:
+                    for fileinfo in zip_files:
+                        filename = os.path.join(app_folder, fileinfo.filename.replace(zip_root, ""))
+                        dirname = os.path.dirname(filename)
+                        os.makedirs(dirname, exist_ok=True)
+                        file_data = myzip.read(fileinfo)
+
+                        with open(filename, "wb") as fopen:
+                            fopen.write(file_data)
+            
+            elif remote_beta_version:
+                if remote_version <= local_version and remote_beta_version > local_version:
+                    print(f"Nova atualização BETA.\nVersão atual: {local_version}\nNova versão: {remote_version}")
+                    timeout = 3
+                    t = Timer(timeout, raise_error, [ValueError("Atualização cancelada")])
+                    t.start()
+                    print("Você deseja atualizar para versão BETA agora? (s/n)")
+                    answer = input("Lembre-se que a versão BETA pode conter erros.")
+                    t.cancel()
+
+                    if answer.lower() in ["true", "1", "t", "y", "yes", "sim", "s", "ok"]:
+                        update = True
+                    else:
+                        update = False
+                        
+                    if update:
+                        for fileinfo in zip_files_beta:
+                            filename = os.path.join(app_folder, fileinfo.filename.replace(zip_root_beta, ""))
+                            dirname = os.path.dirname(filename)
+                            os.makedirs(dirname, exist_ok=True)
+                            file_data = myzip.read(fileinfo)
+
+                            with open(filename, "wb") as fopen:
+                                fopen.write(file_data)
+                
+                
     
     if os.path.exists(path_file):
         from src.ImageMagick.setup import setup as ImageMagickSetup

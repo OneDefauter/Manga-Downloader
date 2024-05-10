@@ -1,3 +1,4 @@
+import platform
 import sys
 from tkinter import messagebox
 
@@ -5,7 +6,18 @@ from src.ImageMagick.novo.is_winget_installed import is_winget_installed
 from src.ImageMagick.novo.is_imagemagick_installed import is_imagemagick_installed
 from src.ImageMagick.novo.install_imagemagick_with_winget import install_imagemagick_with_winget
 
+from src.ImageMagick.novo.Unix.check import is_imagemagick_installed as Unix
+from src.ImageMagick.novo.Unix.install import install_imagemagick
+
 def setup():
+    sistema_operacional = platform.system()
+    if sistema_operacional != 'Windows':
+        if not Unix():
+            install_imagemagick()
+            sys.exit()
+        else:
+            return True
+    
     if not is_winget_installed():
         return False
 

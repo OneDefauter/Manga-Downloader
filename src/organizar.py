@@ -3,8 +3,7 @@ import re
 import shutil
 import imageio
 import zipfile
-import win32api
-import win32con
+import platform
 from PIL import Image
 from wand.image import Image as MagickImage
 from colorama import Fore, Style
@@ -41,11 +40,10 @@ def cortar_imagem(image, output_folder, folder_path, extension, allow_ext = ['.p
         # Save the current part with the desired name
         filename = os.path.basename(image)
         name, ext = os.path.splitext(filename)
-        if ext.lower() != extension.lower():
-            if extension.lower() == ".jpg":
-                current_part = current_part.convert("RGB")
-            elif extension.lower() == ".png":
-                current_part = current_part.convert("RGBA")
+        if extension.lower() == ".jpg":
+            current_part = current_part.convert("RGB")
+        elif extension.lower() == ".png":
+            current_part = current_part.convert("RGBA")
         part_path = os.path.join(output_folder, f"{name}-{i}{extension}")
         current_part.save(part_path)
 
@@ -154,8 +152,13 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    atributos_atuais = win32api.GetFileAttributes(output_folder)
-    win32api.SetFileAttributes(output_folder, atributos_atuais | win32con.FILE_ATTRIBUTE_HIDDEN)
+    sistema_operacional = platform.system()
+    if sistema_operacional == 'Windows':
+        import win32api
+        import win32con
+        
+        atributos_atuais = win32api.GetFileAttributes(output_folder)
+        win32api.SetFileAttributes(output_folder, atributos_atuais | win32con.FILE_ATTRIBUTE_HIDDEN)
 
 
     verificar_imagem(folder_path, extension)
@@ -195,3 +198,5 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
                     if file_name.endswith(extension):
                         zipf.write(os.path.join(folder_path, file_name), file_name)
             shutil.rmtree(folder_path)
+
+    print(f"{Fore.GREEN}Completo.{Style.RESET_ALL}")

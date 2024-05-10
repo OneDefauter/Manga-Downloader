@@ -13,5 +13,5 @@ def setup(download_folder):
     arquivos = os.listdir(download_folder)
     for arquivo in arquivos:
         file_path = os.path.join(download_folder, arquivo)
-        if not (arquivo.lower().endswith('.png') or arquivo.lower().endswith('.jpg')):
+        if not arquivo.lower().endswith(('.png', '.jpg', '.webp', '.gif', '.avif', '.jpeg')):
             os.remove(file_path)

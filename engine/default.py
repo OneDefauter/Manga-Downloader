@@ -1,6 +1,15 @@
+import os
 from selenium import webdriver
+import src.Scripts.setup as ins_ext
 
-def setup(headless_var, agregador_escolhido, profile_folder, download_folder, extension_path, net_option_var, net_limit_down_var, net_limit_up_var, net_lat_var):
+
+temp_folder = os.environ['TEMP']
+app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
+profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
+download_folder = os.path.join(temp_folder, "Manga Downloader Temp Download")
+extension_path = os.path.join(app_folder, "src", "Violentmonkey 2.18.0.0.crx")
+
+def setup(headless_var):
     chrome_options = webdriver.ChromeOptions()
     
     chrome_options.add_experimental_option("detach", True)
@@ -31,33 +40,15 @@ def setup(headless_var, agregador_escolhido, profile_folder, download_folder, ex
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_extension(extension_path)
     
-    if headless_var and agregador_escolhido != 'Mangás Chan':
+    if headless_var:
         chrome_options.add_argument("--headless=new")
     else:
         chrome_options.add_argument('--start-maximized')
     
-    if net_option_var:
-        chrome_options.add_argument("--proxy-server='direct://'")
-        chrome_options.add_argument("--proxy-bypass-list=*")
-        
-        # Emular uma conexão lenta usando o Chrome DevTools Protocol
-        devtools_options = chrome_options.to_capabilities()
-        devtools_options["goog:chromeOptions"]["perfLoggingPrefs"] = {
-            "enableNetwork": True,
-            "enablePage": False,
-            "enableTimeline": False
-        }
-
-        # Configurar a condição de rede lenta (por exemplo, GPRS)
-        driver.execute_cdp_cmd("Network.enable", {})
-        driver.execute_cdp_cmd("Network.emulateNetworkConditions", {
-            "offline": False,
-            "downloadThroughput": int(net_limit_down_var) * 1024,  # Velocidade de download em bytes por segundo
-            "uploadThroughput": int(net_limit_up_var) * 1024,  # Velocidade de upload em bytes por segundo
-            "latency": int(net_lat_var)  # Atraso em milissegundos
-        })
-
-    
     driver = webdriver.Chrome(options=chrome_options)
+    
+    driver.get("https://google.com")
+    
+    ins_ext.setup_not_cloudflare(driver)
     
     return driver

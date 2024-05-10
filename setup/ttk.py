@@ -11,7 +11,6 @@ import ttkbootstrap as tb
 from tkinter import ttk, messagebox, filedialog
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from colorama import Fore, Style
 from __init__ import __version__
 
 
@@ -21,8 +20,8 @@ import src.folder_main as first
 import src.save as save_settings
 import src.print as print_log
 import src.time_zone as hora_agora
-import src.execute_driver as ins_ext
 import src.changelog as open_change
+import src.Scripts.setup as ins_ext
 # import src.reload as reload_main
 import src.clean as clean
 import src.animation as anm
@@ -31,86 +30,45 @@ import src.decorrido as decorrido
 
 
 
-# Importações das URLs
-import urls.br_mangas.main as agr_01
-import urls.crystal_scan.main as agr_02
-import urls.argos_comics.main as agr_03
-# import urls.argos_hentai.main as agr_04
-import urls.mangás_chan.main as agr_05
-import urls.ler_mangá.main as agr_06
-import urls.tsuki.main as agr_07
-import urls.yomumangás.main as agr_08
-import urls.slimeread.main as agr_09
-import urls.flower_manga.main as agr_10
-import urls.ler_manga_online.main as agr_11
-import urls.manga_br.main as agr_12
-import urls.projeto_scanlator.main as agr_13
-import urls.hentai_teca.main as agr_14
-import urls.argos_scan.main as agr_15
-import urls.nicomanga.main as agr_16
-import urls.momo_no_hana.main as agr_17
-import urls.manhastro.main as agr_18
-import urls.valkyrie_scan.main as agr_19
-import urls.limbo_scan.main as agr_20
-import urls.nobre_scan.main as agr_21
-import urls.iris_scanlator.main as agr_22
-import urls.novelmic.main as agr_23
-import urls.norte_rose.main as agr_24
-import urls.lscans.main as agr_25
-import urls.minitwoscan.main as agr_26
-import urls.demonsect.main as agr_27
-import urls.moonwitchinlovescan.main as agr_28
-import urls.hikari_scan.main as agr_29
-import urls.luratoon.main as agr_30
-
-
-
-# Ensines
-import engine.default as engine_default
-import engine.undetected as engine_undetected
-import engine.cloudflare as engine_cloudflare
-
-
-
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-os.system('cls')
+os.system('cls' if os.name == 'nt' else 'clear')
 
 # Defiine o path da pasta confiigurações do app
 settings_dir = first.setup()
 
 # Lista de agregadores como um dicionário
 dic_agregadores = {
-    "BR Mangás": "https://www.brmangas.net/",
+    # "BR Mangás": "https://www.brmangas.net/",
     # "Crystal Scan": "https://crystalscan.net/",
     "Argos Comics": "https://argoscomics.com/",
     "Mangás Chan": "https://mangaschan.net/",
-    "Ler Mangá": "https://lermanga.org/",
+    # "Ler Mangá": "https://lermanga.org/",
     "Tsuki": "https://tsuki-mangas.com/",
     # "YomuMangás": "https://yomumangas.com/",
     "SlimeRead": "https://slimeread.com/",
-    "Flower Manga": "https://flowermanga.com/",
-    "Ler Manga Online": "https://lermangaonline.com.br/",
-    "Manga BR": "https://mangabr.net/",
+    # "Flower Manga": "https://flowermanga.com/",
+    # "Ler Manga Online": "https://lermangaonline.com.br/",
+    # "Manga BR": "https://mangabr.net/",
     # "Projeto Scanlator": "https://projetoscanlator.com/",
     "Hentai Teca": "https://hentaiteca.net/",
     "Argos Scan": "https://argosscan.com/",
     # "NicoManga": "https://nicomanga.com/",
     "Momo no Hana": "https://momonohanascan.com/",
-    "Manhastro": "https://manhastro.com/",
+    # "Manhastro": "https://manhastro.com/",
     "Valkyrie Scan": "https://valkyriescan.com/",
     "Limbo Scan": "https://limboscan.com.br/",
-    "Nobre Scan": "https://nobrescan.com.br/",
+    # "Nobre Scan": "https://nobrescan.com.br/",
     "Iris Scanlator": "https://irisscanlator.com.br/",
     "NovelMic": "https://novelmic.com/",
     "Norte Rose": "https://norterose.com.br/",
-    "L Scan": "https://lscans.com/",
+    # "L Scan": "https://lscans.com/",
     "MiniTwo Scan": "https://minitwoscan.com/",
-    "Demon Sect": "https://demonsect.com.br/",
-    "Moon Witch In Love": "https://moonwitchinlovescan.com/",
+    # "Demon Sect": "https://demonsect.com.br/",
+    # "Moon Witch In Love": "https://moonwitchinlovescan.com/",
     "Hikari Scan": "https://hikariscan.org/",
-    "Niadd": "https://niadd.com.br/",
-    "Luratoon Scan": "https://luratoon.com/"
+    # "Niadd": "https://niadd.com.br/",
+    # "Luratoon Scan": "https://luratoon.com/"
 }
 dic_agregadores = dict(sorted(dic_agregadores.items()))
 
@@ -126,7 +84,7 @@ app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Extensão
 profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
-download_folder = os.path.join(temp_folder, "Mangá Downloader Temp Download")
+download_folder = os.path.join(temp_folder, "Manga Downloader Temp Download")
 extension_path = os.path.join(app_folder, "src", "Violentmonkey 2.18.0.0.crx")
 extension_folder = os.path.join(app_folder, "src", "Violentmonkey 2.18.0.0")
 
@@ -181,6 +139,11 @@ class AppMain():
         
         self.notif_01 = False
         self.notif_02 = False
+        
+        self.ext_01 = False
+        self.ext_02 = False
+        self.ext_03 = False
+        self.ext_04 = False
         
         # self.root.title("Mangá Downloader")
         self.style = ttk.Style(root)
@@ -296,7 +259,7 @@ class AppMain():
             # Abra uma página de teste para garantir que o Chrome está funcionando
             # teste.get("https://www.google.com")
             
-            ins_ext.setup(teste, e_02 = True, e_06 = True)
+            # ins_ext.setup(teste, e_02 = True)
             
             teste.quit()
             print(hora_agora.setup(), "INFO:", "✔ Navegador pronto")
@@ -321,320 +284,37 @@ class AppMain():
     
         
     async def TkApp(self):
-        os.system('cls')
+        from src.Downloader.setup import DownloaderSetup
+        dw_setup = DownloaderSetup(
+            self.app_instance, 
+            self.agregador_var, 
+            self.nome_var, 
+            self.url_var, 
+            self.capitulo_var, 
+            self.ate_var, 
+            self.compact_var, 
+            self.compact_extension_var, 
+            self.extension_var, 
+            self.auto_save, 
+            self.debug_var, 
+            self.headless_var, 
+            self.max_attent_var, 
+            self.max_verify_var,
+            self.user_var,
+            self.pass_var,
+            self.process_completed,
+            self.baixando_label,
+            self.folder_selected,
+            self.tempo_decorrido_,
+            self.notif_01,
+            self.notif_02,
+            self.ext_01,
+            self.ext_02,
+            self.ext_03,
+            self.ext_04,
+        )
         
-        self.result = None
-        
-        print("Agregador escolhido:", self.agregador_var.get())
-        print("Obra escolhida:", str(self.nome_var.get()).replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "").rstrip())
-        print("URL da obra:", self.url_var.get())
-        print("Capítulo escolhido:", self.capitulo_var.get())
-        print("Até qual capítulo baixar:", self.ate_var.get())
-        print("Compactar:", "sim" if self.compact_var.get() else "não")
-        print("Extensão da compactação:", self.compact_extension_var.get())
-        print("Extensão de saída:", self.extension_var.get())
-        print("Auto salvar:", self.auto_save.get())
-        print("Debug:", self.debug_var.get())
-        print("Navegador em segundo plano:", self.headless_var.get())
-        print("Máximo de tentativas:", self.max_attent_var.get())
-        print("Máximo de verificação:", self.max_verify_var.get())
-        print("\n")
-        
-        if self.agregador_var.get() == "SlimeRead":
-            if self.user_var.get() == "" or self.pass_var.get() == "":
-                print("Erro: Usuário ou senha em branco.")
-                self.app_instance.move_text_wait('Erro: Usuário ou senha em branco')
-                messagebox.showerror("Erro", "Usuário ou senha em branco")
-                self.result = 777
-            else:
-                username = self.user_var.get()
-                password = self.pass_var.get()
-        
-        chekin = False
-        
-        if self.nome_var.get() == "":
-            print("Erro: Nome inválido.")
-            self.app_instance.move_text_wait('Erro: Nome inválido')
-            messagebox.showerror("Erro", "Nome inválido")
-            self.result = 777
-        
-        elif self.url_var.get() == "":
-            print("Erro: URL inválida.")
-            self.app_instance.move_text_wait('Erro: URL inválida')
-            messagebox.showerror("Erro", "URL inválida")
-            self.result = 777
-        
-        elif self.capitulo_var.get() == "" and self.ate_var.get() == "":
-            print("Erro: Capítulo inválido.")
-            self.app_instance.move_text_wait('Erro: Capítulo inválido')
-            messagebox.showerror("Erro", "Capítulo inválido")
-            self.result = 777
-        
-        if self.result == 777:
-            self.process_completed.set()
-        
-        
-        if self.result is None:
-            if self.capitulo_var.get() == "" and self.ate_var.get() != "":
-                 capítulo = 0.0
-                 ate = float(self.ate_var.get())
-            elif self.ate_var.get() == "" and self.capitulo_var.get() != "":
-                capítulo = float(self.capitulo_var.get())
-                ate = float(self.capitulo_var.get())
-            else:
-                capítulo = float(self.capitulo_var.get())
-                ate = float(self.ate_var.get())
-            
-            chekin = True
-            
-            if ate < capítulo:
-                ate = capítulo
-        
-        if chekin:
-            agregador_escolhido = self.agregador_var.get()
-            nome = self.nome_var.get().replace("\n", "")
-            url = self.url_var.get()
-            # capítulo = float(self.capitulo_var.get())
-            compactar = self.compact_var.get()
-            extension = self.extension_var.get()
-            compact_extension = self.compact_extension_var.get()
-            
-            nome_foler = nome.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "").replace("\n", "").rstrip()
-            
-            if self.debug_var.get():
-                self.baixando_label.config(text="Iniciando...")
-                print_log.setup(
-                    f'Agregador escolhido: {agregador_escolhido}', 
-                    [
-                        f'Obra escolhida: {nome}',
-                        f'Capítulo escolhido: {str(capítulo).replace(".0", "")}',
-                        f'Até qual capítulo baixar: {str(ate).replace(".0", "")}',
-                        f'Compactar: {"sim" if compactar else "não"}',
-                        f'Tipo de compactação: {compact_extension}',
-                        f'Extensão de saída: {extension}'
-                    ]
-                )
-                print("\n")
-            self.app_instance.move_text_wait('Iniciando')
-            
-            if not agregador_escolhido in ['Hentai Teca', 'Mangás Chan', 'Manhastro', 'Limbo Scan', 'Minitwo Scan', 'Tsuki', 'Luratoon Scan']:
-                driver = engine_default.setup(self.headless_var.get(), agregador_escolhido, profile_folder, download_folder, extension_path, self.net_option_var.get(), self.net_limit_down_var.get(), self.net_limit_up_var.get(), self.net_lat_var.get())
-            elif agregador_escolhido in ['Mangás Chan', 'Minitwo Scan', 'Luratoon Scan']:
-                if self.headless_var.get():
-                    if self.notif_01 is False:
-                        self.notif_01 = True
-                        messagebox.showwarning("Aviso", "Agregador não suporta download em segundo plano.")
-                    print(f"{Fore.GREEN}AVISO: Esse agregador não suporta download em segundo plano.{Style.RESET_ALL}")
-                driver = engine_cloudflare.setup()
-            else:
-                if self.headless_var.get():
-                    if self.notif_01 is False:
-                        self.notif_01 = True
-                        messagebox.showwarning("Aviso", "Agregador não suporta download em segundo plano.")
-                    if self.notif_02 is False:
-                        self.notif_02 = True
-                        messagebox.showwarning("Aviso", "Não mexa no navegador enquanto ele estiver aberto parar evitar erro.")
-                    print(f"{Fore.GREEN}AVISO: Esse agregador não suporta download em segundo plano.{Style.RESET_ALL}")
-                driver = engine_undetected.setup(extension_folder, download_folder)
-            
-            if self.debug_var.get():
-                self.baixando_label.config(text="Aguarde...")
-            print("\nAguarde...")
-            
-            clean.setup(download_folder)
-            
-            async def load(dic_url, agregador):
-                if dic_url in url:
-                    if self.agregador_var.get() == "SlimeRead":
-                        await self.tempo_decorrido_.iniciar_tempo()
-                        self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()), username, password)
-
-                    else:
-                        await self.tempo_decorrido_.iniciar_tempo()
-                        self.result = await agregador.setup(driver, url, capítulo, ate, self.debug_var, self.baixando_label, self.folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, self.app_instance, int(self.max_attent_var.get()), int(self.max_verify_var.get()))
-                    
-                    await self.tempo_decorrido_.parar_tempo()
-                    driver.quit()
-                    
-                else:
-                    self.result = 1
-                    driver.quit()
-                    print("Erro: URL inválida")
-            
-            for dic_name, dic_url in dic_agregadores.items():
-                
-                # Check
-                if not agregador_escolhido in dic_agregadores:
-                    self.app_instance.move_text_wait('Agregador inválido')
-                    if self.debug_var.get():
-                        self.baixando_label.config(text="Agregador inválido")
-                    print("Agregador inválido")
-                    driver.quit()
-                    break
-                
-                elif not dic_name in agregador_escolhido:
-                    continue
-                
-                # Num 01 (BR Mangás)
-                elif "BR Mangás" in agregador_escolhido:
-                    await load(dic_url, agr_01)
-                    break
-        
-                # Num 02 (Crystal Scan)
-                elif "Crystal Scan" in agregador_escolhido:
-                    await load(dic_url, agr_02)
-                    break
-                    
-                # Num 03 (Argos Comics)
-                elif "Argos Comics" in agregador_escolhido:
-                    await load(dic_url, agr_03)
-                    break
-        
-                # Num 04 (Argos Hentai)
-                # elif "Argos Hentai" in agregador_escolhido:
-                #     await load(dic_url, agr_04)
-                #     break
-        
-                # Num 05 (Mangás Chan)
-                elif "Mangás Chan" in agregador_escolhido:
-                    await load(dic_url, agr_05)
-                    break
-        
-                # Num 06 (Ler Mangá)
-                elif "Ler Mangá" in agregador_escolhido:
-                    await load(dic_url, agr_06)
-                    break
-        
-                # Num 07 (Tsuki)
-                elif "Tsuki" in agregador_escolhido:
-                    await load(dic_url, agr_07)
-                    break
-        
-                # Num 08 (YomuMangás)
-                elif "YomuMangás" in agregador_escolhido:
-                    await load(dic_url, agr_08)
-                    break
-        
-                # Num 09 (SlimeRead)
-                elif "SlimeRead" in agregador_escolhido:
-                    await load(dic_url, agr_09)
-                    break
-        
-                # Num 10 (Flower Manga)
-                elif "Flower Manga" in agregador_escolhido:
-                    await load(dic_url, agr_10)
-                    break
-        
-                # Num 11 (Ler Manga Online)
-                elif "Ler Manga Online" in agregador_escolhido:
-                    await load(dic_url, agr_11)
-                    break
-        
-                # Num 12 (Manga BR)
-                elif "Manga BR" in agregador_escolhido:
-                    await load(dic_url, agr_12)
-                    break
-        
-                # Num 13 (Projeto Scanlator)
-                elif "Projeto Scanlator" in agregador_escolhido:
-                    await load(dic_url, agr_13)
-                    break
-        
-                # Num 14 (Hentai Teca)
-                elif "Hentai Teca" in agregador_escolhido:
-                    await load(dic_url, agr_14)
-                    break
-        
-                # Num 15 (Argos Scan)
-                elif "Argos Scan" in agregador_escolhido:
-                    await load(dic_url, agr_15)
-                    break
-        
-                # Num 16 (NicoManga)
-                elif "NicoManga" in agregador_escolhido:
-                    await load(dic_url, agr_16)
-                    break
-        
-                # Num 17 (Momo no Hana)
-                elif "Momo no Hana" in agregador_escolhido:
-                    await load(dic_url, agr_17)
-                    break
-        
-                # Num 18 (Manhastro)
-                elif "Manhastro" in agregador_escolhido:
-                    await load(dic_url, agr_18)
-                    break
-        
-                # Num 19 (Valkyrie Scan)
-                elif "Valkyrie Scan" in agregador_escolhido:
-                    await load(dic_url, agr_19)
-                    break
-        
-                # Num 20 (Limbo Scan)
-                elif "Limbo Scan" in agregador_escolhido:
-                    await load(dic_url, agr_20)
-                    break
-        
-                # Num 21 (Nobre Scan)
-                elif "Nobre Scan" in agregador_escolhido:
-                    await load(dic_url, agr_21)
-                    break
-        
-                # Num 22 (Iris Scanlator)
-                elif "Iris Scanlator" in agregador_escolhido:
-                    await load(dic_url, agr_22)
-                    break
-        
-                # Num 23 (NovelMic)
-                elif "NovelMic" in agregador_escolhido:
-                    await load(dic_url, agr_23)
-                    break
-        
-                # Num 24 (Norte Rose)
-                elif "Norte Rose" in agregador_escolhido:
-                    await load(dic_url, agr_24)
-                    break
-        
-                # Num 25 (L Scan)
-                elif "L Scan" in agregador_escolhido:
-                    await load(dic_url, agr_25)
-                    break
-        
-                # Num 26 (MiniTwo Scan)
-                elif "MiniTwo Scan" in agregador_escolhido:
-                    await load(dic_url, agr_26)
-                    break
-        
-                # Num 27 (Demon Sect)
-                elif "Demon Sect" in agregador_escolhido:
-                    await load(dic_url, agr_27)
-                    break
-        
-                # Num 28 (Moon Witch In Love)
-                elif "Moon Witch In Love" in agregador_escolhido:
-                    await load(dic_url, agr_28)
-                    break
-        
-                # Num 29 (Hikari Scan)
-                elif "Hikari Scan" in agregador_escolhido:
-                    await load(dic_url, agr_29)
-                    break
-        
-                # Num 30 (Luratoon Scan)
-                elif "Luratoon Scan" in agregador_escolhido:
-                    await load(dic_url, agr_30)
-                    break
-            
-                    
-                
-                    
-                    
-            
-            folder_path = os.path.join(self.folder_selected, nome_foler)
-            del_folder.delete_empty_folders(folder_path.replace('/', '\\'))
-            
-            self.process_completed.set()
-
+        self.process_completed, self.result, self.notif_01, self.notif_02, self.ext_01, self.ext_02, self.ext_03, self.ext_04 = await dw_setup.setup()
 
     def start_download(self):
         self.disable_gui()
