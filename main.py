@@ -6,6 +6,7 @@ from io import BytesIO
 import importlib.metadata
 from zipfile import ZipFile
 from threading import Timer
+import tempfile
 
 namespace = "OneDefauter"
 repo = f"https://api.github.com/repos/{namespace}/Manga-Downloader/releases"
@@ -86,7 +87,7 @@ def check_update_modules():
         subprocess.run(['pip', 'install', '--upgrade', "undetected_chromedriver"])
 
 def download_and_execute():
-    temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
+    temp_folder = tempfile.gettempdir()
     app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
     path_file = os.path.join(app_folder, "setup", "main.py")
     

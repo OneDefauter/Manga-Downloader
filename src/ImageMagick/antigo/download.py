@@ -3,9 +3,11 @@ import sys
 import requests
 import subprocess
 from tkinter import messagebox
+import tempfile
+
 
 def download(url):
-    temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
+    temp_folder = tempfile.gettempdir()
     installer_path = os.path.join(temp_folder, 'ImageMagick-Installer.exe')
 
     response = requests.get(url)
