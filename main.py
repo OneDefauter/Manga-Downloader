@@ -33,6 +33,7 @@ def install_modules():
         'Wand',
         'packaging',
         'nodriver',
+        'imagehash'
     ]
 
     for module in required_modules:
