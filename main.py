@@ -11,7 +11,7 @@ namespace = "OneDefauter"
 repo = f"https://api.github.com/repos/{namespace}/Manga-Downloader/releases"
 
 def raise_error(ex):
-    raise ex
+    print(ex)
 
 def install_modules():
     # Verificar se os módulos estão instalados
@@ -148,10 +148,10 @@ def download_and_execute():
         else:
             if remote_version > local_version:
                 print(f"Nova atualização.\nVersão atual: {local_version}\nNova versão: {remote_version}")
-                timeout = 3
-                t = Timer(timeout, raise_error, [ValueError("Atualização cancelada")])
+                timeout = 10
+                t = Timer(timeout, raise_error, [ValueError("\nAtualização cancelada")])
                 t.start()
-                answer = input("Você deseja atualizar agora? (s/n)")
+                answer = input("Você deseja atualizar agora? (s/n)\n")
                 t.cancel()
 
                 if answer.lower() in ["true", "1", "t", "y", "yes", "sim", "s", "ok"]:
@@ -171,12 +171,12 @@ def download_and_execute():
             
             elif remote_beta_version:
                 if remote_version <= local_version and remote_beta_version > local_version:
-                    print(f"Nova atualização BETA.\nVersão atual: {local_version}\nNova versão: {remote_version}")
-                    timeout = 3
-                    t = Timer(timeout, raise_error, [ValueError("Atualização cancelada")])
+                    print(f"Nova atualização BETA.\nVersão atual: {local_version}\nNova versão: {remote_beta_version}")
+                    timeout = 10
+                    t = Timer(timeout, raise_error, [ValueError("\nAtualização cancelada")])
                     t.start()
                     print("Você deseja atualizar para versão BETA agora? (s/n)")
-                    answer = input("Lembre-se que a versão BETA pode conter erros.")
+                    answer = input("Lembre-se que a versão BETA pode conter erros.\n")
                     t.cancel()
 
                     if answer.lower() in ["true", "1", "t", "y", "yes", "sim", "s", "ok"]:
@@ -189,7 +189,7 @@ def download_and_execute():
                             filename = os.path.join(app_folder, fileinfo.filename.replace(zip_root_beta, ""))
                             dirname = os.path.dirname(filename)
                             os.makedirs(dirname, exist_ok=True)
-                            file_data = myzip.read(fileinfo)
+                            file_data = myzip_beta.read(fileinfo)
 
                             with open(filename, "wb") as fopen:
                                 fopen.write(file_data)
