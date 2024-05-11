@@ -3,9 +3,11 @@ import sys
 import shutil
 import logging
 import asyncio
+import platform
 import winsound
 import threading
 import webbrowser
+import subprocess
 from tkinter import *
 import ttkbootstrap as tb
 from tkinter import ttk, messagebox, filedialog
@@ -44,6 +46,7 @@ extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'b
 
 
 version_ = f'Versão {__version__}'
+sistema_operacional = platform.system()
 
 # Paths
 temp_folder = tempfile.gettempdir()

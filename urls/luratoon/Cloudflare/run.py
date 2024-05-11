@@ -3,6 +3,8 @@ import shutil
 import asyncio
 from colorama import Fore, Style
 from datetime import datetime
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 import src.organizar as organizar
 import src.move as move
@@ -31,8 +33,6 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     pagina_ = await driver.get(url)
 
     await pagina_
-    
-    await pagina_.evaluate("document.activeElement.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));")
 
     await pagina_.scroll_down(200)
     
@@ -47,37 +47,17 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                     baixando_label.config(text=f"Carregando capítulo {numero_capitulo}\nVerificação {count_repet + 1} / {max_verify}\nEncontrados {paginas_encontradas} imagens")
 
                 # Espera até que o elemento do leitor esteja presente na página
-                await pagina_.find('all__page__read')
+                await pagina_.find('/html/body/main/div[1]', timeout = 60)
                 
                 # Obtém todas as imagens dentro do leitor
-                paginas = await pagina_.find('all__page__read')
-                paginas = paginas
+                paginas = await pagina_.find('/html/body/main/div[1]')
                 
-                
-                try:
-                    find_01, find_02 = await pagina_.find_elements_by_text('entry-content_wrap')
-                    if find_01.attributes[1] == 'madara-css-inline-css':
-                        paginas = find_02
-                    else:
-                        paginas = find_01
-                except:
-                    paginas = await pagina_.find('entry-content_wrap')
-                
-                if len(paginas.children[0].children) > 1:
-                    if 'page-break' in paginas.children[0].children[1].children[1].attributes[1]:
-                        paginas = paginas.children[0].children[1].children
-                    
-                elif 'page-break' in paginas.children[0].children[0].children[1].attributes[1]:
-                    paginas = paginas.children[0].children[0].children
-                
-
                 # Itera sobre as imagens
-                for imagem in paginas:
-                    if imagem.tag == 'div':
-                        if imagem.children[0].tag == 'img':
-                            await imagem.scroll_into_view()
-                            paginas_encontrada += 1
-            
+                for imagem in paginas.children:
+                    if imagem.tag == 'div' or imagem.tag == 'canvas' or imagem.tag == 'img':
+                        await imagem.scroll_into_view()
+                        paginas_encontrada += 1
+                    
                     else:
                         continue
                     
@@ -100,32 +80,15 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     await load_images()
 
     while True:
-        try:
-            find_01, find_02 = await pagina_.find_elements_by_text('entry-content_wrap')
-            if find_01.attributes[1] == 'madara-css-inline-css':
-                paginas = find_02
-            else:
-                paginas = find_01
-        except:
-            paginas = await pagina_.find('entry-content_wrap')
-        
-        
-        if len(paginas.children[0].children) > 1:
-            if 'page-break' in paginas.children[0].children[1].children[1].attributes[1]:
-                paginas = paginas.children[0].children[1].children
-            
-        elif 'page-break' in paginas.children[0].children[0].children[1].attributes[1]:
-            paginas = paginas.children[0].children[0].children
-        
+        paginas = await pagina_.find('/html/body/main/div[1]')
         
         # Itera sobre as imagens
-        for imagem in paginas:
-            if imagem.tag == 'div':
-                if imagem.children[0].tag == 'img':
-                    await imagem.scroll_into_view()
-                    await imagem.mouse_move()
-                    
-                    break
+        for imagem in paginas.children:
+            if imagem.tag == 'div' or imagem.tag == 'canvas' or imagem.tag == 'img':
+                await imagem.scroll_into_view()
+                await imagem.mouse_move()
+                
+                break
     
             else:
                 continue
@@ -134,8 +97,8 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
         btn = await pagina_.find('Abrir a imagem na galeria (G)')
         await btn.click()
         
-        btn = await pagina_.find('pv-gallery-head-command-others')
-        await btn.click()
+        # btn = await pagina_.find('pv-gallery-head-command pv-gallery-head-command-others')
+        # await btn.click()
         
         btn = await pagina_.find('Baixar todas as imagens')
         await btn.click()
