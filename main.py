@@ -121,15 +121,15 @@ def download_and_execute():
         for release in remote_release_json:
             if release['prerelease'] == True:
                 if remote_beta_version is None:
-                    remote_beta_version = version.parse(remote_release_json["tag_name"])
-                    zip_resp_beta = requests.get(remote_release_json["zipball_url"])
+                    remote_beta_version = version.parse(release["tag_name"])
+                    zip_resp_beta = requests.get(release["zipball_url"])
                     if zip_resp_beta.ok:
                         myzip_beta = ZipFile(BytesIO(zip_resp_beta.content))
                         zip_root_beta = [z for z in myzip_beta.infolist() if z.is_dir()][0].filename
                         zip_files_beta = [z for z in myzip_beta.infolist() if not z.is_dir()]
             else:
-                remote_version = version.parse(remote_release_json["tag_name"])
-                zip_resp = requests.get(remote_release_json["zipball_url"])
+                remote_version = version.parse(release["tag_name"])
+                zip_resp = requests.get(release["zipball_url"])
                 if zip_resp.ok:
                     myzip = ZipFile(BytesIO(zip_resp.content))
                     zip_root = [z for z in myzip.infolist() if z.is_dir()][0].filename
