@@ -23,6 +23,7 @@ import src.changelog as open_change
 import src.Scripts.setup as ins_ext
 import src.animation as anm
 import src.decorrido as decorrido
+import tempfile
 
 from urls.agregadores import Agregadores
 dic_agregadores = Agregadores()
@@ -45,7 +46,7 @@ extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'b
 version_ = f'Versão {__version__}'
 
 # Paths
-temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
+temp_folder = tempfile.gettempdir()
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Extensão

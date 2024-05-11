@@ -1,9 +1,10 @@
 import os
 from selenium import webdriver
 import src.Scripts.setup as ins_ext
+import tempfile
 
 
-temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
+temp_folder = tempfile.gettempdir()
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
 download_folder = os.path.join(temp_folder, "Manga Downloader Temp Download")

@@ -2,8 +2,9 @@ import os
 import platform
 import requests
 import subprocess
+import tempfile
 
-temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
+temp_folder = tempfile.gettempdir()
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 os.makedirs(app_folder, exist_ok=True)
 
