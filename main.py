@@ -85,15 +85,8 @@ def check_update_modules():
     if latest_version != installed_version:
         subprocess.run(['pip', 'install', '--upgrade', "undetected_chromedriver"])
 
-def releases():
-    remote_release = requests.get(repo)
-    if remote_release.ok:
-        remote_release_json = remote_release.json()
-        
-        
-
 def download_and_execute():
-    temp_folder = os.environ['TEMP']
+    temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
     app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
     path_file = os.path.join(app_folder, "setup", "main.py")
     

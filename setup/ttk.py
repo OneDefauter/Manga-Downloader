@@ -45,7 +45,7 @@ extensoes_permitidas2 = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng', 'avif', 'b
 version_ = f'Versão {__version__}'
 
 # Paths
-temp_folder = os.environ['TEMP']
+temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 
 # Extensão

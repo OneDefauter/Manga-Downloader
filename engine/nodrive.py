@@ -2,7 +2,7 @@ import os
 import json
 import nodriver as uc
 
-temp_folder = os.environ['TEMP']
+temp_folder = os.environ['TEMP'] if os.name == 'nt' else os.environ['tmp']
 app_folder = os.path.join(temp_folder, "Mangá Downloader (APP)")
 profile_folder = os.path.join(temp_folder, "Mangá Downloader Profile")
 download_folder = os.path.join(temp_folder, "Manga Downloader Temp Download")
