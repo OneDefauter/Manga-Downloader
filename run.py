@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 import tempfile
 import sys
@@ -8,7 +9,9 @@ required_modules = ['requests', 'pywin32', 'selenium', 'aiohttp', 'asyncio']
 
 for module in required_modules:
     try:
-        __import__('win32api') if module == 'pywin32' else __import__(module)
+        sistema_operacional = platform.system()
+        if sistema_operacional == 'Windows':
+            __import__('win32api') if module == 'pywin32' else __import__(module)
     except ImportError:
         print(f"Módulo {module} não encontrado. Instalando...")
         subprocess.run(['pip', 'install', module])

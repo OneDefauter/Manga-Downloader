@@ -1,5 +1,5 @@
-import platform
 import sys
+import platform
 from tkinter import messagebox
 
 from src.ImageMagick.novo.is_winget_installed import is_winget_installed
