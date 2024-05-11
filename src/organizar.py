@@ -1,5 +1,6 @@
 import os
 import re
+import time
 import shutil
 import imageio
 import zipfile
@@ -114,6 +115,13 @@ def converter_imagem(folder_path, extension, allow_ext = ['.png', '.jpg', '.jpeg
                 except Exception as e:
                     print(f"Erro ao converter {image}: {e}")
 
+def rem(path, out):
+    try:
+        time.sleep(0.2)
+        os.rename(path, out)
+        return
+    except:
+        rem(path, out)
 
 def organizar(folder_path, compactar, compact_extension, extension, extensoes_permitidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.apng', '.avif', '.bmp', '.tiff']):
     # Verifique se há arquivos de imagem na pasta
@@ -132,14 +140,14 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     for filename in file_list:
         base, ext = os.path.splitext(filename)
         new_filename = f"{base}__{ext}"
-        os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
+        rem(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
 
     file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
     for filename in file_list:
         base, ext = os.path.splitext(filename)
         new_filename = f"{count:02d}{ext}"
-        os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
+        rem(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
         count += 1
 
 
@@ -171,14 +179,14 @@ def organizar(folder_path, compactar, compact_extension, extension, extensoes_pe
     for filename in image_files:
         base, ext = os.path.splitext(filename)
         new_filename = f"{base}__{ext}"
-        os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
+        rem(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
 
     file_list = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(tuple(extensoes_permitidas))], key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
 
     for filename in file_list:
         base, ext = os.path.splitext(filename)
         new_filename = f"{count:02d}{ext}"
-        os.rename(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
+        rem(os.path.join(folder_path, filename), os.path.join(folder_path, new_filename))
         count += 1
 
     if compactar:
