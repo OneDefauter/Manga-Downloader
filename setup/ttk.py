@@ -606,7 +606,11 @@ class AppMain():
 
     
     def select_folder(self):
+        back = self.folder_selected
         self.folder_selected = filedialog.askdirectory()
+        if self.folder_selected == '':
+            self.folder_selected = back
+            return
         self.selected_folder_text.config(state=tb.NORMAL)
         self.selected_folder_text.delete(0, tb.END)
         self.selected_folder_text.insert(0, self.folder_selected)

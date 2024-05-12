@@ -386,9 +386,9 @@ class DownloaderSetup():
                 self.ext_02 = True
                 await ins_ext.setup(self.driver, e_02=True, cloudflare=self.cloudflare)
             
-            # if not self.ext_03:
-            #     self.ext_03 = True
-            #     await ins_ext.setup(self.driver, e_03=True, cloudflare=self.cloudflare)
+            if not self.ext_03:
+                self.ext_03 = True
+                await ins_ext.setup(self.driver, e_03=True, cloudflare=self.cloudflare)
             
             if not self.ext_04:
                 self.ext_04 = True

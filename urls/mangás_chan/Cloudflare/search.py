@@ -1,3 +1,4 @@
+import re
 import asyncio
 
 async def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, app_instance, max_attent):
@@ -32,6 +33,8 @@ async def obter_capitulos(driver, url, inicio, fim, debug_var, baixando_label, a
                 numero_capitulo = float(numero_capitulo)
             elif numero_capitulo == "prologo":
                 numero_capitulo = 0.0
+            else:
+                numero_capitulo = float(re.sub(r'[^0-9.,]', '', numero_capitulo.replace(',', '')))
             if inicio <= numero_capitulo <= fim:
                 link = capitulo.children[0].children[0].children[0].attributes[1]
                 capitulos_encontrados.append({'numero_capitulo': numero_capitulo, 'link': link})
