@@ -141,7 +141,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                 return 526
             
             await input_element.clear_input()
-            await input_element.send_keys(count)
+            await input_element.send_keys(f"{count}")
             
             download_button = await pag_.find('/html/body/button')
             await download_button.mouse_click()
@@ -177,6 +177,7 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                         continue
             
             count += 1
+            await pag_.close()
             
         return count
     
