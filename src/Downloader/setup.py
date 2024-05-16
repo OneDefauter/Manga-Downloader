@@ -353,6 +353,11 @@ class DownloaderSetup():
             elif "Luratoon Scan" in self.agregador_escolhido:
                 await self.IniciarDrive(dic_url, agr_30)
                 break
+    
+            # Num 31 (Mode Scanlator)
+            elif "Mode Scanlator" in self.agregador_escolhido:
+                await self.IniciarDrive(dic_url, agr_31)
+                break
         
         folder_path = os.path.join(self.folder_selected, self.nome_foler)
         del_folder.delete_empty_folders(folder_path.replace('/', '\\'))

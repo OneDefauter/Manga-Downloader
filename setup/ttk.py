@@ -25,6 +25,7 @@ import src.changelog as open_change
 import src.Scripts.setup as ins_ext
 import src.animation as anm
 import src.decorrido as decorrido
+import src.reload as reload_main
 import tempfile
 
 from urls.agregadores import Agregadores
@@ -2025,133 +2026,133 @@ class AppMain():
         self.theme = 'litera'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_1_b(self):
         self.theme = 'cosmo'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_2_b(self):
         self.theme = 'flatly'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_3_b(self):
         self.theme = 'litera'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_4_b(self):
         self.theme = 'journal'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_5_b(self):
         self.theme = 'lumen'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_6_b(self):
         self.theme = 'minty'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_7_b(self):
         self.theme = 'pulse'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_8_b(self):
         self.theme = 'sandstone'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_9_b(self):
         self.theme = 'united'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_10_b(self):
         self.theme = 'yeti'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_11_b(self):
         self.theme = 'morph'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_12_b(self):
         self.theme = 'simplex'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_13_b(self):
         self.theme = 'cerculean'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_14_b(self):
         self.theme = 'solar'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_15_b(self):
         self.theme = 'superhero'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_16_b(self):
         self.theme = 'darkly'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_17_b(self):
         self.theme = 'cyborg'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
         
     def theme_18_b(self):
         self.theme = 'vapor'
         self.save_settings()
         self.root.destroy()
-        # reload_main.setup()
+        reload_main.setup()
         sys.exit()
     
         
@@ -2176,6 +2177,10 @@ class AppMain():
         net_limit_up_var = 1024
         net_lat_var = 50
         change_log_var = True
+        max_attent_var = 3
+        max_verify_var = 100
+        user_var = ""
+        pass_var = ""
         
         self.auto_save.set(auto_save)
         self.agregador_var.set(agregador_var)
@@ -2194,11 +2199,14 @@ class AppMain():
         self.net_limit_up_var.set(net_limit_up_var)
         self.net_lat_var.set(net_lat_var)
         self.change_log_var.set(change_log_var)
+        self.max_attent_var = tb.StringVar(value="3")
+        self.max_verify_var = tb.StringVar(value="100")
+        self.user_var = tb.StringVar()
+        self.pass_var = tb.StringVar()
         
-        save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, folder_selected, theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var)
+        save_settings.setup(settings_dir, self.auto_save, self.agregador_var, self.nome_var, self.url_var, self.capitulo_var, self.ate_var, self.extension_var, self.compact_extension_var, self.compact_var, self.debug_var, self.debug2_var, self.headless_var, self.folder_selected, self.theme, self.net_option_var, self.net_limit_down_var, self.net_limit_up_var, self.net_lat_var, self.change_log_var, self.max_attent_var, self.max_verify_var, self.user_var, self.pass_var)
         self.root.destroy()
-        # reload_main.setup()
-        sys.exit()
+        reload_main.setup()
 
 
     def save_shortcut(self, event=None):

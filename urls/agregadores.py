@@ -29,7 +29,8 @@ def Agregadores():
         # "Moon Witch In Love": "https://moonwitchinlovescan.com/",
         "Hikari Scan": "https://hikariscan.org/",
         # "Niadd": "https://niadd.com.br/",
-        "Luratoon Scan": "https://luratoon.com/"
+        "Luratoon Scan": "https://luratoon.com/",
+        # "Mode Scanlator": "https://modescanlator.com/"
     }
     dic_agregadores = dict(sorted(dic_agregadores.items()))
 

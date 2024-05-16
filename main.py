@@ -33,7 +33,8 @@ def install_modules():
         'Wand',
         'packaging',
         'nodriver',
-        'imagehash'
+        'imagehash',
+        'tkinter'
     ]
 
     for module in required_modules:

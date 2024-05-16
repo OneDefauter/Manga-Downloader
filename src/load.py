@@ -55,7 +55,7 @@ def setup(settings_dir):
         net_lat_var = 50
         change_log_var = True
         max_attent_var = 3
-        max_verify_var = 50
+        max_verify_var = 100
         user_var = ""
         pass_var = ""
         

@@ -29,3 +29,4 @@ import urls.demonsect.main as agr_27
 import urls.moonwitchinlovescan.main as agr_28
 import urls.hikari_scan.main as agr_29
 import urls.luratoon.main as agr_30
+import urls.mode_scanlator.main as agr_31
