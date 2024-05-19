@@ -30,7 +30,10 @@ def Agregadores():
         "Hikari Scan": "https://hikariscan.org/",
         # "Niadd": "https://niadd.com.br/",
         "Luratoon Scan": "https://luratoon.com/",
-        # "Mode Scanlator": "https://modescanlator.com/"
+        # "Mode Scanlator": "https://modescanlator.com/",
+        "Cerise Toon": "https://cerisetoon.com/",
+        "Sinensis Toon": "https://sinensistoon.com/",
+        "3xyaoi": "https://3xyaoi.com/"
     }
     dic_agregadores = dict(sorted(dic_agregadores.items()))
 

@@ -358,6 +358,21 @@ class DownloaderSetup():
             elif "Mode Scanlator" in self.agregador_escolhido:
                 await self.IniciarDrive(dic_url, agr_31)
                 break
+    
+            # Num 32 (Cerise Toon)
+            elif "Cerise Toon" in self.agregador_escolhido:
+                await self.IniciarDrive(dic_url, agr_32)
+                break
+    
+            # Num 33 (Sinensis Toon)
+            elif "Sinensis Toon" in self.agregador_escolhido:
+                await self.IniciarDrive(dic_url, agr_33)
+                break
+    
+            # Num 34 (3xyaoi)
+            elif "3xyaoi" in self.agregador_escolhido:
+                await self.IniciarDrive(dic_url, agr_34)
+                break
         
         folder_path = os.path.join(self.folder_selected, self.nome_foler)
         del_folder.delete_empty_folders(folder_path.replace('/', '\\'))

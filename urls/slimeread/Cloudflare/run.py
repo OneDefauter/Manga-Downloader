@@ -2,13 +2,12 @@ import os
 import shutil
 from datetime import datetime
 from colorama import Fore, Style
-from PIL import Image
-import imagehash
 
 import src.move as move
 import src.organizar as organizar
 from src.zipfile import setup
 import src.clean as clean
+from src.imagehash import setup as imagehash
 
 async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler, nome, debug_var, baixando_label, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
     clean.setup(download_folder, False)
@@ -147,27 +146,14 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
     print(f"{Fore.GREEN}Movendo imagens...{Style.RESET_ALL}")
     move.setup(download_folder, folder_path)
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith('.jpg') or filename.endswith('.png'):
-            # Carrega a imagem
-            try:
-                img = Image.open(os.path.join(folder_path, filename))
-            except:
-                os.remove(os.path.join(folder_path, filename))
-                continue
-        
-            # Calcula o hash da imagem
-            img_hash = str(imagehash.average_hash(img))
-            
-            if img_hash == 'df8fbfdf00843d2d':
-                os.remove(os.path.join(folder_path, filename))
+    imagehash(folder_path)
 
     app_instance.move_text_wait(f'Capítulo {numero_capitulo} baixado com sucesso')
-    
+
     if debug_var.get():
         baixando_label.config(text=f"Aguarde...")
 
     print(f"{Fore.GREEN}Organizando imagens...{Style.RESET_ALL}")
     organizar.organizar(folder_path, compactar, compact_extension, extension)
-    
+
     print(f"═══════════════════════════════════► {nome} -- {numero_capitulo} ◄═══════════════════════════════════════\n")
