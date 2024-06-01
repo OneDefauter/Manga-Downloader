@@ -134,8 +134,10 @@ async def run(driver, url, numero_capitulo, session, folder_selected, nome_foler
                     except:
                         attents += 1
             if attents == max_attent:
-                print(f"{Fore.RED}Falha ao baixar o capítulo {numero_capitulo}")
-                return 526
+                await pag_.close()
+                print(f"{Fore.RED}Falha ao baixar {imagem} como {count:02d}.{file_extension}...{Style.RESET_ALL}")
+                count += 1
+                continue
             
             await input_element.clear_input()
             await input_element.send_keys(f"{count}")

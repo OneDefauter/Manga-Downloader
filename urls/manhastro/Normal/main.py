@@ -5,7 +5,7 @@ import urls.manhastro.Normal.search as obter_capitulos
 import urls.manhastro.Normal.run as run
 
 async def setup(driver, url, capítulo, ate, debug_var, baixando_label, folder_selected, nome_foler, nome, compactar, compact_extension, extension, download_folder, app_instance, max_attent, max_verify):
-    base_url = 'https://momonohanascan.com/'
+    base_url = 'https://manhastro.com/'
 
     # Função para obter capítulos dentro de um intervalo
     capitulos_solicitados = obter_capitulos.obter_capitulos(driver, url, capítulo, ate, debug_var, baixando_label, app_instance, max_attent)
